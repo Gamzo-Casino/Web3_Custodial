@@ -1,0 +1,12 @@
+[build]
+  command   = "npx prisma generate && npm run build"
+  publish   = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Dummy DATABASE_URL so Prisma doesn't throw during Next.js build-time page collection.
+  # The real DATABASE_URL must be set in Netlify → Site settings → Environment variables.
+  DATABASE_URL = "postgresql://build:build@localhost:5432/build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
