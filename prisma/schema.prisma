@@ -1,0 +1,565 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  name               String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  image              String?
+  passwordHash       String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  /// Web3: chain id of the wallet's network at last sign-in
+  chainId            Int?
+  /// Web3: last seen timestamp (updated on wallet auth)
+  lastSeenAt         DateTime?
+  /// Web3: EVM wallet address (lowercase, 0x-prefixed). Primary identity for web3 users.
+  walletAddress      String?             @unique
+  accounts           Account[]
+  auditLogs          AuditLog[]
+  aviatorRounds      AviatorRound[]
+  blackjackRounds    BlackjackRound[]
+  coinflipMatchesAsA CoinflipMatch[]     @relation("PlayerA")
+  coinflipMatchesAsB CoinflipMatch[]     @relation("PlayerB")
+  deposits           Deposit[]
+  gameBets           GameBet[]
+  hiloRounds         HiloRound[]
+  ledgerEntries      LedgerEntry[]
+  minesRounds        MinesRound[]
+  seedState          PlayerSeedState?
+  rouletteRounds     RouletteRound[]
+  sessions           Session[]
+  walletBalance      WalletBalance?
+  wheelRounds        WheelRound[]
+  withdrawalRequests WithdrawalRequest[]
+
+  @@index([walletAddress])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model WalletBalance {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Decimal  @default(0) @db.Decimal(18, 8)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LedgerEntry {
+  id            String          @id @default(cuid())
+  userId        String
+  type          LedgerEntryType
+  amount        Decimal         @db.Decimal(18, 8)
+  balanceBefore Decimal         @db.Decimal(18, 8)
+  balanceAfter  Decimal         @db.Decimal(18, 8)
+  reference     String?
+  createdAt     DateTime        @default(now())
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model HouseTreasury {
+  id         String        @id @default("house")
+  balanceGzo Decimal       @default(0) @db.Decimal(18, 8)
+  updatedAt  DateTime      @updatedAt
+  ledger     HouseLedger[]
+}
+
+model HouseLedger {
+  id            String          @id @default(cuid())
+  houseId       String          @default("house")
+  type          HouseLedgerType
+  amountGzo     Decimal         @db.Decimal(18, 8)
+  balanceBefore Decimal         @db.Decimal(18, 8)
+  balanceAfter  Decimal         @db.Decimal(18, 8)
+  reference     String?
+  createdAt     DateTime        @default(now())
+  house         HouseTreasury   @relation(fields: [houseId], references: [id])
+
+  @@index([houseId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model GameBet {
+  id                 String    @id @default(cuid())
+  userId             String
+  gameType           GameType
+  stakeGzo           Decimal   @db.Decimal(18, 8)
+  status             BetStatus @default(PENDING)
+  idempotencyKey     String    @unique
+  createdAt          DateTime  @default(now())
+  settledAt          DateTime?
+  referenceId        String?
+  serverSeedHash     String?
+  serverSeedRevealed String?
+  clientSeed         String?
+  nonce              Int       @default(1)
+  publicSeed         String?
+  resultJson         Json?
+  grossPayoutGzo     Decimal?  @db.Decimal(18, 8)
+  profitGzo          Decimal?  @db.Decimal(18, 8)
+  feeGzo             Decimal?  @db.Decimal(18, 8)
+  netPayoutGzo       Decimal?  @db.Decimal(18, 8)
+  /// block number of settlement
+  blockNumber        BigInt?
+  /// chain id this bet was placed on
+  chainId            Int?
+  /// contract address of the game
+  contractAddress    String?
+  /// bytes32 roundId from the smart contract
+  onchainRoundId     String?
+  /// transaction hash of settlement
+  settleTxHash       String?
+  /// transaction hash of bet placement
+  txHash             String?
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([gameType])
+  @@index([status])
+  @@index([referenceId])
+}
+
+model CoinflipMatch {
+  id            String           @id @default(cuid())
+  playerAId     String
+  playerBId     String?
+  wager         Decimal          @db.Decimal(18, 8)
+  playerAChoice CoinSide
+  outcome       CoinSide?
+  winnerId      String?
+  status        MatchStatus      @default(PENDING)
+  createdAt     DateTime         @default(now())
+  resolvedAt    DateTime?
+  commits       CoinflipCommit[]
+  playerA       User             @relation("PlayerA", fields: [playerAId], references: [id])
+  playerB       User?            @relation("PlayerB", fields: [playerBId], references: [id])
+
+  @@index([playerAId])
+  @@index([playerBId])
+  @@index([status])
+}
+
+model CoinflipCommit {
+  id         String        @id @default(cuid())
+  matchId    String
+  userId     String
+  commitHash String
+  seed       String?
+  revealedAt DateTime?
+  createdAt  DateTime      @default(now())
+  match      CoinflipMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, userId])
+  @@index([matchId])
+}
+
+/// *
+///  * Stores each player's active server seed (secret) and its public commitment hash.
+///  * The raw serverSeed is NEVER exposed via API; only serverSeedHash is returned.
+///  * After a bet settles, the serverSeed is revealed and rotated to a fresh one.
+///  *
+///  * Algorithm version 1:
+///  *   randomBytes = HMAC-SHA256(key=serverSeed, data="clientSeed:publicSeed:nonce")
+///  *   coinflip outcome = high nibble of first byte: even=HEADS, odd=TAILS
+model PlayerSeedState {
+  userId             String   @id
+  serverSeed         String
+  serverSeedHash     String
+  clientSeed         String
+  nonce              Int      @default(0)
+  prevServerSeedHash String?
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model MinesRound {
+  id                String      @id @default(cuid())
+  userId            String
+  stakeGzo          Decimal     @db.Decimal(18, 8)
+  mineCount         Int
+  boardSize         Int         @default(25)
+  /// JSON number[] — mine tile indices, hidden until game ends
+  minePositions     Json
+  /// JSON number[] — safe tiles the player has revealed
+  revealedTiles     Json        @default("[]")
+  status            MinesStatus @default(ACTIVE)
+  /// JSON number[] — multiplier recorded after each safe pick
+  multiplierPath    Json        @default("[]")
+  currentMultiplier Decimal     @default(1) @db.Decimal(18, 8)
+  grossPayoutGzo    Decimal?    @db.Decimal(18, 8)
+  profitGzo         Decimal?    @db.Decimal(18, 8)
+  feeGzo            Decimal?    @db.Decimal(18, 8)
+  netPayoutGzo      Decimal?    @db.Decimal(18, 8)
+  /// Secret seed committed at start — revealed only after game ends
+  serverSeed        String
+  serverSeedHash    String
+  clientSeed        String
+  nonce             Int
+  publicSeed        String
+  rngVersion        Int         @default(1)
+  createdAt         DateTime    @default(now())
+  settledAt         DateTime?
+  idempotencyKey    String      @unique
+  user              User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
+}
+
+/// One row per on-chain Transfer tx the user sends to the house deposit wallet.
+/// txHash is unique — double-credit is impossible.
+model Deposit {
+  id          String        @id @default(cuid())
+  userId      String
+  /// Amount in GZO (human-readable, not wei).
+  amountGzo   Decimal       @db.Decimal(18, 8)
+  /// On-chain transaction hash — unique, prevents double-credit.
+  txHash      String?       @unique
+  /// The EVM address that sent the tokens (must match user.walletAddress).
+  fromAddress String?
+  status      DepositStatus @default(PENDING)
+  adminNote   String?
+  confirmedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  user        User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// One row per user-initiated withdrawal.
+/// Balance is debited atomically when row is created (PROCESSING).
+/// Refunded automatically if on-chain send fails (FAILED).
+model WithdrawalRequest {
+  id          String           @id @default(cuid())
+  userId      String
+  /// Amount in GZO (human-readable, not wei).
+  amountGzo   Decimal          @db.Decimal(18, 8)
+  /// Destination EVM address (user's connected wallet).
+  toAddress   String
+  status      WithdrawalStatus @default(PENDING)
+  /// On-chain tx hash, populated after successful send.
+  txHash      String?
+  adminNote   String?
+  /// Error message if FAILED.
+  errorMsg    String?
+  processedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model RouletteRound {
+  id              String    @id @default(cuid())
+  userId          String
+  wagers          Json
+  totalStakeGzo   Decimal   @db.Decimal(18, 8)
+  winningNumber   Int?
+  winningColor    String?
+  grossPayoutGzo  Decimal?  @db.Decimal(18, 8)
+  profitGzo       Decimal?  @db.Decimal(18, 8)
+  feeGzo          Decimal?  @db.Decimal(18, 8)
+  netPayoutGzo    Decimal?  @db.Decimal(18, 8)
+  payoutBreakdown Json?
+  status          String    @default("PENDING")
+  serverSeed      String
+  serverSeedHash  String
+  clientSeed      String
+  nonce           Int
+  publicSeed      String
+  rngVersion      Int       @default(1)
+  createdAt       DateTime  @default(now())
+  settledAt       DateTime?
+  idempotencyKey  String    @unique
+  user            User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+
+model BlackjackRound {
+  id             String    @id @default(cuid())
+  userId         String
+  /// Initial stake placed at deal time
+  stakeGzo       Decimal   @db.Decimal(18, 8)
+  /// Full shuffled deck stored server-side only (JSON number[0-51])
+  deckJson       Json
+  /// Next index into deckJson for the next card draw
+  deckIndex      Int       @default(4)
+  /// Main player hand — JSON number[] of card values 0-51
+  playerCards    Json
+  /// Dealer hand — index 0 = face-up card, index 1 = hole card (hidden until settled)
+  dealerCards    Json
+  /// Split hand — null if no split taken
+  splitCards     Json?
+  /// 0 = playing main hand, 1 = playing split hand
+  activeHand     Int       @default(0)
+  /// Effective stake for main hand (stakeGzo × 2 if doubled)
+  mainStakeGzo   Decimal   @db.Decimal(18, 8)
+  /// Effective stake for split hand (stakeGzo × 2 if split-doubled)
+  splitStakeGzo  Decimal?  @db.Decimal(18, 8)
+  mainDoubled    Boolean   @default(false)
+  splitDoubled   Boolean   @default(false)
+  /// Action log for auditability (JSON array)
+  actions        Json      @default("[]")
+  status         String    @default("ACTIVE")
+  mainOutcome    String?
+  splitOutcome   String?
+  grossPayoutGzo Decimal?  @db.Decimal(18, 8)
+  profitGzo      Decimal?  @db.Decimal(18, 8)
+  feeGzo         Decimal?  @db.Decimal(18, 8)
+  netPayoutGzo   Decimal?  @db.Decimal(18, 8)
+  /// serverSeed used for this hand — stored at start, revealed at settlement
+  serverSeed     String
+  serverSeedHash String
+  clientSeed     String
+  nonce          Int
+  publicSeed     String
+  rngVersion     Int       @default(1)
+  createdAt      DateTime  @default(now())
+  settledAt      DateTime?
+  idempotencyKey String    @unique
+  user           User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, createdAt])
+}
+
+model HiloRound {
+  id                String    @id @default(cuid())
+  userId            String
+  stakeGzo          Decimal   @db.Decimal(18, 8)
+  /// Full shuffled deck stored server-side (JSON number[0-51])
+  deckJson          Json
+  /// Index of next card to draw; deck[0] is the revealed starting card, deckIndex starts at 1
+  deckIndex         Int       @default(1)
+  /// Cumulative multiplier — starts at 1.0, multiplied on each correct guess
+  currentMultiplier Decimal   @default(1) @db.Decimal(18, 8)
+  /// JSON array of HiloGuessHistoryEntry — records every guess made
+  guessHistory      Json      @default("[]")
+  status            String    @default("ACTIVE")
+  grossPayoutGzo    Decimal?  @db.Decimal(18, 8)
+  profitGzo         Decimal?  @db.Decimal(18, 8)
+  feeGzo            Decimal?  @db.Decimal(18, 8)
+  netPayoutGzo      Decimal?  @db.Decimal(18, 8)
+  /// Committed serverSeed stored at round start — revealed only when round ends
+  serverSeed        String
+  serverSeedHash    String
+  clientSeed        String
+  nonce             Int
+  publicSeed        String
+  rngVersion        Int       @default(1)
+  createdAt         DateTime  @default(now())
+  settledAt         DateTime?
+  idempotencyKey    String    @unique
+  user              User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, createdAt])
+}
+
+model WheelRound {
+  id               String   @id @default(cuid())
+  userId           String
+  stakeGzo         Decimal  @db.Decimal(18, 8)
+  riskMode         String
+  configVersion    Int      @default(1)
+  stopPosition     Int
+  segmentIndex     Int
+  segmentLabel     String
+  landedMultiplier Decimal  @db.Decimal(18, 8)
+  grossPayoutGzo   Decimal  @db.Decimal(18, 8)
+  profitGzo        Decimal  @db.Decimal(18, 8)
+  feeGzo           Decimal  @db.Decimal(18, 8)
+  netPayoutGzo     Decimal  @db.Decimal(18, 8)
+  serverSeed       String
+  serverSeedHash   String
+  clientSeed       String
+  nonce            Int
+  publicSeed       String
+  rngVersion       Int      @default(1)
+  createdAt        DateTime @default(now())
+  idempotencyKey   String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+
+model AviatorRound {
+  id                String        @id @default(cuid())
+  userId            String
+  stakeGzo          Decimal       @db.Decimal(18, 8)
+  status            AviatorStatus @default(FLYING)
+  /// Predetermined crash multiplier (hidden during flight)
+  flyAwayPoint      Float
+  /// Multiplier at which the player cashed out (null if crashed)
+  cashoutMultiplier Float?
+  /// Optional auto-cashout target set by player at start
+  autoCashoutAt     Float?
+  startedAt         DateTime
+  settledAt         DateTime?
+  grossPayoutGzo    Decimal?      @db.Decimal(18, 8)
+  profitGzo         Decimal?      @db.Decimal(18, 8)
+  feeGzo            Decimal?      @db.Decimal(18, 8)
+  netPayoutGzo      Decimal?      @db.Decimal(18, 8)
+  /// Secret seed committed at start — revealed only after round ends
+  serverSeed        String
+  serverSeedHash    String
+  clientSeed        String
+  nonce             Int
+  publicSeed        String
+  rngVersion        Int           @default(1)
+  createdAt         DateTime      @default(now())
+  idempotencyKey    String        @unique
+  user              User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
+}
+
+enum LedgerEntryType {
+  DEPOSIT
+  WITHDRAWAL
+  BET_PLACED
+  BET_WON
+  BET_REFUND
+}
+
+enum HouseLedgerType {
+  INITIAL_FUND
+  BET_IN
+  BET_OUT
+  FEE
+  TOPUP
+}
+
+enum GameType {
+  COINFLIP
+  DICE
+  PLINKO
+  LIMBO
+  KENO
+  CRASH
+  MINES
+  ROULETTE
+  BLACKJACK
+  HILO
+  WHEEL
+  AVIATOR
+}
+
+enum BetStatus {
+  PENDING
+  SETTLED
+  REFUNDED
+}
+
+enum CoinSide {
+  HEADS
+  TAILS
+}
+
+enum MatchStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MinesStatus {
+  ACTIVE
+  CASHED_OUT
+  LOST
+}
+
+enum DepositStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AviatorStatus {
+  FLYING
+  CASHED_OUT
+  CRASHED
+}
