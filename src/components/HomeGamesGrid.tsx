@@ -23,7 +23,7 @@ const GAMES: { href: string; name: string; Icon: GameIconComponent; tag: string;
 
 export default function HomeGamesGrid() {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: "1rem" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(210px, 100%), 1fr))", gap: "1rem" }}>
       {GAMES.map(({ href, name, Icon, tag, color, desc }) => (
         <Link
           key={href}

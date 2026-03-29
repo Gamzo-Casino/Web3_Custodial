@@ -28,14 +28,11 @@ async function main() {
   console.log("  Proxy:          ", COORDINATOR_PROXY);
   console.log("  New impl:       ", implAddr);
 
-  // Set callbackGas to 1,000,000 (was hard-coded constant 500,000 — Keno needs more)
-  console.log("─────────────────────────────────────────");
-  console.log("Setting callbackGas = 1,000,000...");
+  // NOTE: callbackGas is intentionally left at 500,000 (set via setCallbackGas.ts).
+  // 500K is sufficient for all custodial games; 1M caused Chainlink Amoy to stall.
   const coordinator = await ethers.getContractAt("RandomnessCoordinator", COORDINATOR_PROXY);
-  const tx = await coordinator.setCallbackGas(1_000_000);
-  await tx.wait();
   const gas = await coordinator.callbackGas();
-  console.log("✓ callbackGas =", gas.toString());
+  console.log("  callbackGas =", gas.toString(), "(unchanged)");
   console.log("─────────────────────────────────────────");
 }
 

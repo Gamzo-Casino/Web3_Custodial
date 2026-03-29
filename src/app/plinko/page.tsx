@@ -595,12 +595,7 @@ function PlinkoInner() {
       </div>
 
       {/* ── 3-column layout ────────────────────────────────────────────────── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "220px minmax(0,1fr) 240px",
-        gap: "1.25rem",
-        marginBottom: "1.25rem",
-      }}>
+      <div className="game-3col" style={{ alignItems: "start", marginBottom: "1.25rem" }}>
 
         {/* ── LEFT — Controls ─────────────────────────────────────────────── */}
         <div className="card" style={{
@@ -611,7 +606,7 @@ function PlinkoInner() {
           {/* Chip selector */}
           <div>
             <label style={labelStyle}>Stake (GZO)</label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center" }}>
+            <div className="chip-row" style={{ justifyItems: "center" }}>
               {CHIP_OPTIONS.map(chip => (
                 <CasinoChip key={chip.value} value={chip.value} color={chip.color}
                   active={chipValue === chip.value && customStake === chip.value}
@@ -750,8 +745,9 @@ function PlinkoInner() {
           className="card"
           style={{
             minWidth: 0,
+            width: "100%",
             padding: "1.25rem 0.5rem",
-            overflowX: "auto",
+            overflowX: "hidden",
             background: settled
               ? won ? "rgba(0,255,157,0.04)" : "rgba(255,80,80,0.04)"
               : animating ? "rgba(255,215,0,0.03)"
@@ -802,7 +798,7 @@ function PlinkoInner() {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT, display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiTarget size={16} color={ACCENT} /> How to Play
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", alignItems: "start" }}>
+        <div className="howto-grid" style={{ alignItems: "start" }}>
           {[
             { step:"1", icon: <SiWallet size={14} color={ACCENT} />, title:"Sign In",            desc:"Log in with your wallet. Your GZO balance is held custodially — no per-bet wallet approval needed." },
             { step:"2", icon: <SiChip size={14} color={ACCENT} />, title:"Pick Your Stake",      desc:"Select a chip (10, 50, 100, 500 GZO) or type a custom amount." },
@@ -830,7 +826,7 @@ function PlinkoInner() {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT, display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How It Works
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem", alignItems: "start" }}>
+        <div className="stat-grid-2" style={{ alignItems: "start" }}>
           {[
             { icon: <SiWallet size={20} color={ACCENT} />, title:"Custodial DB Balance",        desc:"Your GZO balance is tracked in our database. When you drop a ball, your stake is debited instantly — no wallet approval, no gas from your wallet." },
             { icon: <SiDice size={20} color={ACCENT} />, title:"Chainlink VRF Randomness",     desc:"The house wallet calls PlinkoGame.dropBallFor() on-chain. The contract requests a random word from Chainlink VRF — cryptographically tamper-proof and verifiable by anyone." },

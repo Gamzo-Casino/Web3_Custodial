@@ -443,7 +443,7 @@ function WheelPageInner() {
       </div>
 
       {/* 3-col layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px minmax(0,1fr) 240px", gap: "1.25rem", marginBottom: "1.25rem" }}>
+      <div className="game-3col">
 
         {/* LEFT — Controls */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem",
@@ -452,7 +452,7 @@ function WheelPageInner() {
           {/* Casino chips */}
           <div>
             <label style={labelStyle}>Select Chip (GZO)</label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center" }}>
+            <div className="chip-row">
               {CHIP_OPTIONS.map(chip => (
                 <CasinoChip key={chip.value} value={chip.value} color={chip.color}
                   active={chipValue === chip.value} onClick={() => { setChipValue(chip.value); setCustomStake(chip.value); }} />
@@ -657,7 +657,7 @@ function WheelPageInner() {
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiTarget size={16} color="#00d4ff" /> How to Play
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", alignItems: "start" }}>
+        <div className="howto-grid">
           {[
             { step:"1", title:"Connect Wallet",     desc:"Connect MetaMask on Polygon Amoy. You need GZO tokens to play.", icon: <SiWallet size={14} color="#00d4ff" /> },
             { step:"2", title:"Pick a Chip Value",  desc:"Select your bet amount — 10, 50, 100, or 500 GZO. Or enter a custom amount.", icon: <SiChip size={14} color="#00d4ff" /> },
@@ -691,7 +691,7 @@ function WheelPageInner() {
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How It Works
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem", alignItems: "start" }}>
+        <div className="stat-grid-2">
           {[
             { icon: <SiLock size={20} color={ACCENT} />, title:"Stake Locking", desc:"When you spin, your GZO stake is transferred into the TreasuryVault smart contract and locked on-chain for the round duration. No funds leave the blockchain." },
             { icon: <SiDice size={20} color={ACCENT} />, title:"Chainlink VRF Stop Position", desc:"The WheelGame contract calls RandomnessCoordinator, which requests a random number from Chainlink VRF. This number maps to a stop position [0, totalWeight). The result is cryptographically provable and manipulation-proof." },

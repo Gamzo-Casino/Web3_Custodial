@@ -14,7 +14,9 @@ function createPrismaClient() {
   }
   // Strip channel_binding=require — not supported by Node.js pg driver
   const cleanUrl = connectionString.replace(/[&?]channel_binding=require/g, "");
-  const pool = new Pool({ connectionString: cleanUrl, max: 5, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 5_000, ssl: { rejectUnauthorized: false } });
+  // Only enable SSL for remote databases — local postgres has no SSL
+  const isRemote = !cleanUrl.includes("localhost") && !cleanUrl.includes("127.0.0.1");
+  const pool = new Pool({ connectionString: cleanUrl, max: 5, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 5_000, ssl: isRemote ? { rejectUnauthorized: false } : false });
   const adapter = new PrismaPg(pool);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new (PrismaClient as any)({ adapter });

@@ -497,7 +497,7 @@ function HiloGame() {
       </div>
 
       {/* ── 3-column main layout ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px minmax(0,1fr) 240px", gap: "1.25rem", marginBottom: "1.25rem", alignItems: "start" }}>
+      <div className="game-3col">
 
         {/* ── LEFT — Controls ── */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem", background: `rgba(129,140,248,0.03)`, borderColor: `rgba(129,140,248,0.2)` }}>
@@ -520,7 +520,7 @@ function HiloGame() {
                 cursor: controlsDisabled ? "not-allowed" : "text",
               }}
             />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center", marginTop: "0.5rem" }}>
+            <div className="chip-row" style={{ marginTop: "0.5rem" }}>
               {CHIP_OPTIONS.map((chip) => (
                 <CasinoChip
                   key={chip.value}
@@ -923,7 +923,7 @@ function HiloGame() {
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiTarget size={16} color="#00d4ff" /> How to Play
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
+        <div className="howto-grid">
           {[
             { step: "1", icon: <SiWallet size={14} color="#00d4ff" />, title: "Connect & Fund",       desc: "Log in and make sure your custodial GZO balance is funded. No wallet approval needed — funds come from your account balance." },
             { step: "2", icon: <SiChip size={14} color="#00d4ff" />, title: "Pick a Chip",           desc: "Choose your bet size — 10, 50, 100, or 500 GZO chips, or type a custom amount." },
@@ -960,7 +960,7 @@ function HiloGame() {
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How It Works
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+        <div className="stat-grid-2">
           {[
             { icon: <SiWallet size={20} color={ACCENT} />, title: "Custodial Balance",        desc: "Your GZO stake is debited from your secure custodial balance when you start a round — no gas fees, no wallet popups required." },
             { icon: <SiDice size={20} color={ACCENT} />, title: "Chainlink VRF Deck Shuffle", desc: "The HiloGame contract requests Chainlink VRF randomness. The returned seed is stored on-chain and used to shuffle all 52 cards — fully deterministic and auditable." },

@@ -238,7 +238,7 @@ export default function CoinFlipPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
           <div>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "0.25rem" }}>
+            <h1 style={{ fontSize: "clamp(1.4rem, 4vw, 1.875rem)", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "0.25rem" }}>
               Coin Flip
             </h1>
             <p style={{ color: "#8888aa", fontSize: "0.875rem" }}>

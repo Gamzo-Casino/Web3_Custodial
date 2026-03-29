@@ -435,12 +435,12 @@ export default function HistoryPage() {
   if (status === "unauthenticated") {
     return (
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-        <h1 style={{ fontSize: "1.875rem", fontWeight: 800, marginBottom: "1rem", color: "#00d4ff" }}>
+        <h1 style={{ fontSize: "clamp(1.4rem, 4vw, 1.875rem)", fontWeight: 800, marginBottom: "1rem", color: "#00d4ff" }}>
           History
         </h1>
         <div className="card" style={{ textAlign: "center", padding: "3rem" }}>
-          <p style={{ color: "#8888aa", marginBottom: "1rem" }}>Login to see your bet history.</p>
-          <Link href="/login" className="btn-primary">Login</Link>
+          <p style={{ color: "#8888aa", marginBottom: "1rem" }}>Connect your wallet to see your bet history.</p>
+          <Link href="/dashboard" className="btn-primary">Connect Wallet</Link>
         </div>
       </div>
     );
@@ -454,7 +454,7 @@ export default function HistoryPage() {
     <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
       {/* Header */}
       <div style={{ marginBottom: "1.5rem" }}>
-        <h1 style={{ fontSize: "1.875rem", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "0.25rem" }}>
+        <h1 style={{ fontSize: "clamp(1.4rem, 4vw, 1.875rem)", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "0.25rem" }}>
           History
         </h1>
         <p style={{ color: "#8888aa", fontSize: "0.875rem" }}>

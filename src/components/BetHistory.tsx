@@ -156,6 +156,8 @@ export default function BetHistory({
           border: "1px solid var(--border-subtle, #2a2a50)",
           borderRadius: "12px",
           overflow: "hidden",
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch" as React.CSSProperties["WebkitOverflowScrolling"],
         }}
       >
         {loading ? (

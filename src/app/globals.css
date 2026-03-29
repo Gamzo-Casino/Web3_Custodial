@@ -28,6 +28,11 @@
   box-sizing: border-box;
 }
 
+html {
+  /* prevent horizontal scroll globally */
+  overflow-x: hidden;
+}
+
 body {
   background: var(--bg-primary);
   background-image:
@@ -38,6 +43,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Neon glow utilities */
@@ -227,10 +233,183 @@ body {
   }
 }
 
-/* Responsive main layout padding */
+/* ── 3-column game layout (controls | animation | stats) ────────── */
+/* Used by: Dice, Plinko, Mines, Keno, Roulette, Wheel, Blackjack, Hilo, Aviator */
+.game-3col {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 240px;
+  gap: 1.25rem;
+  align-items: start;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .game-3col {
+    grid-template-columns: 200px minmax(0, 1fr) 210px;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Tablet: center (game area) full-width on top, controls + stats side by side below */
+  .game-3col {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .game-3col > *:nth-child(1) { order: 2; }   /* controls — bottom left */
+  .game-3col > *:nth-child(2) {               /* game area — top full width */
+    order: 1;
+    grid-column: 1 / -1;
+  }
+  .game-3col > *:nth-child(3) { order: 3; }   /* stats — bottom right */
+}
+
 @media (max-width: 640px) {
+  /* Mobile: all stacked — controls → game area → stats */
+  .game-3col {
+    grid-template-columns: 1fr;
+  }
+  .game-3col > *:nth-child(1) { order: 1; }
+  .game-3col > *:nth-child(2) { order: 2; grid-column: 1; }
+  .game-3col > *:nth-child(3) { order: 3; }
+}
+
+/* ── Chip selector row — responsive ─────────────────────────────── */
+.chip-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+@media (max-width: 400px) {
+  .chip-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+  }
+  /* Scale down chips slightly on very small screens */
+  .chip-row button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+/* ── Stat grids ─────────────────────────────────────────────────── */
+.stat-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .stat-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── How to play section ─────────────────────────────────────────── */
+.howto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .howto-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .howto-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Roulette betting table ──────────────────────────────────────── */
+.roulette-bet-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Keno number grid ───────────────────────────────────────────── */
+.keno-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+@media (max-width: 640px) {
+  .keno-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+}
+
+@media (max-width: 400px) {
+  .keno-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
+  }
+}
+
+/* ── Canvas containers ─────────────────────────────────────────── */
+.canvas-container {
+  width: 100%;
+  position: relative;
+}
+
+.canvas-container canvas {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+
+/* ── Mobile nav ─────────────────────────────────────────────────── */
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  backdrop-filter: blur(2px);
+}
+
+.mobile-menu-drawer {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 45;
+  background: #0d0d1f;
+  border-top: 1px solid #2a2a50;
+  overflow-y: auto;
+  padding: 1rem;
+  animation: slide-in-top 0.2s ease;
+}
+
+/* ── Responsive main layout padding ─────────────────────────────── */
+@media (max-width: 768px) {
   main {
-    padding: 1.25rem 0.875rem !important;
+    padding: 1.5rem 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 1rem 0.75rem !important;
+  }
+}
+
+/* ── Card padding reduction on mobile ───────────────────────────── */
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
   }
 }
 
@@ -298,3 +477,164 @@ input[type="number"] {
 /* ── Keno page ─────────────────────────────────────────────────────────────── */
 @keyframes kenoBtnGlow { 0%,100%{box-shadow:0 0 20px #a855f755,0 0 40px #a855f722} 50%{box-shadow:0 0 32px #a855f788,0 0 64px #a855f744} }
 .keno-play-btn { animation: kenoBtnGlow 2s ease-in-out infinite !important; }
+
+/* ── Game page section spacing ──────────────────────────────────────────────── */
+.game-page-section {
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .game-page-section {
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* ── "Other Games" + "How to Play" row ─────────────────────────── */
+.game-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .game-secondary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .game-secondary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Mines 5×5 board ───────────────────────────────────────────── */
+.mines-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .mines-board {
+    gap: 6px;
+  }
+}
+
+/* ── Blackjack cards row ─────────────────────────────────────────── */
+.bj-cards-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Overflow-safe text ─────────────────────────────────────────── */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Scrollable container (touch-friendly) ──────────────────────── */
+.scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a50 transparent;
+}
+
+.scroll-x::-webkit-scrollbar {
+  height: 4px;
+}
+.scroll-x::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-x::-webkit-scrollbar-thumb {
+  background: #2a2a50;
+  border-radius: 2px;
+}
+
+/* ── Hero stats row wraps gracefully ───────────────────────────── */
+.hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .hero-stats {
+    gap: 1.25rem;
+  }
+}
+
+/* ── CTA button row ─────────────────────────────────────────────── */
+.cta-row {
+  display: flex;
+  gap: 0.875rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 400px) {
+  .cta-row a,
+  .cta-row button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ── Deposit/Withdraw panel flex ─────────────────────────────────── */
+.deposit-withdraw-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.deposit-withdraw-row > * {
+  flex: 1;
+  min-width: 260px;
+}
+
+@media (max-width: 560px) {
+  .deposit-withdraw-row > * {
+    min-width: 100%;
+  }
+}
+
+/* ── GZO Balance card responsive ─────────────────────────────────── */
+.balance-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .balance-card-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+}
+
+/* ── Roulette outside bet row wrapping ───────────────────────────── */
+.roulette-outside-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ── Table scroll wrapper ───────────────────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+}

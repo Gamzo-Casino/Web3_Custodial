@@ -38,6 +38,17 @@ contract RandomnessCoordinator is
     // ── Storage extension (appended to avoid layout collision) ──────────────────
     uint32 public callbackGas; // configurable callback gas; 0 = use CALLBACK_GAS legacy
 
+    // ── s_requests — VRF v2.5 style request status tracking (Chainlink recommendation) ──
+    /// @notice Tracks fulfillment status and random word per VRF request ID.
+    ///         Allows on-chain inspection without scanning event logs.
+    ///         Populated by both rawFulfillRandomWords (Chainlink) and manualFulfill (admin).
+    struct RequestStatus {
+        bool    fulfilled; // true once random word delivered
+        bool    exists;    // true if requestId was ever registered
+        uint256 randomWord; // the random word used for settlement
+    }
+    mapping(uint256 => RequestStatus) public s_requests;
+
     event RandomnessRequested(uint256 indexed vrfRequestId, bytes32 indexed gameId, bytes32 indexed roundId);
     event RandomnessFulfilled(uint256 indexed vrfRequestId, bytes32 indexed gameId, bytes32 indexed roundId, uint256 randomWord);
 
@@ -85,6 +96,7 @@ contract RandomnessCoordinator is
             roundId: roundId,
             fulfilled: false
         });
+        s_requests[vrfRequestId] = RequestStatus({ fulfilled: false, exists: true, randomWord: 0 });
         emit RandomnessRequested(vrfRequestId, gameId, roundId);
     }
 
@@ -95,6 +107,8 @@ contract RandomnessCoordinator is
         require(req.gameContract != address(0), "unknown request");
         require(!req.fulfilled, "already fulfilled");
         req.fulfilled = true;
+        s_requests[vrfRequestId].fulfilled  = true;
+        s_requests[vrfRequestId].randomWord = randomWords[0];
 
         emit RandomnessFulfilled(vrfRequestId, req.gameId, req.roundId, randomWords[0]);
         IGame(req.gameContract).fulfillRandomness(vrfRequestId, randomWords);
@@ -107,10 +121,30 @@ contract RandomnessCoordinator is
         subscriptionId = subId;
     }
 
-    /// @notice Update the VRF callback gas limit (recommended: 1_000_000 for Keno)
+    /// @notice Update the VRF callback gas limit (recommended: 500_000 for custodial games)
     function setCallbackGas(uint32 gas_) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(gas_ >= 100_000 && gas_ <= 2_500_000, "gas out of range");
         callbackGas = gas_;
+    }
+
+    /// @notice Emergency manual fulfillment — used when Chainlink VRF node is delayed or offline.
+    ///         Generates settlement using admin-provided randomWord instead of Chainlink VRF.
+    ///         Admin-only. Does NOT re-fulfill already-fulfilled requests.
+    function manualFulfill(uint256 vrfRequestId, uint256 randomWord)
+        external onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        Request storage req = requests[vrfRequestId];
+        require(req.gameContract != address(0), "unknown request");
+        require(!req.fulfilled, "already fulfilled");
+        req.fulfilled = true;
+        s_requests[vrfRequestId].fulfilled  = true;
+        s_requests[vrfRequestId].randomWord = randomWord;
+
+        uint256[] memory words = new uint256[](1);
+        words[0] = randomWord;
+
+        emit RandomnessFulfilled(vrfRequestId, req.gameId, req.roundId, randomWord);
+        IGame(req.gameContract).fulfillRandomness(vrfRequestId, words);
     }
 
     function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) {}

@@ -632,7 +632,7 @@ export default function RoulettePage() {
       </div>
 
       {/* 3-col layout */}
-      <div style={{ display:"grid", gridTemplateColumns:"220px minmax(0,1fr) 240px", gap:"1.25rem", marginBottom:"1.25rem" }}>
+      <div className="game-3col">
 
         {/* LEFT — Controls */}
         <div className="card" style={{ display:"flex", flexDirection:"column", gap:"1rem",
@@ -640,7 +640,7 @@ export default function RoulettePage() {
 
           <div>
             <label style={labelStyle}>Select Chip (GZO)</label>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.5rem", justifyItems:"center" }}>
+            <div className="chip-row">
               {CHIP_OPTIONS.map(chip => (
                 <CasinoChip key={chip.value} value={chip.value} color={chip.color}
                   active={chipValue === chip.value} onClick={() => setChipValue(chip.value)} />
@@ -777,7 +777,7 @@ export default function RoulettePage() {
             )}
           </div>
 
-          <div className="card" style={{ padding:"0.875rem", background:"rgba(232,121,249,0.01)", borderColor:"rgba(232,121,249,0.15)", position:"relative" }}>
+          <div className="card roulette-bet-table" style={{ padding:"0.875rem", background:"rgba(232,121,249,0.01)", borderColor:"rgba(232,121,249,0.15)", position:"relative" }}>
             {isBusy && !animating && (
               <div style={{ position:"absolute", inset:0, borderRadius:"inherit",
                 background:"rgba(10,10,24,0.6)", zIndex:5, pointerEvents:"none" }} />
@@ -810,7 +810,7 @@ export default function RoulettePage() {
           display:"flex", alignItems:"center", gap:"0.5rem" }}>
           <SiTarget size={16} color="#00d4ff" /> How to Play
         </h2>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"0.75rem" }}>
+        <div className="howto-grid">
           {[
             { step:"1", title:"Sign In",           desc:"Log in with your account to access your custodial GZO balance.", icon: <SiWallet size={14} color="#00d4ff" /> },
             { step:"2", title:"Pick a Chip",       desc:"Choose your bet size — 10, 50, 100, 500 GZO, or enter a custom amount.", icon: <SiChip size={14} color="#00d4ff" /> },
@@ -847,7 +847,7 @@ export default function RoulettePage() {
           display:"flex", alignItems:"center", gap:"0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How It Works
         </h2>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:"0.75rem" }}>
+        <div className="stat-grid-2">
           {[
             { icon: <SiLock size={20} color={ACCENT} />,  title:"Custodial Balance",     desc:"Your GZO balance is tracked in our database. No on-chain token approval needed — stake is debited instantly when you spin." },
             { icon: <SiDice size={20} color={ACCENT} />,  title:"Chainlink VRF",         desc:"The game contract requests a random number from Chainlink VRF. The winning number [0–36] is cryptographically provable and impossible to predict." },

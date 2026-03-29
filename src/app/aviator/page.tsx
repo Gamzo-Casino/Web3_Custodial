@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useWalletUser } from "@/contexts/WalletAuthContext";
+import { useAccount } from "wagmi";
 import OtherGames from "@/components/OtherGames";
 import BetHistory from "@/components/BetHistory";
 import FairnessWidget from "@/components/FairnessWidget";
@@ -358,7 +359,9 @@ function AviatorCanvas({
 
 // ── Main Page ────────────────────────────────────────────────────────────────
 export default function AviatorPage() {
-  const { data: session } = useSession();
+  const { user: walletUser } = useWalletUser();
+  const { isConnected } = useAccount();
+  const session = walletUser ?? (isConnected ? {} : null);
 
   // Controls
   const [stake, setStake] = useState(100);
@@ -641,12 +644,7 @@ export default function AviatorPage() {
       )}
 
       {/* ── 3-column layout ────────────────────────────────────────────── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "220px 1fr 240px",
-        gap: "1rem",
-        marginBottom: "1.5rem",
-      }}>
+      <div className="game-3col" style={{ marginBottom: "1.5rem" }}>
         {/* ── Left: Controls ─────────────────────────────────────────── */}
         <div className="card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
           {/* Stake */}
@@ -671,7 +669,7 @@ export default function AviatorPage() {
           </div>
 
           {/* Chips */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.375rem" }}>
+          <div className="chip-row">
             {CHIP_OPTIONS.map((c) => (
               <button
                 key={c.value}
@@ -790,7 +788,7 @@ export default function AviatorPage() {
         </div>
 
         {/* ── Center: Canvas + Live Multiplier ───────────────────────── */}
-        <div style={{ position: "relative", minHeight: "340px" }}>
+        <div style={{ position: "relative", minHeight: "340px", width: "100%" }}>
           <AviatorCanvas
             phase={phase}
             multiplier={multiplier}

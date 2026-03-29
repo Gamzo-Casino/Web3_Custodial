@@ -604,7 +604,7 @@ function MinesGame() {
       </div>
 
       {/* ── Main layout: Controls | Board | Stats ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px minmax(0,1fr) 240px", gap: "1.25rem", marginBottom: "1.25rem" }}>
+      <div className="game-3col">
 
         {/* ── LEFT — Controls ── */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem", background: "rgba(255,61,122,0.03)", borderColor: "rgba(255,61,122,0.2)" }}>
@@ -619,7 +619,7 @@ function MinesGame() {
               disabled={phase !== "idle"}
               style={inputStyle(phase !== "idle")}
             />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center", marginTop: "0.5rem" }}>
+            <div className="chip-row" style={{ justifyItems: "center", marginTop: "0.5rem" }}>
               {CHIP_OPTIONS.map((chip) => (
                 <CasinoChip
                   key={chip.value}
@@ -806,7 +806,7 @@ function MinesGame() {
           </div>
 
           {/* 5×5 Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "8px" }}>
+          <div className="mines-board">
             {(phase === "pending_vrf" || phase === "starting") ? (
               Array.from({ length: BOARD_SIZE }, (_, i) => (
                 <div key={i} style={{
@@ -975,7 +975,7 @@ function MinesGame() {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT, display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiTarget size={16} color={ACCENT} /> How to Play
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.875rem" }}>
+        <div className="howto-grid">
           {[
             { step: "1", title: "Set Your Bet",      desc: "Pick a chip size (10/50/100/500 GZO) or type a custom amount. Your balance is custodial — no wallet approval needed." },
             { step: "2", title: "Choose Mines",      desc: "Drag the slider to set how many mines hide on the 5×5 grid — more mines, bigger multipliers." },
@@ -1011,7 +1011,7 @@ function MinesGame() {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT, display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How it Works
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.875rem" }}>
+        <div className="stat-grid-2">
           {[
             {
               icon: <SiDice size={20} color={ACCENT} />,

@@ -453,7 +453,7 @@ function DiceGameInner() {
       </div>
 
       {/* 3-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px minmax(0,1fr) 240px", gap: "1.25rem", marginBottom: "1.25rem", alignItems: "stretch" }}>
+      <div className="game-3col" style={{ alignItems: "stretch" }}>
 
         {/* LEFT — Controls */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem",
@@ -462,7 +462,7 @@ function DiceGameInner() {
           {/* Chip selector */}
           <div>
             <label style={labelStyle}>Select Chip (GZO)</label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center" }}>
+            <div className="chip-row" style={{ justifyItems: "center" }}>
               {CHIP_OPTIONS.map(chip => (
                 <CasinoChip key={chip.value} value={chip.value} color={chip.color}
                   active={chipValue === chip.value} onClick={() => handleChipClick(chip.value)} />
@@ -491,7 +491,7 @@ function DiceGameInner() {
           {/* Quick presets */}
           <div>
             <label style={labelStyle}>Quick Multiplier</label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+            <div className="chip-row" style={{}}>
               {PRESETS.map(p => (
                 <button key={p.label} onClick={() => setTarget(p.target)} disabled={isBusy}
                   style={{
@@ -576,7 +576,7 @@ function DiceGameInner() {
             {!showResult && !isRolling && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem", paddingTop: "0.5rem" }}>
                 <div style={{
-                  width: "220px", height: "140px",
+                  width: "100%", maxWidth: "260px", height: "140px",
                   background: "radial-gradient(ellipse at 50% 40%, rgba(0,212,255,0.14) 0%, rgba(0,0,20,0.0) 70%)",
                   border: "1px solid rgba(0,212,255,0.18)", borderRadius: "20px",
                   display: "flex", alignItems: "center", justifyContent: "center",
@@ -780,7 +780,7 @@ function DiceGameInner() {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: "#00d4ff", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiTarget size={16} color="#00d4ff" /> How to Play
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
+        <div className="howto-grid">
           {[
             { step:"1", title:"Deposit GZO",        desc:"Go to the Dashboard and deposit GZO from your wallet into your casino balance. No per-bet wallet approval needed.",  icon: <SiWallet size={14} color="#00d4ff" /> },
             { step:"2", title:"Pick a Chip",         desc:"Choose your bet size — 10, 50, 100, 500 GZO — or enter any custom amount up to your deposited balance.",           icon: <SiChip size={14} color="#00d4ff" /> },
@@ -811,7 +811,7 @@ function DiceGameInner() {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT, display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How It Works
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+        <div className="stat-grid-2">
           {[
             { icon: <SiLock size={20} color={ACCENT} />,     title: "Custodial Balance",       desc: "Your GZO is held in a custodial DB balance after depositing. Stake is deducted from DB before the on-chain call — no wallet approval per bet." },
             { icon: <SiShieldCheck size={20} color={ACCENT} />, title: "Chainlink VRF",        desc: "Each roll uses Chainlink VRF v2.5 — an on-chain verifiable random function. The round is committed to the blockchain first, then VRF generates an unpredictable number. Fully verifiable on Polygonscan." },
@@ -851,6 +851,18 @@ function DiceGameInner() {
         .prog-dot-0 { animation: progDot 1.4s ease-in-out 0s infinite; }
         .prog-dot-1 { animation: progDot 1.4s ease-in-out 0.2s infinite; }
         .prog-dot-2 { animation: progDot 1.4s ease-in-out 0.4s infinite; }
+        .game-3col { display: grid; grid-template-columns: 220px minmax(0,1fr) 240px; gap: 1.25rem; margin-bottom: 1.25rem; }
+        .chip-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .howto-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
+        .stat-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
+        @media (max-width: 900px) {
+          .game-3col { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .game-3col { grid-template-columns: 1fr !important; }
+          .howto-grid { grid-template-columns: 1fr !important; }
+          .stat-grid-2 { grid-template-columns: 1fr !important; }
+        }
       `}</style>
     </div>
   );

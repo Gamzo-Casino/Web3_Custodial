@@ -44,7 +44,7 @@ export default function GamesGrid() {
       </h2>
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fill, minmax(min(220px, 100%), 1fr))",
         gap: "0.875rem",
       }}>
         {GAMES.map((game) => (

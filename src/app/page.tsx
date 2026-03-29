@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import HomeGamesGrid from "@/components/HomeGamesGrid";
 
 const HOW_IT_WORKS = [
@@ -81,14 +79,11 @@ const PLATFORM_FEATURES = [
   },
 ];
 
-export default async function HomePage() {
-  const session = await auth();
-  if (session?.user?.id) redirect("/dashboard");
-
+export default function HomePage() {
   return (
     <div>
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section style={{ position: "relative", textAlign: "center", padding: "6rem 1rem 5rem", overflow: "hidden" }}>
+      <section style={{ position: "relative", textAlign: "center", padding: "clamp(3rem, 8vw, 6rem) 1rem clamp(3rem, 6vw, 5rem)", overflow: "hidden" }}>
         {/* Radial glow blobs */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
@@ -123,9 +118,9 @@ export default async function HomePage() {
 
           {/* Headline */}
           <h1 style={{
-            fontSize: "clamp(2.75rem, 7vw, 5.5rem)",
-            fontWeight: 900, lineHeight: 1.0,
-            letterSpacing: "-3px", marginBottom: "1.5rem", color: "#f0f0ff",
+            fontSize: "clamp(2rem, 7vw, 5.5rem)",
+            fontWeight: 900, lineHeight: 1.05,
+            letterSpacing: "clamp(-1px, -0.03em, -3px)", marginBottom: "1.5rem", color: "#f0f0ff",
           }}>
             The Casino That<br />
             <span style={{
@@ -137,16 +132,16 @@ export default async function HomePage() {
           </h1>
 
           <p style={{
-            fontSize: "1.15rem", color: "#8888aa",
-            maxWidth: "560px", margin: "0 auto 2.75rem", lineHeight: 1.75,
+            fontSize: "clamp(0.9rem, 2.5vw, 1.15rem)", color: "#8888aa",
+            maxWidth: "560px", margin: "0 auto 2.25rem", lineHeight: 1.75,
           }}>
-            Every outcome is generated with HMAC-SHA256 using your own seed.
-            Verify any bet, any time — no trust required.
+            Connect your wallet to play — no sign-up, no email, no password.
+            Every outcome is generated with HMAC-SHA256 and fully verifiable.
           </p>
 
-          <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/signup" className="btn-primary" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem", borderRadius: "10px" }}>
-              Start Playing Free →
+          <div className="cta-row">
+            <Link href="/dashboard" className="btn-primary" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem", borderRadius: "10px" }}>
+              Connect Wallet &amp; Play →
             </Link>
             <Link href="/verify" className="btn-ghost" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem", borderRadius: "10px" }}>
               Verify a Bet
@@ -154,10 +149,7 @@ export default async function HomePage() {
           </div>
 
           {/* Stats row */}
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            gap: "2rem", marginTop: "3.5rem", flexWrap: "wrap",
-          }}>
+          <div className="hero-stats" style={{ marginTop: "3rem" }}>
             {[
               { value: "10",   label: "Games" },
               { value: "100%", label: "Provably Fair" },
@@ -281,7 +273,7 @@ export default async function HomePage() {
       <section style={{
         background: "linear-gradient(135deg, #0c1f13 0%, #0a0a1a 45%, #0e0d28 100%)",
         border: "1px solid rgba(0,255,157,0.14)",
-        borderRadius: "20px", padding: "4.5rem 2rem",
+        borderRadius: "20px", padding: "clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 2rem)",
         textAlign: "center", marginBottom: "4rem",
         position: "relative", overflow: "hidden",
       }}>
@@ -294,7 +286,7 @@ export default async function HomePage() {
             fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em",
             textTransform: "uppercase", color: "#00ff9d", marginBottom: "1rem",
           }}>
-            Free to Join
+            No Sign-Up Required
           </div>
           <h2 style={{
             fontSize: "clamp(1.75rem, 4vw, 3rem)", fontWeight: 900,
@@ -306,15 +298,15 @@ export default async function HomePage() {
             color: "#8888aa", fontSize: "1rem", maxWidth: "420px",
             margin: "0 auto 2.25rem", lineHeight: 1.7,
           }}>
-            Create a free account, set your client seed, and start playing —
-            every outcome verifiable from your very first bet.
+            Just connect your wallet — no email, no password, no sign-up.
+            Every outcome is verifiable from your very first bet.
           </p>
-          <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/signup" className="btn-primary" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem" }}>
-              Create Free Account →
+          <div className="cta-row">
+            <Link href="/dashboard" className="btn-primary" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem" }}>
+              Connect Wallet &amp; Play →
             </Link>
-            <Link href="/login" className="btn-ghost" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem" }}>
-              Already have an account
+            <Link href="/verify" className="btn-ghost" style={{ fontSize: "1rem", padding: "0.8rem 2.25rem" }}>
+              Verify a Bet
             </Link>
           </div>
         </div>

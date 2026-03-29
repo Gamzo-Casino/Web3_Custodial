@@ -25,12 +25,12 @@ export default function DashboardPage() {
     : null);
 
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 1rem" }}>
+    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0" }}>
       {/* Page header */}
       <div style={{ marginBottom: "2rem" }}>
         <h1
           style={{
-            fontSize: "1.875rem",
+            fontSize: "clamp(1.5rem, 4vw, 1.875rem)",
             fontWeight: 800,
             letterSpacing: "-0.5px",
             marginBottom: "0.25rem",

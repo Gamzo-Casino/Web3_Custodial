@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useWalletUser } from "@/contexts/WalletAuthContext";
+import { useAccount } from "wagmi";
 import Link from "next/link";
 
 type Bet = {
@@ -76,7 +77,9 @@ const TD: React.CSSProperties = {
 };
 
 export default function TransactionHistory({ game, refreshKey }: { game?: string; refreshKey?: string | number } = {}) {
-  const { data: session } = useSession();
+  const { user: walletUser } = useWalletUser();
+  const { isConnected } = useAccount();
+  const session = walletUser ?? (isConnected ? {} : null);
   const [bets,        setBets]        = useState<Bet[]>([]);
   const [initialLoad, setInitialLoad] = useState(true);
   const [tab,         setTab]         = useState<Tab>("all");

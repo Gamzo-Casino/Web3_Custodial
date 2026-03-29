@@ -39,12 +39,14 @@ export interface RandomnessCoordinatorInterface extends Interface {
       | "hasRole"
       | "initialize"
       | "keyHash"
+      | "manualFulfill"
       | "proxiableUUID"
       | "rawFulfillRandomWords"
       | "renounceRole"
       | "requestRandomness"
       | "requests"
       | "revokeRole"
+      | "s_requests"
       | "setCallbackGas"
       | "setVRFConfig"
       | "subscriptionId"
@@ -108,6 +110,10 @@ export interface RandomnessCoordinatorInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "keyHash", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "manualFulfill",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "proxiableUUID",
     values?: undefined
   ): string;
@@ -130,6 +136,10 @@ export interface RandomnessCoordinatorInterface extends Interface {
   encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "s_requests",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setCallbackGas",
@@ -191,6 +201,10 @@ export interface RandomnessCoordinatorInterface extends Interface {
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "keyHash", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "manualFulfill",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "proxiableUUID",
     data: BytesLike
   ): Result;
@@ -208,6 +222,7 @@ export interface RandomnessCoordinatorInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "requests", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "s_requests", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setCallbackGas",
     data: BytesLike
@@ -449,6 +464,12 @@ export interface RandomnessCoordinator extends BaseContract {
 
   keyHash: TypedContractMethod<[], [string], "view">;
 
+  manualFulfill: TypedContractMethod<
+    [vrfRequestId: BigNumberish, randomWord: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   proxiableUUID: TypedContractMethod<[], [string], "view">;
 
   rawFulfillRandomWords: TypedContractMethod<
@@ -486,6 +507,18 @@ export interface RandomnessCoordinator extends BaseContract {
     [role: BytesLike, account: AddressLike],
     [void],
     "nonpayable"
+  >;
+
+  s_requests: TypedContractMethod<
+    [arg0: BigNumberish],
+    [
+      [boolean, boolean, bigint] & {
+        fulfilled: boolean;
+        exists: boolean;
+        randomWord: bigint;
+      }
+    ],
+    "view"
   >;
 
   setCallbackGas: TypedContractMethod<
@@ -577,6 +610,13 @@ export interface RandomnessCoordinator extends BaseContract {
     nameOrSignature: "keyHash"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "manualFulfill"
+  ): TypedContractMethod<
+    [vrfRequestId: BigNumberish, randomWord: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "proxiableUUID"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
@@ -620,6 +660,19 @@ export interface RandomnessCoordinator extends BaseContract {
     [role: BytesLike, account: AddressLike],
     [void],
     "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "s_requests"
+  ): TypedContractMethod<
+    [arg0: BigNumberish],
+    [
+      [boolean, boolean, bigint] & {
+        fulfilled: boolean;
+        exists: boolean;
+        randomWord: bigint;
+      }
+    ],
+    "view"
   >;
   getFunction(
     nameOrSignature: "setCallbackGas"

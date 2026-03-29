@@ -85,8 +85,11 @@ export default function WalletTransactions() {
           border: "1px solid rgba(255,255,255,0.07)",
           borderRadius: "1rem",
           overflow: "hidden",
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch" as React.CSSProperties["WebkitOverflowScrolling"],
         }}
       >
+      <div style={{ minWidth: "560px" }}>
         {/* Table header */}
         <div
           style={{
@@ -261,6 +264,7 @@ export default function WalletTransactions() {
             );
           })
         )}
+      </div>  {/* minWidth wrapper */}
       </div>
     </div>
   );

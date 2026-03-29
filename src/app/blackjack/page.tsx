@@ -168,7 +168,7 @@ function HandDisplay({
           <span style={{ fontSize: "0.65rem", color: "#00d4ff", fontWeight: 600 }}>← Active</span>
         )}
       </div>
-      <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" }}>
+      <div className="bj-cards-row" style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" }}>
         {cards.map((c, i) => {
           const glowType =
             outcome === "BLACKJACK" || outcome === "WIN" ? "win" :
@@ -670,12 +670,7 @@ function BlackjackGame() {
         </div>
 
         {/* 3-column grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "220px minmax(0,1fr) 240px",
-          gap: "1.25rem",
-          alignItems: "flex-start",
-        }}>
+        <div className="game-3col" style={{ alignItems: "flex-start" }}>
 
           {/* ── Left panel: bet controls ── */}
           <div>
@@ -687,7 +682,7 @@ function BlackjackGame() {
               {/* Chip selector */}
               <div style={{ marginBottom: "0.875rem" }}>
                 <div style={{ fontSize: "0.72rem", color: "#555577", marginBottom: "0.5rem", fontWeight: 600 }}>Chip Value</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center" }}>
+                <div className="chip-row">
                   {CHIP_OPTIONS.map(({ value, color }) => (
                     <CasinoChip
                       key={value}
@@ -1004,7 +999,7 @@ function BlackjackGame() {
           <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: "#14b8a6", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <SiTarget size={16} color="#14b8a6" /> How to Play
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
+          <div className="howto-grid">
             {[
               {
                 step: "1", title: "Deposit GZO", icon: <SiWallet size={14} color="#14b8a6" />,
@@ -1054,7 +1049,7 @@ function BlackjackGame() {
           <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: "#14b8a6", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <SiGear size={16} color="#14b8a6" /> How It Works
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+          <div className="stat-grid-2">
             {[
               {
                 icon: <SiLock size={20} color="#14b8a6" />,

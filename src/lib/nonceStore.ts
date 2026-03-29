@@ -7,9 +7,11 @@ interface NonceEntry {
   expiresAt: number;
 }
 
-// In-memory store — fine for single-instance development.
-// Replace with Redis for multi-instance production.
-const store = new Map<string, NonceEntry>();
+// Persist on globalThis so Next.js hot-reloads don't wipe the store mid-flow.
+// In production replace with Redis for multi-instance safety.
+const g = globalThis as unknown as { __nonceStore?: Map<string, NonceEntry> };
+if (!g.__nonceStore) g.__nonceStore = new Map();
+const store = g.__nonceStore;
 
 /**
  * generateNonce — creates a fresh 32-hex-char nonce for an address,

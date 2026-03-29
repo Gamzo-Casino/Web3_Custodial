@@ -392,7 +392,7 @@ export default function DepositWithdrawPanel() {
       >
         Funds
       </div>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+      <div className="deposit-withdraw-row">
         <DepositSection onSuccess={refetch} />
         <WithdrawSection maxBalance={balance} onSuccess={refetch} />
       </div>

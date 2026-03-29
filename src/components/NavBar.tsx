@@ -32,7 +32,8 @@ const TOOLS_NAV = [
 
 export default function NavBar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);          // desktop single-player dropdown
+  const [mobileOpen, setMobileOpen] = useState(false); // mobile full menu
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,14 +46,28 @@ export default function NavBar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  useEffect(() => { setOpen(false); }, [pathname]);
+  // Close both menus on route change
+  useEffect(() => {
+    setOpen(false);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
 
   const isGameActive = SINGLE_PLAYER_GAMES.some((g) => pathname === g.href);
 
   return (
     <header
       style={{
-        background: "rgba(13, 13, 26, 0.85)",
+        background: "rgba(13, 13, 26, 0.95)",
         borderBottom: "1px solid #2a2a50",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
@@ -65,19 +80,19 @@ export default function NavBar() {
         style={{
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 1.5rem",
+          padding: "0 1.25rem",
           height: "64px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "1rem",
+          gap: "0.75rem",
         }}
       >
         {/* Logo */}
         <Link
           href="/"
           style={{
-            fontSize: "1.5rem",
+            fontSize: "1.4rem",
             fontWeight: 800,
             background: "linear-gradient(135deg, #00ff9d, #00d4ff)",
             WebkitBackgroundClip: "text",
@@ -91,8 +106,11 @@ export default function NavBar() {
           Gamzo
         </Link>
 
-        {/* Nav links */}
-        <div style={{ display: "flex", gap: "0.25rem", alignItems: "center" }}>
+        {/* Desktop nav links — hidden on mobile */}
+        <div
+          className="desktop-nav"
+          style={{ display: "flex", gap: "0.25rem", alignItems: "center" }}
+        >
           {/* Coin Flip — PvP */}
           <Link
             href="/coinflip"
@@ -213,11 +231,180 @@ export default function NavBar() {
           ))}
         </div>
 
-        {/* Web3 wallet connect button */}
-        <div style={{ flexShrink: 0 }}>
-          <WalletButton />
+        {/* Right side: wallet button + hamburger */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexShrink: 0 }}>
+          {/* Wallet button always visible */}
+          <div className="wallet-btn-wrap">
+            <WalletButton />
+          </div>
+
+          {/* Hamburger — only on mobile */}
+          <button
+            className="hamburger-btn"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
+            style={{
+              display: "none",  /* shown via CSS on mobile */
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "5px",
+              width: "40px",
+              height: "40px",
+              borderRadius: "8px",
+              border: "1px solid #2a2a50",
+              background: mobileOpen ? "rgba(0,212,255,0.08)" : "transparent",
+              cursor: "pointer",
+              flexShrink: 0,
+              padding: 0,
+            }}
+          >
+            <span style={{
+              display: "block", width: "18px", height: "2px",
+              background: mobileOpen ? "#00d4ff" : "#8888aa",
+              borderRadius: "2px",
+              transition: "transform 0.2s, opacity 0.2s",
+              transform: mobileOpen ? "rotate(45deg) translate(5px, 5px)" : "none",
+            }} />
+            <span style={{
+              display: "block", width: "18px", height: "2px",
+              background: mobileOpen ? "#00d4ff" : "#8888aa",
+              borderRadius: "2px",
+              transition: "opacity 0.2s",
+              opacity: mobileOpen ? 0 : 1,
+            }} />
+            <span style={{
+              display: "block", width: "18px", height: "2px",
+              background: mobileOpen ? "#00d4ff" : "#8888aa",
+              borderRadius: "2px",
+              transition: "transform 0.2s, opacity 0.2s",
+              transform: mobileOpen ? "rotate(-45deg) translate(5px, -5px)" : "none",
+            }} />
+          </button>
         </div>
       </nav>
+
+      {/* ── Mobile Menu Drawer ─────────────────────────────────────────── */}
+      {mobileOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="mobile-menu-overlay"
+            onClick={() => setMobileOpen(false)}
+          />
+
+          {/* Drawer */}
+          <div className="mobile-menu-drawer">
+            {/* PvP section */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <div style={{
+                fontSize: "0.6rem", fontWeight: 700, color: "#555577",
+                textTransform: "uppercase", letterSpacing: "0.1em",
+                marginBottom: "0.5rem", paddingLeft: "0.25rem",
+              }}>
+                PvP
+              </div>
+              <Link
+                href="/coinflip"
+                style={{
+                  display: "flex", alignItems: "center", gap: "0.75rem",
+                  padding: "0.75rem 0.75rem", borderRadius: "10px",
+                  textDecoration: "none",
+                  background: pathname === "/coinflip" ? "rgba(0,255,157,0.08)" : "transparent",
+                  border: pathname === "/coinflip" ? "1px solid rgba(0,255,157,0.2)" : "1px solid transparent",
+                }}
+              >
+                <CoinFlipIcon size={22} color={pathname === "/coinflip" ? "#00ff9d" : "#555577"} />
+                <div>
+                  <div style={{ fontSize: "0.9rem", fontWeight: 700, color: pathname === "/coinflip" ? "#00ff9d" : "#f0f0ff" }}>Coin Flip</div>
+                  <div style={{ fontSize: "0.7rem", color: "#555577" }}>PvP match — winner takes the pot</div>
+                </div>
+              </Link>
+            </div>
+
+            {/* Single Player games */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <div style={{
+                fontSize: "0.6rem", fontWeight: 700, color: "#555577",
+                textTransform: "uppercase", letterSpacing: "0.1em",
+                marginBottom: "0.5rem", paddingLeft: "0.25rem",
+              }}>
+                Single Player
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px" }}>
+                {SINGLE_PLAYER_GAMES.map(({ href, label, Icon, color, desc }) => {
+                  const active = pathname === href;
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "0.6rem",
+                        padding: "0.625rem 0.75rem", borderRadius: "10px",
+                        textDecoration: "none",
+                        background: active ? `${color}12` : "rgba(255,255,255,0.02)",
+                        border: active ? `1px solid ${color}30` : "1px solid transparent",
+                      }}
+                    >
+                      <Icon size={22} color={active ? color : "#555577"} />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: "0.82rem", fontWeight: 600, color: active ? color : "#f0f0ff" }}>
+                          {label}
+                        </div>
+                        <div style={{ fontSize: "0.62rem", color: "#555577", marginTop: "1px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {desc}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Tools */}
+            <div style={{ borderTop: "1px solid #2a2a50", paddingTop: "1rem" }}>
+              <div style={{
+                fontSize: "0.6rem", fontWeight: 700, color: "#555577",
+                textTransform: "uppercase", letterSpacing: "0.1em",
+                marginBottom: "0.5rem", paddingLeft: "0.25rem",
+              }}>
+                Tools
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                {TOOLS_NAV.map(({ href, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`nav-link${pathname === href ? " active" : ""}`}
+                    style={{ flex: 1, textAlign: "center", padding: "0.6rem 0.75rem" }}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Inline responsive styles for nav */}
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .hamburger-btn { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-menu-overlay,
+          .mobile-menu-drawer { display: none !important; }
+        }
+        @media (max-width: 400px) {
+          .wallet-btn-wrap button,
+          .wallet-btn-wrap div[role="button"] {
+            font-size: 0.75rem !important;
+            padding: 0.375rem 0.625rem !important;
+          }
+        }
+      `}</style>
     </header>
   );
 }

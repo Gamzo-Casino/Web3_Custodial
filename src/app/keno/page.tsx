@@ -345,7 +345,7 @@ function KenoInner() {
       </div>
 
       {/* 3-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px minmax(0,1fr) 240px", gap: "1.25rem", marginBottom: "1.25rem", alignItems: "start" }}>
+      <div className="game-3col" style={{ alignItems: "start" }}>
 
         {/* LEFT — Controls */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "0.75rem",
@@ -354,7 +354,7 @@ function KenoInner() {
           {/* Chip selector */}
           <div>
             <label style={labelStyle}>Select Chip (GZO)</label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", justifyItems: "center" }}>
+            <div className="chip-row" style={{ justifyItems: "center" }}>
               {CHIP_OPTIONS.map(chip => (
                 <CasinoChip key={chip.value} value={chip.value} color={chip.color}
                   active={chipValue === chip.value && stake === String(chip.value)}
@@ -508,7 +508,7 @@ function KenoInner() {
           </div>
 
           {/* 8×5 number grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "6px" }}>
+          <div className="keno-grid">
             {allNumbers.map(n => {
               const isSelected = selected.has(n);
               const isDrawn    = revealedDrawn.has(n);
@@ -638,7 +638,7 @@ function KenoInner() {
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiTarget size={16} color={ACCENT} /> How to Play
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", alignItems: "start" }}>
+        <div className="howto-grid" style={{ alignItems: "start" }}>
           {[
             { step:"1", title:"Sign In",           desc:"Log in with your wallet. Your GZO balance is held custodially — no per-bet wallet approval needed.", icon: <SiWallet size={14} color={ACCENT} /> },
             { step:"2", title:"Pick a Chip",        desc:"Choose your bet size: 10, 50, 100, 500 GZO or enter a custom amount.", icon: <SiChip size={14} color={ACCENT} /> },
@@ -673,7 +673,7 @@ function KenoInner() {
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <SiGear size={16} color={ACCENT} /> How It Works
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem", alignItems: "start" }}>
+        <div className="stat-grid-2" style={{ alignItems: "start" }}>
           {[
             { icon: <SiWallet size={20} color={ACCENT} />, title:"Custodial DB Balance",    desc:"Your GZO balance is tracked in our database. Stake debits instantly when you play — no wallet approval or gas from your wallet." },
             { icon: <SiDice size={20} color={ACCENT} />, title:"Chainlink VRF Randomness",  desc:"The house wallet calls KenoGame.placeBetFor() on-chain. The contract requests a random word from Chainlink VRF — cryptographically tamper-proof." },

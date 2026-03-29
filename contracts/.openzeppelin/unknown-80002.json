@@ -5917,6 +5917,432 @@
       "allAddresses": [
         "0x27DC5307ef7Fa7e118E1708c0063c324411cA4b7"
       ]
+    },
+    "e4722a3524e7db06bdbf4201c2168e482bd9ac4daff40205a26760a351ec2507": {
+      "address": "0x75333dA678fA889e5ee69A87a1c2661af5C88420",
+      "txHash": "0x8fa238956e2ef7d0547aa95e97a6fa3a27e068c1f8c1e9a25c55f786da4d8f92",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "vrfCoordinator",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:25"
+          },
+          {
+            "label": "keyHash",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:26"
+          },
+          {
+            "label": "subscriptionId",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:26"
+          },
+          {
+            "label": "requests",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(Request)2996_storage)",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:39"
+          },
+          {
+            "label": "callbackGas",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint32",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:42"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)156_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)166_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)156_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)647_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)156_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_mapping(t_uint256,t_struct(Request)2996_storage)": {
+            "label": "mapping(uint256 => struct RandomnessCoordinator.Request)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Request)2996_storage": {
+            "label": "struct RandomnessCoordinator.Request",
+            "members": [
+              {
+                "label": "gameId",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "gameContract",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "roundId",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "fulfilled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)156_storage)",
+              "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "36e23057961ecc50bd78a6744d2557c1bfed4477883f3d2bfd2cd7a8800d9454": {
+      "address": "0x80684A6845fe967c683Ce97F31951401512F12E9",
+      "txHash": "0x172bc9222778f04d663c359a90242782aecd7df0ece3c8c994f483da75cd4164",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "vrfCoordinator",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:25"
+          },
+          {
+            "label": "keyHash",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:26"
+          },
+          {
+            "label": "subscriptionId",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:26"
+          },
+          {
+            "label": "requests",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(Request)2996_storage)",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:39"
+          },
+          {
+            "label": "callbackGas",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint32",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:43"
+          },
+          {
+            "label": "s_requests",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(RequestStatus)3011_storage)",
+            "contract": "RandomnessCoordinator",
+            "src": "contracts/core/RandomnessCoordinator.sol:53"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)156_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)166_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)156_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)647_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)156_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_mapping(t_uint256,t_struct(Request)2996_storage)": {
+            "label": "mapping(uint256 => struct RandomnessCoordinator.Request)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(RequestStatus)3011_storage)": {
+            "label": "mapping(uint256 => struct RandomnessCoordinator.RequestStatus)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Request)2996_storage": {
+            "label": "struct RandomnessCoordinator.Request",
+            "members": [
+              {
+                "label": "gameId",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "gameContract",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "roundId",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "fulfilled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(RequestStatus)3011_storage": {
+            "label": "struct RandomnessCoordinator.RequestStatus",
+            "members": [
+              {
+                "label": "fulfilled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "randomWord",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)156_storage)",
+              "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }
