@@ -704,7 +704,7 @@ function TransactionsView({ authed }: { authed: object | null }) {
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function HistoryPage() {
-  const { user: walletUser } = useWalletUser();
+  const { user: walletUser, isLoading: walletLoading } = useWalletUser();
   const { isConnected }      = useAccount();
   const authed               = walletUser ?? (isConnected ? {} : null);
 
@@ -736,10 +736,11 @@ export default function HistoryPage() {
   }, []);
 
   useEffect(() => {
+    if (walletLoading) return; // wait for session restore before deciding
     if (!authed) { setLoading(false); return; }
     fetchPage(activeTab, page);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authed]);
+  }, [authed, walletLoading]);
 
   function handleTab(tab: string) {
     setActiveTab(tab);
@@ -759,7 +760,7 @@ export default function HistoryPage() {
   }
 
   // Unauthenticated
-  if (!authed && !loading) {
+  if (!authed && !loading && !walletLoading) {
     return (
       <div style={{ maxWidth: "540px", margin: "4rem auto", padding: "0 1rem" }}>
         <div className="card" style={{ textAlign: "center", padding: "3rem 2rem" }}>
