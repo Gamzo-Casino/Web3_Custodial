@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import OtherGames from "@/components/OtherGames";
 import BetHistory from "@/components/BetHistory";
 import FairnessWidget from "@/components/FairnessWidget";
+import CasinoChip, { CHIP_OPTIONS } from "@/components/CasinoChip";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const ACCENT = "#ff6b35";
@@ -18,13 +19,6 @@ const AVIATOR_SPEED = 0.00006;
 function getMultiplierAtTime(elapsedMs: number): number {
   return Math.floor(Math.exp(AVIATOR_SPEED * elapsedMs) * 100) / 100;
 }
-
-const CHIP_OPTIONS = [
-  { value: 10, color: "#00d4ff", label: "10" },
-  { value: 50, color: "#00ff9d", label: "50" },
-  { value: 100, color: "#e879f9", label: "100" },
-  { value: 500, color: "#ff4444", label: "500" },
-];
 
 const AUTO_PRESETS = [
   { label: "Off", value: 0 },
