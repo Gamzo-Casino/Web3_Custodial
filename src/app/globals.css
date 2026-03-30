@@ -272,6 +272,7 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 52px);
   gap: 0.5rem;
+  justify-content: center;
 }
 
 /* ── Stat grids ─────────────────────────────────────────────────── */
