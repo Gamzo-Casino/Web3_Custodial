@@ -629,7 +629,7 @@ function BlackjackGame() {
 
               {/* Chip selector */}
               <div style={{ marginBottom: "0.875rem" }}>
-                <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8888aa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: "0.4rem" }}>Select Chip (GZO)</label>
+                <div style={{ fontSize: "0.72rem", color: "#555577", marginBottom: "0.5rem", fontWeight: 600 }}>Chip Value</div>
                 <div className="chip-row">
                   {CHIP_OPTIONS.map(({ value, color }) => (
                     <CasinoChip

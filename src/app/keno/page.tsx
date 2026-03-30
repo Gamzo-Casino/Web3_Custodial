@@ -320,7 +320,7 @@ function KenoInner() {
           {/* Chip selector */}
           <div>
             <label style={labelStyle}>Select Chip (GZO)</label>
-            <div className="chip-row">
+            <div className="chip-row" style={{ justifyItems: "center" }}>
               {CHIP_OPTIONS.map(chip => (
                 <CasinoChip key={chip.value} value={chip.value} color={chip.color}
                   active={chipValue === chip.value && stake === String(chip.value)}

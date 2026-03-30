@@ -469,8 +469,7 @@ function HiloGame() {
                 cursor: controlsDisabled ? "not-allowed" : "text",
               }}
             />
-            <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8888aa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginTop: "0.75rem", marginBottom: "0.4rem" }}>Select Chip (GZO)</label>
-            <div className="chip-row">
+            <div className="chip-row" style={{ marginTop: "0.5rem" }}>
               {CHIP_OPTIONS.map((chip) => (
                 <CasinoChip
                   key={chip.value}
