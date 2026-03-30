@@ -143,6 +143,9 @@ function normalizeSoloBet(b: any) {
     nonce:              b.nonce         ?? null,
     publicSeed:         b.publicSeed    ?? null,
     resultJson:         b.resultJson    ?? null,
+    txHash:             b.txHash        ?? null,
+    onchainRoundId:     b.onchainRoundId ?? null,
+    chainId:            b.chainId       ?? null,
   };
 }
 

@@ -6,6 +6,29 @@ import { useAccount } from "wagmi";
 import Link from "next/link";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
+type Section = "BETS" | "TRANSACTIONS";
+
+type TxRecord = {
+  id: string;
+  type: "DEPOSIT" | "WITHDRAWAL";
+  amountGzo: number;
+  status: string;
+  txHash: string | null;
+  chainId: number | null;
+  address: string | null;
+  adminNote: string | null;
+  errorMsg?: string | null;
+  createdAt: string;
+  settledAt: string | null;
+};
+
+type TxPageMeta = {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 type BetRecord = {
   id: string;
   game: string;
@@ -23,6 +46,9 @@ type BetRecord = {
   publicSeed: string | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resultJson: any;
+  txHash: string | null;
+  onchainRoundId: string | null;
+  chainId: number | null;
 };
 
 type PageMeta = {
@@ -200,12 +226,12 @@ function BetsTable({ bets, showGame }: { bets: BetRecord[]; showGame: boolean })
 
   return (
     <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "580px" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "720px" }}>
         <thead>
           <tr style={{ background: "#0a0a18", borderBottom: "1px solid #2a2a50" }}>
             {(showGame
-              ? ["Date", "Game", "Result", "Stake", "P / L", "Seeds", "Status"]
-              : ["Date", "Result", "Stake", "P / L", "Seeds", "Status"]
+              ? ["Date", "Game", "Result", "Stake", "P / L", "Seeds", "Spin Tx", "Round", "Status"]
+              : ["Date", "Result", "Stake", "P / L", "Seeds", "Spin Tx", "Round", "Status"]
             ).map(h => (
               <th key={h} style={{
                 padding: "0.6rem 0.875rem",
@@ -281,6 +307,54 @@ function BetsTable({ bets, showGame }: { bets: BetRecord[]; showGame: boolean })
                 <td style={{ padding: "0.75rem 0.875rem" }}>
                   <SeedCell bet={bet} />
                 </td>
+
+                {/* Spin Tx */}
+                {(() => {
+                  const url = bet.chainId === 80002 && bet.txHash
+                    ? `https://amoy.polygonscan.com/tx/${bet.txHash}` : null;
+                  return (
+                    <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap" }}>
+                      {url ? (
+                        <a href={url} target="_blank" rel="noopener noreferrer" style={{
+                          fontSize: "0.72rem", fontWeight: 600,
+                          color: "#00d4ff", textDecoration: "none",
+                          border: "1px solid #00d4ff44",
+                          borderRadius: "6px", padding: "0.15rem 0.5rem",
+                          background: "#00d4ff0d",
+                          display: "inline-block",
+                        }}>
+                          Tx ↗
+                        </a>
+                      ) : (
+                        <span style={{ color: "#555577", fontSize: "0.72rem" }}>—</span>
+                      )}
+                    </td>
+                  );
+                })()}
+
+                {/* Round */}
+                {(() => {
+                  const url = bet.chainId === 80002 && bet.txHash
+                    ? `https://amoy.polygonscan.com/tx/${bet.txHash}#eventlog` : null;
+                  return (
+                    <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap" }}>
+                      {url ? (
+                        <a href={url} target="_blank" rel="noopener noreferrer" style={{
+                          fontSize: "0.72rem", fontWeight: 600,
+                          color: "#a855f7", textDecoration: "none",
+                          border: "1px solid #a855f744",
+                          borderRadius: "6px", padding: "0.15rem 0.5rem",
+                          background: "#a855f70d",
+                          display: "inline-block",
+                        }}>
+                          Log ↗
+                        </a>
+                      ) : (
+                        <span style={{ color: "#555577", fontSize: "0.72rem" }}>—</span>
+                      )}
+                    </td>
+                  );
+                })()}
 
                 {/* Status */}
                 <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap" }}>
@@ -375,12 +449,266 @@ function Pagination({ meta, onPage }: { meta: PageMeta; onPage: (p: number) => v
   );
 }
 
+// ── Transactions View ──────────────────────────────────────────────────────────
+
+const TX_TYPES = [
+  { key: "ALL",        label: "All",         color: "#8888aa" },
+  { key: "DEPOSIT",    label: "Deposits",    color: "#00ff9d" },
+  { key: "WITHDRAWAL", label: "Withdrawals", color: "#f97316" },
+];
+
+function txStatusStyle(status: string, type: "DEPOSIT" | "WITHDRAWAL"): { label: string; color: string } {
+  if (status === "PENDING")    return { label: "Pending",    color: "#ffd700" };
+  if (status === "PROCESSING") return { label: "Processing", color: "#00d4ff" };
+  if (status === "CONFIRMED" || status === "COMPLETED" || status === "APPROVED")
+    return { label: type === "DEPOSIT" ? "Confirmed" : "Completed", color: "#00ff9d" };
+  if (status === "FAILED")     return { label: "Failed",     color: "#ff8080" };
+  if (status === "REJECTED")   return { label: "Rejected",   color: "#ff8080" };
+  return { label: status, color: "#8888aa" };
+}
+
+function TransactionsView({ authed }: { authed: object | null }) {
+  const [txType,   setTxType]   = useState("ALL");
+  const [txPage,   setTxPage]   = useState(1);
+  const [txs,      setTxs]      = useState<TxRecord[]>([]);
+  const [txMeta,   setTxMeta]   = useState<TxPageMeta | null>(null);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState("");
+
+  const fetchTxs = useCallback((type: string, p: number) => {
+    setLoading(true);
+    setError("");
+    const params = new URLSearchParams({ page: String(p) });
+    if (type !== "ALL") params.set("type", type);
+    fetch(`/api/history/transactions?${params}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.error) { setError(d.error); return; }
+        setTxs(d.transactions ?? []);
+        setTxMeta(d.total != null ? {
+          total: d.total, page: d.page, pageSize: d.pageSize, totalPages: d.totalPages,
+        } : null);
+      })
+      .catch(() => setError("Failed to load transactions"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!authed) { setLoading(false); return; }
+    fetchTxs(txType, txPage);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authed]);
+
+  function handleType(t: string) {
+    setTxType(t);
+    setTxPage(1);
+    fetchTxs(t, 1);
+  }
+
+  function handleTxPage(p: number) {
+    setTxPage(p);
+    fetchTxs(txType, p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  return (
+    <div>
+      {/* Type filter pills */}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
+        {TX_TYPES.map(t => {
+          const active = txType === t.key;
+          return (
+            <button key={t.key} onClick={() => handleType(t.key)} style={{
+              padding: "0.4rem 1rem", borderRadius: "99px", fontSize: "0.8rem",
+              fontWeight: active ? 700 : 500, cursor: "pointer",
+              border: `1px solid ${active ? t.color : t.color + "44"}`,
+              background: active ? `${t.color}18` : "transparent",
+              color: active ? t.color : "#8888aa",
+              transition: "all 0.15s",
+            }}>
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {loading ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "5rem 2rem", color: "#8888aa", gap: "0.75rem" }}>
+          <div style={{
+            width: 20, height: 20, borderRadius: "50%",
+            border: "2px solid #00ff9d44", borderTopColor: "#00ff9d",
+            animation: "spin 0.8s linear infinite",
+          }} />
+          Loading…
+        </div>
+      ) : error ? (
+        <div className="card" style={{ textAlign: "center", padding: "3rem", borderColor: "rgba(255,80,80,0.3)" }}>
+          <p style={{ color: "#ff8080", marginBottom: "1rem" }}>{error}</p>
+          <button className="btn-ghost" onClick={() => fetchTxs(txType, txPage)}>Retry</button>
+        </div>
+      ) : txs.length === 0 ? (
+        <div className="card" style={{ textAlign: "center", padding: "4rem 2rem" }}>
+          <div style={{ fontSize: "2rem", marginBottom: "1rem", opacity: 0.4 }}>💸</div>
+          <p style={{ color: "#8888aa" }}>No transactions found.</p>
+        </div>
+      ) : (
+        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "620px" }}>
+              <thead>
+                <tr style={{ background: "#0a0a18", borderBottom: "1px solid #2a2a50" }}>
+                  {["Date", "Type", "Amount", "Address", "Tx Hash", "Settled", "Status"].map(h => (
+                    <th key={h} style={{
+                      padding: "0.6rem 0.875rem",
+                      fontSize: "0.65rem", fontWeight: 700,
+                      textAlign: h === "Amount" ? "right" : "left",
+                      color: "#555577", letterSpacing: "0.07em", textTransform: "uppercase",
+                      whiteSpace: "nowrap",
+                    }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {txs.map(tx => {
+                  const { label, color } = txStatusStyle(tx.status, tx.type);
+                  const typeColor = tx.type === "DEPOSIT" ? "#00ff9d" : "#f97316";
+                  const explorerUrl = tx.chainId === 80002 && tx.txHash
+                    ? `https://amoy.polygonscan.com/tx/${tx.txHash}` : null;
+
+                  return (
+                    <tr key={tx.id}
+                      style={{ borderBottom: "1px solid rgba(42,42,80,0.4)" }}
+                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"}
+                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
+                    >
+                      {/* Date */}
+                      <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap", fontSize: "0.78rem", color: "#555577" }}>
+                        <span className="date-full">{formatDate(tx.createdAt)}</span>
+                        <span className="date-short">{formatDateShort(tx.createdAt)}</span>
+                      </td>
+
+                      {/* Type */}
+                      <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: "0.3rem",
+                          padding: "0.15rem 0.55rem", borderRadius: "99px",
+                          fontSize: "0.65rem", fontWeight: 700,
+                          color: typeColor, background: `${typeColor}18`, border: `1px solid ${typeColor}33`,
+                        }}>
+                          {tx.type === "DEPOSIT" ? "↓ Deposit" : "↑ Withdraw"}
+                        </span>
+                      </td>
+
+                      {/* Amount */}
+                      <td style={{
+                        padding: "0.75rem 0.875rem", textAlign: "right",
+                        fontWeight: 800, fontSize: "0.85rem", fontVariantNumeric: "tabular-nums",
+                        color: typeColor, whiteSpace: "nowrap",
+                      }}>
+                        {tx.type === "DEPOSIT" ? "+" : "−"}{tx.amountGzo.toLocaleString()} GZO
+                      </td>
+
+                      {/* Address */}
+                      <td style={{ padding: "0.75rem 0.875rem", maxWidth: "140px" }}>
+                        {tx.address ? (
+                          <span style={{
+                            fontSize: "0.7rem", fontFamily: "monospace", color: "#666688",
+                            display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                          }} title={tx.address}>
+                            {tx.address.slice(0, 6)}…{tx.address.slice(-4)}
+                          </span>
+                        ) : (
+                          <span style={{ color: "#555577", fontSize: "0.72rem" }}>—</span>
+                        )}
+                      </td>
+
+                      {/* Tx Hash */}
+                      <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap" }}>
+                        {explorerUrl ? (
+                          <a href={explorerUrl} target="_blank" rel="noopener noreferrer" style={{
+                            fontSize: "0.72rem", fontWeight: 600,
+                            color: "#00d4ff", textDecoration: "none",
+                            border: "1px solid #00d4ff44", borderRadius: "6px",
+                            padding: "0.15rem 0.5rem", background: "#00d4ff0d",
+                            display: "inline-block", fontFamily: "monospace",
+                          }} title={tx.txHash ?? ""}>
+                            {tx.txHash!.slice(0, 8)}… ↗
+                          </a>
+                        ) : tx.txHash ? (
+                          <span style={{ fontSize: "0.7rem", fontFamily: "monospace", color: "#666688" }}
+                            title={tx.txHash}>
+                            {tx.txHash.slice(0, 8)}…
+                          </span>
+                        ) : (
+                          <span style={{ color: "#555577", fontSize: "0.72rem" }}>—</span>
+                        )}
+                      </td>
+
+                      {/* Settled At */}
+                      <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap", fontSize: "0.78rem", color: "#555577" }}>
+                        {tx.settledAt ? (
+                          <>
+                            <span className="date-full">{formatDate(tx.settledAt)}</span>
+                            <span className="date-short">{formatDateShort(tx.settledAt)}</span>
+                          </>
+                        ) : <span>—</span>}
+                      </td>
+
+                      {/* Status */}
+                      <td style={{ padding: "0.75rem 0.875rem", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: "0.3rem",
+                          fontSize: "0.72rem", fontWeight: 700,
+                          color, padding: "0.2rem 0.6rem", borderRadius: "99px",
+                          background: `${color}14`, border: `1px solid ${color}33`,
+                        }}>
+                          {(tx.status === "PENDING" || tx.status === "PROCESSING") && (
+                            <span style={{
+                              width: 5, height: 5, borderRadius: "50%",
+                              background: color, display: "inline-block",
+                              boxShadow: `0 0 6px ${color}`,
+                              animation: "histPulse 1.4s ease-in-out infinite",
+                            }} />
+                          )}
+                          {label}
+                        </span>
+                        {tx.errorMsg && (
+                          <div style={{ fontSize: "0.65rem", color: "#ff8080", marginTop: "2px", maxWidth: "140px",
+                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                            title={tx.errorMsg}>
+                            {tx.errorMsg}
+                          </div>
+                        )}
+                        {tx.adminNote && (
+                          <div style={{ fontSize: "0.65rem", color: "#8888aa", marginTop: "2px", maxWidth: "140px",
+                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                            title={tx.adminNote}>
+                            {tx.adminNote}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {txMeta && txMeta.totalPages > 1 && (
+            <Pagination meta={txMeta} onPage={handleTxPage} />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function HistoryPage() {
   const { user: walletUser } = useWalletUser();
   const { isConnected }      = useAccount();
   const authed               = walletUser ?? (isConnected ? {} : null);
 
+  const [section,   setSection]   = useState<Section>("BETS");
   const [activeTab, setActiveTab] = useState("ALL");
   const [page,      setPage]      = useState(1);
   const [bets,      setBets]      = useState<BetRecord[]>([]);
@@ -466,17 +794,55 @@ export default function HistoryPage() {
       `}</style>
 
       {/* ── Header ── */}
-      <div style={{ marginBottom: "1.5rem" }}>
+      <div style={{ marginBottom: "1.25rem" }}>
         <h1 style={{
           fontSize: "clamp(1.4rem, 4vw, 2rem)", fontWeight: 800,
           letterSpacing: "-0.5px", marginBottom: "0.25rem",
         }}>
-          Bet History
+          History
         </h1>
         <p style={{ color: "#8888aa", fontSize: "0.875rem" }}>
-          All bets across every game — stored permanently, 50 per page
+          Bets, deposits &amp; withdrawals — 50 per page
         </p>
       </div>
+
+      {/* ── Section switcher ── */}
+      <div style={{
+        display: "flex", justifyContent: "center", marginBottom: "1.5rem",
+      }}>
+        <div style={{
+          display: "flex", gap: "0.375rem",
+          background: "#0a0a18", borderRadius: "14px", padding: "5px",
+          border: "1px solid #2a2a50", width: "100%", maxWidth: "480px",
+        }}>
+          {([
+            { key: "BETS",         label: "Bet History",           icon: "🎲" },
+            { key: "TRANSACTIONS", label: "Deposits & Withdrawals", icon: "💸" },
+          ] as { key: Section; label: string; icon: string }[]).map(s => {
+            const active = section === s.key;
+            return (
+              <button key={s.key} onClick={() => setSection(s.key)} style={{
+                flex: 1, padding: "0.6rem 1rem", borderRadius: "10px",
+                fontSize: "0.875rem", fontWeight: active ? 700 : 500,
+                cursor: "pointer", border: "none",
+                background: active ? "rgba(255,255,255,0.08)" : "transparent",
+                color: active ? "#f0f0ff" : "#666688",
+                transition: "all 0.15s", whiteSpace: "nowrap",
+              }}>
+                {s.icon} {s.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Transactions section ── */}
+      {section === "TRANSACTIONS" && (
+        <TransactionsView authed={authed} />
+      )}
+
+      {/* ── Bets section ── */}
+      {section === "BETS" && <>
 
       {/* ── Tab Bar ── */}
       <div
@@ -600,6 +966,8 @@ export default function HistoryPage() {
           )}
         </>
       )}
+
+      </>} {/* end section === BETS */}
     </div>
   );
 }
