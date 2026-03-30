@@ -269,10 +269,9 @@ body {
 
 /* ── Chip selector row — responsive ─────────────────────────────── */
 .chip-row {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(2, 52px);
   gap: 0.5rem;
-  align-items: center;
 }
 
 /* ── Stat grids ─────────────────────────────────────────────────── */
