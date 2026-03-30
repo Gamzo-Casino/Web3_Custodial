@@ -663,23 +663,20 @@ export default function AviatorPage() {
           </div>
 
           {/* Chips */}
-          <div className="chip-row">
-            {CHIP_OPTIONS.map((c) => (
-              <button
-                key={c.value}
-                onClick={() => setStake(c.value)}
-                disabled={isFlying}
-                style={{
-                  padding: "0.4rem", borderRadius: "8px",
-                  border: stake === c.value ? `2px solid ${c.color}` : "1px solid #2a2a50",
-                  background: stake === c.value ? `${c.color}18` : "transparent",
-                  color: stake === c.value ? c.color : "#8888aa",
-                  fontSize: "0.8rem", fontWeight: 700, cursor: isFlying ? "default" : "pointer",
-                }}
-              >
-                {c.label}
-              </button>
-            ))}
+          <div>
+            <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8888aa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: "0.4rem" }}>Select Chip (GZO)</label>
+            <div className="chip-row">
+              {CHIP_OPTIONS.map((c) => (
+                <CasinoChip
+                  key={c.value}
+                  value={c.value}
+                  color={c.color}
+                  active={stake === c.value}
+                  onClick={() => setStake(c.value)}
+                  disabled={isFlying}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Auto cashout */}

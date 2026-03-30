@@ -568,7 +568,8 @@ function MinesGame() {
               disabled={phase !== "idle"}
               style={inputStyle(phase !== "idle")}
             />
-            <div className="chip-row" style={{ justifyItems: "center", marginTop: "0.5rem" }}>
+            <label style={labelStyle}>Select Chip (GZO)</label>
+            <div className="chip-row">
               {CHIP_OPTIONS.map((chip) => (
                 <CasinoChip
                   key={chip.value}
