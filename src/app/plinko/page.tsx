@@ -47,7 +47,7 @@ function CasinoChip({ value, color, active, onClick, disabled }: {
       onClick={onClick}
       disabled={disabled}
       style={{
-        width: "52px", height: "52px", borderRadius: "50%",
+        width: "100%", height: "100%", borderRadius: "50%",
         cursor: disabled ? "not-allowed" : "pointer", position: "relative",
         border: `3px solid ${active ? color : color + "66"}`,
         background: active

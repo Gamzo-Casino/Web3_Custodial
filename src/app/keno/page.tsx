@@ -59,7 +59,7 @@ function CasinoChip({ value, color, active, onClick }: {
 }) {
   return (
     <button onClick={onClick} style={{
-      width: "52px", height: "52px", borderRadius: "50%", cursor: "pointer", position: "relative",
+      width: "100%", height: "100%", borderRadius: "50%", cursor: "pointer", position: "relative",
       border: `3px solid ${active ? color : color + "66"}`,
       background: active
         ? `radial-gradient(circle at 35% 35%, ${color}33 0%, ${color}11 60%, ${color}22 100%)`

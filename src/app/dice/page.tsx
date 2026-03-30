@@ -89,7 +89,7 @@ function AtomLoader() {
 function CasinoChip({ value, color, active, onClick }: { value: number; color: string; active: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} style={{
-      width: "52px", height: "52px", borderRadius: "50%",
+      width: "100%", height: "100%", borderRadius: "50%",
       cursor: "pointer", position: "relative",
       border: `3px solid ${active ? color : color + "66"}`,
       background: active

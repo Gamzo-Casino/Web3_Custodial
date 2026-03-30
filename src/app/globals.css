@@ -269,22 +269,17 @@ body {
 
 /* ── Chip selector row — responsive ─────────────────────────────── */
 .chip-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-  justify-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-start;
 }
 
-@media (max-width: 400px) {
-  .chip-row {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.3rem;
-  }
-  /* Scale down chips slightly on very small screens */
-  .chip-row button {
-    width: 44px !important;
-    height: 44px !important;
-  }
+/* Each chip: fixed circle that shrinks with clamp so it always fits */
+.chip-row button {
+  width:  clamp(40px, 22%, 52px) !important;
+  height: clamp(40px, 22%, 52px) !important;
+  flex-shrink: 0;
 }
 
 /* ── Stat grids ─────────────────────────────────────────────────── */
