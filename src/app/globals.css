@@ -358,7 +358,7 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 48;
+  z-index: 200;
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   opacity: 0;
@@ -377,7 +377,7 @@ body {
   bottom: 0;
   width: 300px;
   max-width: 85vw;
-  z-index: 49;
+  z-index: 201;
   background: #0d0d1f;
   border-right: 1px solid #2a2a50;
   overflow-y: auto;
