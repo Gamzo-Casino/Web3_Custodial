@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
         const onchainRoundId = round.serverSeedHash as string;
 
-        await tx.gameBet.create({
+        const createdBet = await tx.gameBet.create({
           data: {
             userId,
             gameType:           "HILO",
@@ -124,9 +124,14 @@ export async function POST(req: NextRequest) {
             nonce:              round.nonce,
             publicSeed:         round.publicSeed,
             referenceId:        roundId,
+            onchainRoundId,
+            chainId:            80002,
+            contractAddress:    HILO_GAME_ADDRESS,
             settledAt:          now,
             resultJson: {
-              outcome: "LOST",
+              outcome:      "LOST",
+              steps:        guessHistory.length,
+              multiplier100: 0,
               guessHistory,
               finalCard: nextCard,
               rngVersion: round.rngVersion,
@@ -140,6 +145,7 @@ export async function POST(req: NextRequest) {
 
         return {
           updatedRound,
+          loseBetId: createdBet.id,
           loseOnchain: { onchainRoundId, cards, positions, guesses: allGuessCodes, lostAtStep },
         };
       }
@@ -154,10 +160,10 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      return { updatedRound, loseOnchain: null };
+      return { updatedRound, loseBetId: null, loseOnchain: null };
     });
 
-    // ── Call loseRound() on-chain if lost (non-fatal) ────────────────────────
+    // ── Call loseRound() on-chain if lost — capture txHash to update GameBet ─
     if (result.loseOnchain) {
       const { onchainRoundId, cards, positions, guesses: guessCodes, lostAtStep } = result.loseOnchain;
       if (onchainRoundId && /^0x[0-9a-fA-F]{64}$/.test(onchainRoundId)) {
@@ -178,7 +184,15 @@ export async function POST(req: NextRequest) {
             ],
             account,
           });
-          await walletClient.writeContract(request);
+          const loseTxHash = await walletClient.writeContract(request);
+          // Update GameBet with the on-chain txHash (non-fatal if this fails)
+          if (result.loseBetId) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (prisma as any).gameBet.update({
+              where: { id: result.loseBetId },
+              data:  { txHash: loseTxHash },
+            }).catch((e: unknown) => console.error("hilo/guess txHash update error:", e));
+          }
         } catch (err) {
           console.error("hilo/guess loseRound on-chain error (non-fatal):", err);
         }
