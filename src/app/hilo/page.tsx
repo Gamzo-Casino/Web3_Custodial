@@ -867,26 +867,26 @@ function HiloGame() {
       </div>
 
       {/* ── How to Play ── */}
-      <div className="card" style={{ background: "rgba(0,212,255,0.03)", borderColor: "rgba(0,212,255,0.2)", marginBottom: "1.25rem", padding: "1.25rem" }}>
-        <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: "#00d4ff",
+      <div className="card" style={{ background: `rgba(129,140,248,0.02)`, borderColor: `rgba(129,140,248,0.15)`, marginBottom: "1.25rem", padding: "1.25rem" }}>
+        <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT,
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <SiTarget size={16} color="#00d4ff" /> How to Play
+          <SiTarget size={16} color={ACCENT} /> How to Play
         </h2>
         <div className="howto-grid">
           {[
-            { step: "1", icon: <SiWallet size={14} color="#00d4ff" />, title: "Connect & Fund",       desc: "Log in and make sure your custodial GZO balance is funded. No wallet approval needed — funds come from your account balance." },
-            { step: "2", icon: <SiChip size={14} color="#00d4ff" />, title: "Pick a Chip",           desc: "Choose your bet size — 10, 50, 100, or 500 GZO chips, or type a custom amount." },
-            { step: "3", icon: <SiCard size={14} color="#00d4ff" />, title: "Deal a Card",           desc: "Click Deal Card. Chainlink VRF generates a provably fair shuffled deck on-chain." },
-            { step: "4", icon: <SiArrowUpDown size={14} color="#00d4ff" />, title: "Make Your Guess", desc: "Predict whether the next card is Higher, Lower, or the Same value as the current one." },
-            { step: "5", icon: <SiTrendingUp size={14} color="#00d4ff" />, title: "Build Multiplier", desc: "Each correct guess compounds your multiplier. The riskier the guess, the higher the reward." },
-            { step: "6", icon: <SiCashOut size={14} color="#00d4ff" />, title: "Cash Out or Bust",   desc: "Cash out any time after 1+ correct guess to lock winnings, or keep going for a bigger payout." },
+            { step: "1", icon: <SiWallet size={14} color={ACCENT} />, title: "Connect & Fund",       desc: "Log in and make sure your custodial GZO balance is funded. No wallet approval needed — funds come from your account balance." },
+            { step: "2", icon: <SiChip size={14} color={ACCENT} />, title: "Pick a Chip",           desc: "Choose your bet size — 10, 50, 100, or 500 GZO chips, or type a custom amount." },
+            { step: "3", icon: <SiCard size={14} color={ACCENT} />, title: "Deal a Card",           desc: "Click Deal Card. Chainlink VRF generates a provably fair shuffled deck on-chain." },
+            { step: "4", icon: <SiArrowUpDown size={14} color={ACCENT} />, title: "Make Your Guess", desc: "Predict whether the next card is Higher, Lower, or the Same value as the current one." },
+            { step: "5", icon: <SiTrendingUp size={14} color={ACCENT} />, title: "Build Multiplier", desc: "Each correct guess compounds your multiplier. The riskier the guess, the higher the reward." },
+            { step: "6", icon: <SiCashOut size={14} color={ACCENT} />, title: "Cash Out or Bust",   desc: "Cash out any time after 1+ correct guess to lock winnings, or keep going for a bigger payout." },
           ].map(item => (
-            <div key={item.step} style={{ background: "rgba(0,212,255,0.04)", border: "1px solid rgba(0,212,255,0.12)",
+            <div key={item.step} style={{ background: `rgba(129,140,248,0.03)`, border: `1px solid rgba(129,140,248,0.1)`,
               borderRadius: "10px", padding: "0.875rem", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
               <div style={{ flexShrink: 0, width: "28px", height: "28px", borderRadius: "50%",
-                background: "rgba(0,212,255,0.15)", border: "1px solid rgba(0,212,255,0.3)",
+                background: `rgba(129,140,248,0.12)`, border: `1px solid rgba(129,140,248,0.25)`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "0.7rem", fontWeight: 800, color: "#00d4ff" }}>
+                fontSize: "0.7rem", fontWeight: 800, color: ACCENT }}>
                 {item.step}
               </div>
               <div>
