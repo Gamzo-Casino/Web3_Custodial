@@ -914,11 +914,6 @@ function MinesGame() {
         </div>
       </div>
 
-      {/* ── Bet History ── */}
-      <div style={{ marginBottom: "1.25rem" }}>
-        <BetHistory game="MINES" refreshTrigger={historyTick} />
-      </div>
-
       {/* ── How to Play ── */}
       <div className="card" style={{ marginBottom: "1.25rem", background: "rgba(255,61,122,0.02)", borderColor: "rgba(255,61,122,0.15)" }}>
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT, display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -992,6 +987,12 @@ function MinesGame() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── Bet History ── */}
+      <div style={{ marginBottom: "1.25rem" }}>
+        <h2 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "0.875rem", color: "#8888aa" }}>Your History</h2>
+        <BetHistory game="MINES" refreshTrigger={historyTick} />
       </div>
     </div>
   );
