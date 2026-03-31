@@ -65,6 +65,7 @@ export default function NavBar() {
   const isGameActive = SINGLE_PLAYER_GAMES.some((g) => pathname === g.href);
 
   return (
+    <>
     <header
       style={{
         background: "rgba(13, 13, 26, 0.95)",
@@ -284,16 +285,36 @@ export default function NavBar() {
         </div>
       </nav>
 
-      {/* ── Mobile Menu Drawer — always in DOM, animated ───────────── */}
+      {/* Inline responsive styles for nav */}
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .hamburger-btn { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-menu-overlay,
+          .mobile-menu-drawer { display: none !important; }
+        }
+        @media (max-width: 400px) {
+          .wallet-btn-wrap button,
+          .wallet-btn-wrap div[role="button"] {
+            font-size: 0.75rem !important;
+            padding: 0.375rem 0.625rem !important;
+          }
+        }
+      `}</style>
+    </header>
 
-      {/* Overlay */}
-      <div
-        className={`mobile-menu-overlay${mobileOpen ? " open" : ""}`}
-        onClick={() => setMobileOpen(false)}
-      />
+    {/* ── Mobile Menu — rendered OUTSIDE <header> so backdrop-filter doesn't trap fixed children ── */}
 
-      {/* Drawer */}
-      <div className={`mobile-menu-drawer${mobileOpen ? " open" : ""}`}>
+    {/* Overlay */}
+    <div
+      className={`mobile-menu-overlay${mobileOpen ? " open" : ""}`}
+      onClick={() => setMobileOpen(false)}
+    />
+
+    {/* Drawer */}
+    <div className={`mobile-menu-drawer${mobileOpen ? " open" : ""}`}>
 
         {/* Drawer header */}
         <div style={{
@@ -438,25 +459,6 @@ export default function NavBar() {
           </div>
         </div>
       </div>
-
-      {/* Inline responsive styles for nav */}
-      <style>{`
-        @media (max-width: 768px) {
-          .desktop-nav { display: none !important; }
-          .hamburger-btn { display: flex !important; }
-        }
-        @media (min-width: 769px) {
-          .mobile-menu-overlay,
-          .mobile-menu-drawer { display: none !important; }
-        }
-        @media (max-width: 400px) {
-          .wallet-btn-wrap button,
-          .wallet-btn-wrap div[role="button"] {
-            font-size: 0.75rem !important;
-            padding: 0.375rem 0.625rem !important;
-          }
-        }
-      `}</style>
-    </header>
+    </>
   );
 }
