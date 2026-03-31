@@ -223,9 +223,11 @@ function HiloGame() {
           setGameState(data.round);
           setGameStatus("active");
         } else if (data.pending?.roundId) {
+          // Only restore VRF polling — server already filtered out stale bets
           setOnchainRoundId(data.pending.roundId);
           setGameStatus("pending_vrf");
         }
+        // If neither, page stays idle — stale bets were auto-refunded by the server
       } catch {
         // silent
       }
