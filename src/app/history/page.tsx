@@ -467,7 +467,7 @@ function txStatusStyle(status: string, type: "DEPOSIT" | "WITHDRAWAL"): { label:
   return { label: status, color: "#8888aa" };
 }
 
-function TransactionsView({ authed }: { authed: object | null }) {
+function TransactionsView({ walletUser }: { walletUser: object | null }) {
   const [txType,   setTxType]   = useState("ALL");
   const [txPage,   setTxPage]   = useState(1);
   const [txs,      setTxs]      = useState<TxRecord[]>([]);
@@ -494,10 +494,10 @@ function TransactionsView({ authed }: { authed: object | null }) {
   }, []);
 
   useEffect(() => {
-    if (!authed) { setLoading(false); return; }
+    if (!walletUser) { setLoading(false); return; }
     fetchTxs(txType, txPage);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authed]);
+  }, [walletUser]);
 
   function handleType(t: string) {
     setTxType(t);
@@ -705,9 +705,11 @@ function TransactionsView({ authed }: { authed: object | null }) {
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function HistoryPage() {
   const { user: walletUser, isLoading: walletLoading } = useWalletUser();
-  const { isConnected, status: wagmiStatus } = useAccount();
-  const wagmiSettling = wagmiStatus === "reconnecting" || wagmiStatus === "connecting";
-  const authed        = walletUser ?? (isConnected ? {} : null);
+  const { status: wagmiStatus } = useAccount();
+  // Still resolving auth — wagmi reconnecting or SIWE session fetch in progress
+  const authSettling = walletLoading || wagmiStatus === "reconnecting" || wagmiStatus === "connecting";
+  // Definitively logged out: session fetch done, wagmi settled, no user
+  const loggedOut    = !walletLoading && wagmiStatus === "disconnected" && !walletUser;
 
   const [section,   setSection]   = useState<Section>("BETS");
   const [activeTab, setActiveTab] = useState("ALL");
@@ -736,12 +738,13 @@ export default function HistoryPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Fetch as soon as walletUser is confirmed — walletUser is the authoritative signal
   useEffect(() => {
-    if (walletLoading || wagmiSettling) return; // wait for both session + wagmi to settle
-    if (!authed) { setLoading(false); return; }
+    if (walletLoading) return; // wait for SIWE session restore first
+    if (!walletUser) { setLoading(false); return; }
     fetchPage(activeTab, page);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authed, walletLoading, wagmiSettling]);
+  }, [walletUser, walletLoading]);
 
   function handleTab(tab: string) {
     setActiveTab(tab);
@@ -760,8 +763,18 @@ export default function HistoryPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  // Unauthenticated
-  if (!authed && !loading && !walletLoading && !wagmiSettling) {
+  // Show spinner while auth is still resolving — never flash Connect Wallet prematurely
+  if (authSettling || (loading && !walletUser && !loggedOut)) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8rem 2rem", gap: "0.75rem", color: "#8888aa" }}>
+        <div style={{ width: 24, height: 24, borderRadius: "50%", border: "2px solid #00ff9d44", borderTopColor: "#00ff9d", animation: "spin 0.8s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  // Definitively unauthenticated
+  if (loggedOut) {
     return (
       <div style={{ maxWidth: "540px", margin: "4rem auto", padding: "0 1rem" }}>
         <div className="card" style={{ textAlign: "center", padding: "3rem 2rem" }}>
@@ -840,7 +853,7 @@ export default function HistoryPage() {
 
       {/* ── Transactions section ── */}
       {section === "TRANSACTIONS" && (
-        <TransactionsView authed={authed} />
+        <TransactionsView walletUser={walletUser} />
       )}
 
       {/* ── Bets section ── */}
