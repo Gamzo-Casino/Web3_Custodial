@@ -563,3 +563,12 @@ enum AviatorStatus {
   CASHED_OUT
   CRASHED
 }
+
+/// One-time SIWE nonces stored in DB so serverless instances share state.
+model WalletNonce {
+  address   String   @id
+  nonce     String
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}

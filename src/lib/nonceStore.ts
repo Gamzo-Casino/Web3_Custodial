@@ -1,45 +1,40 @@
 import { randomBytes } from "crypto";
+import { prisma } from "@/lib/prismaClient";
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-interface NonceEntry {
-  nonce: string;
-  expiresAt: number;
-}
-
-// Persist on globalThis so Next.js hot-reloads don't wipe the store mid-flow.
-// In production replace with Redis for multi-instance safety.
-const g = globalThis as unknown as { __nonceStore?: Map<string, NonceEntry> };
-if (!g.__nonceStore) g.__nonceStore = new Map();
-const store = g.__nonceStore;
-
 /**
- * generateNonce — creates a fresh 32-hex-char nonce for an address,
- * overwriting any previous pending nonce (so each call invalidates the last).
+ * generateNonce — creates a fresh nonce for an address stored in the DB.
+ * Works across serverless instances (Netlify, Vercel, etc.)
  */
-export function generateNonce(address: string): string {
+export async function generateNonce(address: string): Promise<string> {
   const nonce = randomBytes(16).toString("hex");
-  store.set(address.toLowerCase(), {
-    nonce,
-    expiresAt: Date.now() + TTL_MS,
+  const expiresAt = new Date(Date.now() + TTL_MS);
+
+  await (prisma as any).walletNonce.upsert({
+    where:  { address: address.toLowerCase() },
+    update: { nonce, expiresAt },
+    create: { address: address.toLowerCase(), nonce, expiresAt },
   });
+
   return nonce;
 }
 
 /**
- * consumeNonce — verifies the nonce exists, is not expired, and matches.
- * Deletes it on success (one-time use).
- * Returns true on success, false on any failure (missing, expired, mismatch).
+ * consumeNonce — verifies the nonce matches and is not expired, then deletes it.
+ * Returns true on success, false on any failure.
  */
-export function consumeNonce(address: string, nonce: string): boolean {
+export async function consumeNonce(address: string, nonce: string): Promise<boolean> {
   const key = address.toLowerCase();
-  const entry = store.get(key);
+
+  const entry = await (prisma as any).walletNonce.findUnique({ where: { address: key } });
   if (!entry) return false;
-  if (entry.expiresAt < Date.now()) {
-    store.delete(key);
+  if (entry.expiresAt < new Date()) {
+    await (prisma as any).walletNonce.delete({ where: { address: key } }).catch(() => {});
     return false;
   }
   if (entry.nonce !== nonce) return false;
-  store.delete(key);
+
+  await (prisma as any).walletNonce.delete({ where: { address: key } }).catch(() => {});
   return true;
 }

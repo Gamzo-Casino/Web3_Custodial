@@ -65,7 +65,7 @@ export async function POST(request: Request) {
   }
 
   // Consume the nonce (one-time use, TTL-checked)
-  if (!consumeNonce(address, nonce)) {
+  if (!await consumeNonce(address, nonce)) {
     return NextResponse.json({ error: "Nonce reused or expired" }, { status: 401 });
   }
 
