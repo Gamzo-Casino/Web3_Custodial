@@ -766,27 +766,27 @@ export default function RoulettePage() {
       </div>
 
       {/* How to Play */}
-      <div className="card" style={{ background:"rgba(0,212,255,0.03)", borderColor:"rgba(0,212,255,0.2)",
+      <div className="card" style={{ background:"rgba(232,121,249,0.02)", borderColor:"rgba(232,121,249,0.15)",
         marginBottom:"1.25rem", padding:"1.25rem" }}>
-        <h2 style={{ fontSize:"0.9375rem", fontWeight:700, marginBottom:"1rem", color:"#00d4ff",
+        <h2 style={{ fontSize:"0.9375rem", fontWeight:700, marginBottom:"1rem", color:ACCENT,
           display:"flex", alignItems:"center", gap:"0.5rem" }}>
-          <SiTarget size={16} color="#00d4ff" /> How to Play
+          <SiTarget size={16} color={ACCENT} /> How to Play
         </h2>
         <div className="howto-grid">
           {[
-            { step:"1", title:"Sign In",           desc:"Log in with your account to access your custodial GZO balance.", icon: <SiWallet size={14} color="#00d4ff" /> },
-            { step:"2", title:"Pick a Chip",       desc:"Choose your bet size — 10, 50, 100, 500 GZO, or enter a custom amount.", icon: <SiChip size={14} color="#00d4ff" /> },
-            { step:"3", title:"Place Your Bets",   desc:"Click any number, color, dozen, column, or outside bet. Click again to stack more chips.", icon: <SiCards size={14} color="#00d4ff" /> },
-            { step:"4", title:"Hit Spin",          desc:"Stake debited from your custodial balance. House wallet calls the contract; Chainlink VRF generates randomness.", icon: <SiRefresh size={14} color="#00d4ff" /> },
-            { step:"5", title:"Watch the Wheel",   desc:"The wheel lands on a number. All bets are evaluated simultaneously against that single result.", icon: <SiWheel size={14} color="#00d4ff" /> },
-            { step:"6", title:"Collect Winnings",  desc:"Straight 36×, dozens/columns 3×, outside bets 2×. Winnings go straight to your custodial balance.", icon: <SiCoins size={14} color="#00d4ff" /> },
+            { step:"1", title:"Sign In",           desc:"Log in with your account to access your custodial GZO balance.", icon: <SiWallet size={14} color={ACCENT} /> },
+            { step:"2", title:"Pick a Chip",       desc:"Choose your bet size — 10, 50, 100, 500 GZO, or enter a custom amount.", icon: <SiChip size={14} color={ACCENT} /> },
+            { step:"3", title:"Place Your Bets",   desc:"Click any number, color, dozen, column, or outside bet. Click again to stack more chips.", icon: <SiCards size={14} color={ACCENT} /> },
+            { step:"4", title:"Hit Spin",          desc:"Stake debited from your custodial balance. House wallet calls the contract; Chainlink VRF generates randomness.", icon: <SiRefresh size={14} color={ACCENT} /> },
+            { step:"5", title:"Watch the Wheel",   desc:"The wheel lands on a number. All bets are evaluated simultaneously against that single result.", icon: <SiWheel size={14} color={ACCENT} /> },
+            { step:"6", title:"Collect Winnings",  desc:"Straight 36×, dozens/columns 3×, outside bets 2×. Winnings go straight to your custodial balance.", icon: <SiCoins size={14} color={ACCENT} /> },
           ].map(item => (
-            <div key={item.step} style={{ background:"rgba(0,212,255,0.04)", border:"1px solid rgba(0,212,255,0.12)",
+            <div key={item.step} style={{ background:"rgba(232,121,249,0.03)", border:"1px solid rgba(232,121,249,0.1)",
               borderRadius:"10px", padding:"0.875rem", display:"flex", gap:"0.75rem", alignItems:"flex-start" }}>
               <div style={{ flexShrink:0, width:"28px", height:"28px", borderRadius:"50%",
-                background:"rgba(0,212,255,0.15)", border:"1px solid rgba(0,212,255,0.3)",
+                background:"rgba(232,121,249,0.12)", border:"1px solid rgba(232,121,249,0.25)",
                 display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:"0.7rem", fontWeight:800, color:"#00d4ff" }}>
+                fontSize:"0.7rem", fontWeight:800, color:ACCENT }}>
                 {item.step}
               </div>
               <div>
