@@ -705,8 +705,9 @@ function TransactionsView({ authed }: { authed: object | null }) {
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function HistoryPage() {
   const { user: walletUser, isLoading: walletLoading } = useWalletUser();
-  const { isConnected }      = useAccount();
-  const authed               = walletUser ?? (isConnected ? {} : null);
+  const { isConnected, status: wagmiStatus } = useAccount();
+  const wagmiSettling = wagmiStatus === "reconnecting" || wagmiStatus === "connecting";
+  const authed        = walletUser ?? (isConnected ? {} : null);
 
   const [section,   setSection]   = useState<Section>("BETS");
   const [activeTab, setActiveTab] = useState("ALL");
@@ -736,11 +737,11 @@ export default function HistoryPage() {
   }, []);
 
   useEffect(() => {
-    if (walletLoading) return; // wait for session restore before deciding
+    if (walletLoading || wagmiSettling) return; // wait for both session + wagmi to settle
     if (!authed) { setLoading(false); return; }
     fetchPage(activeTab, page);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authed, walletLoading]);
+  }, [authed, walletLoading, wagmiSettling]);
 
   function handleTab(tab: string) {
     setActiveTab(tab);
@@ -760,7 +761,7 @@ export default function HistoryPage() {
   }
 
   // Unauthenticated
-  if (!authed && !loading && !walletLoading) {
+  if (!authed && !loading && !walletLoading && !wagmiSettling) {
     return (
       <div style={{ maxWidth: "540px", margin: "4rem auto", padding: "0 1rem" }}>
         <div className="card" style={{ textAlign: "center", padding: "3rem 2rem" }}>
