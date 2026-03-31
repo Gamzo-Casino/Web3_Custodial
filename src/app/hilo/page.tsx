@@ -366,6 +366,30 @@ function HiloGame() {
     setError("");
   }
 
+  const [recovering, setRecovering] = useState(false);
+  const handleAbandon = useCallback(async () => {
+    setRecovering(true);
+    setError("");
+    try {
+      const res = await fetch("/api/games/hilo/abandon", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Recovery failed");
+      } else {
+        setGameState(null);
+        setOnchainRoundId(null);
+        setGameStatus("idle");
+        refetchBalance();
+        setHistoryTick((t) => t + 1);
+        setError("");
+      }
+    } catch {
+      setError("Network error — please try again");
+    } finally {
+      setRecovering(false);
+    }
+  }, [refetchBalance]);
+
   // ── Derived values ────────────────────────────────────────────────────────────
   const isActive    = gameStatus === "active";
   const isSettled   = gameStatus === "settled";
@@ -546,6 +570,24 @@ function HiloGame() {
               }}
             >
               Play Again
+            </button>
+          )}
+
+          {/* Recover stuck round */}
+          {(isActive || isPendingVrf) && (
+            <button
+              onClick={handleAbandon}
+              disabled={recovering}
+              title="Use this if the round appears stuck — it will sync with on-chain state and refund or credit your balance."
+              style={{
+                width: "100%", padding: "0.5rem 0.75rem", borderRadius: "8px",
+                border: "1px solid rgba(255,165,0,0.35)",
+                background: "rgba(255,165,0,0.07)", color: "#ffaa00",
+                fontWeight: 600, fontSize: "0.78rem", cursor: recovering ? "not-allowed" : "pointer",
+                opacity: recovering ? 0.6 : 1, marginTop: "0.25rem",
+              }}
+            >
+              {recovering ? "Recovering…" : "Round stuck? Recover"}
             </button>
           )}
 
