@@ -10,7 +10,12 @@ export async function GET(request: Request): Promise<Response> {
     return NextResponse.json({ error: "Invalid address" }, { status: 400 });
   }
 
-  const address = raw.toLowerCase();
-  const nonce = await generateNonce(address);
-  return NextResponse.json({ nonce });
+  try {
+    const address = raw.toLowerCase();
+    const nonce = await generateNonce(address);
+    return NextResponse.json({ nonce });
+  } catch (err) {
+    console.error("[wallet/nonce] error:", err);
+    return NextResponse.json({ error: "Failed to get nonce" }, { status: 500 });
+  }
 }
