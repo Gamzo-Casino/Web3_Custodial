@@ -353,27 +353,43 @@ body {
   display: block;
 }
 
-/* ── Mobile nav ─────────────────────────────────────────────────── */
+/* ── Mobile nav — slide-from-left drawer ────────────────────────── */
 .mobile-menu-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 40;
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 48;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+}
+.mobile-menu-overlay.open {
+  opacity: 1;
+  pointer-events: all;
 }
 
 .mobile-menu-drawer {
   position: fixed;
-  top: 64px;
+  top: 0;
   left: 0;
-  right: 0;
   bottom: 0;
-  z-index: 45;
+  width: 300px;
+  max-width: 85vw;
+  z-index: 49;
   background: #0d0d1f;
-  border-top: 1px solid #2a2a50;
+  border-right: 1px solid #2a2a50;
   overflow-y: auto;
-  padding: 1rem;
-  animation: slide-in-top 0.2s ease;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.6);
+}
+.mobile-menu-drawer.open {
+  transform: translateX(0);
 }
 
 /* ── Responsive main layout padding ─────────────────────────────── */

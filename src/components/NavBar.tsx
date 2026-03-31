@@ -284,108 +284,160 @@ export default function NavBar() {
         </div>
       </nav>
 
-      {/* ── Mobile Menu Drawer ─────────────────────────────────────────── */}
-      {mobileOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            className="mobile-menu-overlay"
+      {/* ── Mobile Menu Drawer — always in DOM, animated ───────────── */}
+
+      {/* Overlay */}
+      <div
+        className={`mobile-menu-overlay${mobileOpen ? " open" : ""}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      {/* Drawer */}
+      <div className={`mobile-menu-drawer${mobileOpen ? " open" : ""}`}>
+
+        {/* Drawer header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 1.25rem",
+          height: "64px",
+          borderBottom: "1px solid #2a2a50",
+          flexShrink: 0,
+        }}>
+          <Link href="/" onClick={() => setMobileOpen(false)} style={{
+            fontSize: "1.4rem", fontWeight: 800,
+            background: "linear-gradient(135deg, #00ff9d, #00d4ff)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            backgroundClip: "text", textDecoration: "none", letterSpacing: "-0.5px",
+          }}>
+            Gamzo
+          </Link>
+          <button
             onClick={() => setMobileOpen(false)}
-          />
+            aria-label="Close menu"
+            style={{
+              width: 36, height: 36, borderRadius: "8px",
+              border: "1px solid #2a2a50", background: "transparent",
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#8888aa", fontSize: "1.1rem", lineHeight: 1,
+            }}
+          >
+            ✕
+          </button>
+        </div>
 
-          {/* Drawer */}
-          <div className="mobile-menu-drawer">
-            {/* PvP section */}
-            <div style={{ marginBottom: "1.25rem" }}>
-              <div style={{
-                fontSize: "0.6rem", fontWeight: 700, color: "#555577",
-                textTransform: "uppercase", letterSpacing: "0.1em",
-                marginBottom: "0.5rem", paddingLeft: "0.25rem",
-              }}>
-                PvP
-              </div>
-              <Link
-                href="/coinflip"
-                style={{
-                  display: "flex", alignItems: "center", gap: "0.75rem",
-                  padding: "0.75rem 0.75rem", borderRadius: "10px",
-                  textDecoration: "none",
-                  background: pathname === "/coinflip" ? "rgba(0,255,157,0.08)" : "transparent",
-                  border: pathname === "/coinflip" ? "1px solid rgba(0,255,157,0.2)" : "1px solid transparent",
-                }}
-              >
-                <CoinFlipIcon size={22} color={pathname === "/coinflip" ? "#00ff9d" : "#555577"} />
-                <div>
-                  <div style={{ fontSize: "0.9rem", fontWeight: 700, color: pathname === "/coinflip" ? "#00ff9d" : "#f0f0ff" }}>Coin Flip</div>
-                  <div style={{ fontSize: "0.7rem", color: "#555577" }}>PvP match — winner takes the pot</div>
+        {/* Drawer body */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "1.25rem 1rem" }}>
+
+          {/* PvP */}
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{
+              fontSize: "0.6rem", fontWeight: 700, color: "#555577",
+              textTransform: "uppercase", letterSpacing: "0.1em",
+              marginBottom: "0.5rem", paddingLeft: "0.25rem",
+            }}>
+              PvP
+            </div>
+            <Link
+              href="/coinflip"
+              onClick={() => setMobileOpen(false)}
+              style={{
+                display: "flex", alignItems: "center", gap: "0.875rem",
+                padding: "0.75rem 0.875rem", borderRadius: "12px",
+                textDecoration: "none",
+                background: pathname === "/coinflip" ? "rgba(0,255,157,0.08)" : "rgba(255,255,255,0.02)",
+                border: pathname === "/coinflip" ? "1px solid rgba(0,255,157,0.25)" : "1px solid #2a2a50",
+              }}
+            >
+              <CoinFlipIcon size={24} color={pathname === "/coinflip" ? "#00ff9d" : "#555577"} />
+              <div>
+                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: pathname === "/coinflip" ? "#00ff9d" : "#f0f0ff" }}>
+                  Coin Flip
                 </div>
-              </Link>
-            </div>
+                <div style={{ fontSize: "0.68rem", color: "#555577", marginTop: "1px" }}>
+                  PvP match — winner takes the pot
+                </div>
+              </div>
+            </Link>
+          </div>
 
-            {/* Single Player games */}
-            <div style={{ marginBottom: "1.25rem" }}>
-              <div style={{
-                fontSize: "0.6rem", fontWeight: 700, color: "#555577",
-                textTransform: "uppercase", letterSpacing: "0.1em",
-                marginBottom: "0.5rem", paddingLeft: "0.25rem",
-              }}>
-                Single Player
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px" }}>
-                {SINGLE_PLAYER_GAMES.map(({ href, label, Icon, color, desc }) => {
-                  const active = pathname === href;
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "0.6rem",
-                        padding: "0.625rem 0.75rem", borderRadius: "10px",
-                        textDecoration: "none",
-                        background: active ? `${color}12` : "rgba(255,255,255,0.02)",
-                        border: active ? `1px solid ${color}30` : "1px solid transparent",
-                      }}
-                    >
-                      <Icon size={22} color={active ? color : "#555577"} />
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: "0.82rem", fontWeight: 600, color: active ? color : "#f0f0ff" }}>
-                          {label}
-                        </div>
-                        <div style={{ fontSize: "0.62rem", color: "#555577", marginTop: "1px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {desc}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+          {/* Single Player */}
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{
+              fontSize: "0.6rem", fontWeight: 700, color: "#555577",
+              textTransform: "uppercase", letterSpacing: "0.1em",
+              marginBottom: "0.5rem", paddingLeft: "0.25rem",
+            }}>
+              Single Player
             </div>
-
-            {/* Tools */}
-            <div style={{ borderTop: "1px solid #2a2a50", paddingTop: "1rem" }}>
-              <div style={{
-                fontSize: "0.6rem", fontWeight: 700, color: "#555577",
-                textTransform: "uppercase", letterSpacing: "0.1em",
-                marginBottom: "0.5rem", paddingLeft: "0.25rem",
-              }}>
-                Tools
-              </div>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                {TOOLS_NAV.map(({ href, label }) => (
+            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+              {SINGLE_PLAYER_GAMES.map(({ href, label, Icon, color, desc }) => {
+                const active = pathname === href;
+                return (
                   <Link
                     key={href}
                     href={href}
-                    className={`nav-link${pathname === href ? " active" : ""}`}
-                    style={{ flex: 1, textAlign: "center", padding: "0.6rem 0.75rem" }}
+                    onClick={() => setMobileOpen(false)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.875rem",
+                      padding: "0.65rem 0.875rem", borderRadius: "10px",
+                      textDecoration: "none",
+                      background: active ? `${color}12` : "transparent",
+                      border: active ? `1px solid ${color}30` : "1px solid transparent",
+                      transition: "background 0.12s",
+                    }}
+                  >
+                    <span style={{ flexShrink: 0 }}>
+                      <Icon size={22} color={active ? color : "#555577"} />
+                    </span>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: "0.875rem", fontWeight: 600, color: active ? color : "#f0f0ff" }}>
+                        {label}
+                      </div>
+                      <div style={{ fontSize: "0.66rem", color: "#555577", marginTop: "1px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {desc}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Tools */}
+          <div style={{ borderTop: "1px solid #2a2a50", paddingTop: "1.25rem" }}>
+            <div style={{
+              fontSize: "0.6rem", fontWeight: 700, color: "#555577",
+              textTransform: "uppercase", letterSpacing: "0.1em",
+              marginBottom: "0.5rem", paddingLeft: "0.25rem",
+            }}>
+              Tools
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+              {TOOLS_NAV.map(({ href, label }) => {
+                const active = pathname === href;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.875rem",
+                      padding: "0.65rem 0.875rem", borderRadius: "10px",
+                      textDecoration: "none", fontWeight: active ? 700 : 500,
+                      fontSize: "0.875rem",
+                      color: active ? "#00ff9d" : "#c0c0dd",
+                      background: active ? "rgba(0,255,157,0.08)" : "transparent",
+                      border: active ? "1px solid rgba(0,255,157,0.2)" : "1px solid transparent",
+                    }}
                   >
                     {label}
                   </Link>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </div>
 
       {/* Inline responsive styles for nav */}
       <style>{`
