@@ -259,8 +259,8 @@ function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisp
               paddingTop: "0.4rem" }}>
               <span style={{ fontSize: "0.7rem", color: "#8888aa", textTransform: "uppercase",
                 letterSpacing: "0.07em", fontWeight: 600 }}>Profit on Max Win</span>
-              <span style={{ fontSize: "0.9rem", fontWeight: 800, fontFamily: "monospace",
-                color: GREEN_C }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, fontFamily: "monospace",
+                color: GREEN_C, whiteSpace: "nowrap" }}>
                 {profitOnWin > 0 ? `+${profitOnWin.toLocaleString()}` : "—"} GZO
               </span>
             </div>
@@ -607,7 +607,7 @@ export default function WheelPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
           <div className="card" style={{ padding: "1.5rem", background: `rgba(251,146,60,0.02)`,
             borderColor: `rgba(251,146,60,0.2)`, display: "flex", flexDirection: "column",
-            alignItems: "center", gap: "1.25rem", position: "relative", flex: 1, minHeight: "420px" }}>
+            alignItems: "stretch", gap: "1.25rem", position: "relative", flex: 1, minHeight: "420px" }}>
 
             {/* Atom loader overlay */}
             {loadPhase && (
@@ -619,8 +619,8 @@ export default function WheelPage() {
             )}
 
             {/* Pointer + Wheel — responsive square container */}
-            <div style={{ position: "relative", width: "100%", maxWidth: "320px",
-              aspectRatio: "1 / 1", margin: "0 auto" }}>
+            <div style={{ position: "relative", width: "100%",
+              aspectRatio: "1 / 1" }}>
               {/* Pointer triangle */}
               <div style={{ position: "absolute", top: "-4.4%", left: "50%",
                 transform: "translateX(-50%)",
@@ -670,7 +670,7 @@ export default function WheelPage() {
                 )}
               </div>
             ) : !loadPhase && (
-              <div style={{ textAlign: "center", color: "#555577", fontSize: "0.875rem" }}>
+              <div style={{ textAlign: "center", color: "#555577", fontSize: "0.875rem", width: "100%" }}>
                 {spinning ? <span style={{ color: ACCENT, fontWeight: 700 }}>Spinning…</span> : "Place your bet and spin"}
               </div>
             )}
