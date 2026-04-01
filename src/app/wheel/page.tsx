@@ -172,7 +172,7 @@ function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisp
   resultColor: string; netPayoutDisplay: string; stakeNum: number; activeRoundId: string | null;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem", height: "100%" }}>
       {isSettled && winSeg ? (
         <div className="card" style={{ padding: "0.875rem",
           background: isWin ? "rgba(0,255,157,0.04)" : "rgba(255,85,85,0.04)",
@@ -227,7 +227,7 @@ function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisp
       )}
 
       {/* Provably Fair */}
-      <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
+      <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35", flex: 1 }}>
         <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff",
           textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
           Provably Fair
@@ -447,7 +447,7 @@ export default function WheelPage() {
       </div>
 
       {/* 3-col layout */}
-      <div className="game-3col">
+      <div className="game-3col" style={{ alignItems: "stretch" }}>
 
         {/* LEFT — Controls */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem",
@@ -526,7 +526,7 @@ export default function WheelPage() {
           )}
 
           {/* Spin button */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+          <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             {isSettled ? (
               <button onClick={handleNewRound} style={{ padding: "0.75rem", borderRadius: "8px",
                 border: `1px solid ${ACCENT}44`, background: `${ACCENT}0a`, color: ACCENT,
@@ -562,10 +562,10 @@ export default function WheelPage() {
         </div>
 
         {/* CENTER — Wheel */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
           <div className="card" style={{ padding: "1.5rem", background: `rgba(251,146,60,0.02)`,
             borderColor: `rgba(251,146,60,0.2)`, display: "flex", flexDirection: "column",
-            alignItems: "center", gap: "1.25rem", position: "relative", minHeight: "420px" }}>
+            alignItems: "center", gap: "1.25rem", position: "relative", flex: 1, minHeight: "420px" }}>
 
             {/* Atom loader overlay */}
             {loadPhase && (
