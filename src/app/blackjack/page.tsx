@@ -646,31 +646,35 @@ function BlackjackGame() {
 
               {/* Stake input */}
               <div style={{ marginBottom: "1rem" }}>
-                <div style={{ fontSize: "0.72rem", color: "#555577", marginBottom: "0.4rem", fontWeight: 600 }}>Bet Amount (GZO)</div>
-                <div style={{ display: "flex", gap: "0.4rem" }}>
-                  <input
-                    type="number" min={1} step="1" value={stakeInput}
-                    onChange={e => setStakeInput(e.target.value)}
-                    disabled={controlsDisabled}
-                    style={{
-                      flex: 1, background: "#0d0d1a", border: "1px solid #2a2a50", borderRadius: 8,
-                      padding: "0.5rem 0.625rem", color: "#f0f0ff", fontSize: "0.875rem",
-                      fontFamily: "monospace", outline: "none",
-                      opacity: controlsDisabled ? 0.5 : 1,
-                    }}
-                  />
-                  <button
-                    onClick={() => setStakeInput(s => String(Math.max(1, parseInt(s || "0") - chipValue)))}
-                    disabled={controlsDisabled}
-                    style={{ padding: "0.5rem 0.625rem", borderRadius: 8, border: "1px solid #2a2a50", background: "transparent", color: "#8888aa", cursor: "pointer", fontSize: "0.9rem", opacity: controlsDisabled ? 0.4 : 1 }}>
-                    −
-                  </button>
-                  <button
-                    onClick={() => setStakeInput(s => String(parseInt(s || "0") + chipValue))}
-                    disabled={controlsDisabled}
-                    style={{ padding: "0.5rem 0.625rem", borderRadius: 8, border: "1px solid #2a2a50", background: "transparent", color: "#8888aa", cursor: "pointer", fontSize: "0.9rem", opacity: controlsDisabled ? 0.4 : 1 }}>
-                    +
-                  </button>
+                <div style={{ fontSize: "0.68rem", fontWeight: 700, color: "#8888aa", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>Bet Amount (GZO)</div>
+                <input
+                  type="number" min={1} step="1" value={stakeInput}
+                  onChange={e => setStakeInput(e.target.value)}
+                  disabled={controlsDisabled}
+                  style={{
+                    width: "100%", background: "#0d0d1a", border: "1px solid #2a2a50", borderRadius: 8,
+                    padding: "0.5rem 0.6rem", color: "#f0f0ff", fontSize: "0.9375rem",
+                    fontWeight: 700, outline: "none", boxSizing: "border-box",
+                    opacity: controlsDisabled ? 0.5 : 1,
+                  }}
+                />
+                <div style={{ display: "flex", gap: "0.375rem", marginTop: "0.375rem" }}>
+                  {[-chipValue, -10, +10, +chipValue].map((delta, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setStakeInput(s => String(Math.max(1, (parseInt(s || "0") + delta))))}
+                      disabled={controlsDisabled}
+                      style={{
+                        flex: 1, padding: "0.3rem 0", borderRadius: 6,
+                        border: "1px solid #2a2a50", background: "transparent",
+                        color: delta < 0 ? "#ff8080" : "#00d4ff",
+                        cursor: controlsDisabled ? "not-allowed" : "pointer",
+                        fontSize: "0.72rem", fontWeight: 700,
+                        opacity: controlsDisabled ? 0.4 : 1,
+                      }}>
+                      {delta > 0 ? `+${delta}` : delta}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -721,18 +725,6 @@ function BlackjackGame() {
               )}
             </div>
 
-            {/* Game info */}
-            <div className="card" style={{ padding: "1rem", fontSize: "0.72rem", color: "#555577", lineHeight: 2 }}>
-              <div style={{ color: "#8888aa", fontWeight: 700, marginBottom: "0.5rem", fontSize: "0.75rem" }}>Rules</div>
-              <div>Blackjack pays <span style={{ color: "#14b8a6", fontWeight: 700 }}>3:2</span></div>
-              <div>Win pays <span style={{ color: "#14b8a6", fontWeight: 700 }}>1:1</span></div>
-              <div>Push returns stake</div>
-              <div>Dealer hits on &lt;17</div>
-              <div style={{ marginTop: "0.5rem", color: "#3a3a5a", fontSize: "0.68rem" }}>
-                Deck shuffled by Chainlink VRF<br />
-                On-chain settlement verification
-              </div>
-            </div>
           </div>
 
           {/* ── Centre: game table ── */}
@@ -887,10 +879,33 @@ function BlackjackGame() {
           </div>
 
           {/* ── Right panel ── */}
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+
+            {/* Rules card */}
+            <div className="card" style={{ padding: "0.875rem", background: "rgba(20,184,166,0.03)", borderColor: "rgba(20,184,166,0.2)" }}>
+              <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.625rem" }}>Rules</div>
+              {[
+                { label: "Blackjack pays", value: "3:2" },
+                { label: "Win pays",       value: "1:1" },
+                { label: "Push",           value: "Returns stake" },
+                { label: "Dealer hits",    value: "on < 17" },
+                { label: "Split",          value: "Same rank only" },
+                { label: "Double down",    value: "Any 2 cards" },
+              ].map(({ label, value }) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "0.28rem 0", borderBottom: "1px solid #1a1a3544" }}>
+                  <span style={{ fontSize: "0.7rem", color: "#8888aa", fontWeight: 600 }}>{label}</span>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#14b8a6", fontFamily: "monospace" }}>{value}</span>
+                </div>
+              ))}
+              <div style={{ marginTop: "0.5rem", fontSize: "0.62rem", color: "#555577", lineHeight: 1.6 }}>
+                Deck shuffled by Chainlink VRF · On-chain settlement verification
+              </div>
+            </div>
+
             {/* On-chain verification */}
             {roundId && (
-              <div className="card" style={{ padding: "1rem", marginBottom: "1rem" }}>
+              <div className="card" style={{ padding: "1rem" }}>
                 <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "#8888aa", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.75rem" }}>
                   On-Chain Verification
                 </div>
@@ -914,7 +929,7 @@ function BlackjackGame() {
 
             {/* Current bet info */}
             {isActive && gameState && (
-              <div className="card" style={{ padding: "1rem", marginBottom: "1rem" }}>
+              <div className="card" style={{ padding: "1rem" }}>
                 <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "#8888aa", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.75rem" }}>
                   Current Bet
                 </div>
