@@ -48,8 +48,12 @@ function formatResult(gameType: string, resultJson: any): string {
       return `Roll: ${resultJson.roll?.toFixed(2)} / Target: ${resultJson.target?.toFixed(2)}`;
     case "PLINKO":
       return `${resultJson.multiplier}× · bin ${resultJson.binIndex} · ${resultJson.risk} risk`;
-    case "WHEEL":
-      return `${(resultJson.multiplier100 / 100)?.toFixed(2)}× · ${resultJson.riskMode} risk`;
+    case "WHEEL": {
+      if (resultJson.multiplier100 == null) return "";
+      const wMult = (resultJson.multiplier100 / 100).toFixed(2);
+      const wRisk = resultJson.riskMode ?? resultJson.risk ?? "";
+      return `${wMult}× · ${wRisk} risk`;
+    }
     case "ROULETTE":
       return `Number: ${resultJson.number}`;
     case "KENO":

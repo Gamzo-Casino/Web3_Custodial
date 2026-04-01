@@ -1,17 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useAccount, useChainId, useReadContract } from "wagmi";
-import { parseEther, formatEther } from "viem";
+import { useDBBalance } from "@/lib/web3/hooks/useDBBalance";
+import { useWalletUser } from "@/contexts/WalletAuthContext";
 import OtherGames from "@/components/OtherGames";
-import NetworkGuard from "@/components/NetworkGuard";
-import ApproveGZO from "@/components/ApproveGZO";
-import TxStatus, { useTxStatus } from "@/components/TxStatus";
-import { useGZOBalance } from "@/lib/web3/hooks/useGZOBalance";
-import { useSpinWheel, useWheelRound } from "@/lib/web3/hooks/useWheel";
-import { useVRFAutoFulfill } from "@/lib/web3/hooks/useVRFAutoFulfill";
-import { ADDRESSES, TREASURY_ABI, GZO_ABI } from "@/lib/web3/contracts";
-import { useRecordBet } from "@/lib/web3/hooks/useRecordBet";
 import BetHistory from "@/components/BetHistory";
 import {
   WHEEL_CONFIGS,
@@ -103,7 +95,6 @@ function WheelSVG({ config, rotation, transitioning, winningSegIdx, settled }: {
           <stop offset="100%" stopColor="#f97316" stopOpacity="0.4" />
         </radialGradient>
       </defs>
-      {/* Outer glow ring on center */}
       <circle cx={cx} cy={cy} r={34} fill="none" stroke="#fb923c" strokeWidth="1.5" opacity="0.35" filter="url(#centerGlow)" />
       <circle cx={cx} cy={cy} r={28} fill="#0d0d1a" stroke="#fb923c44" strokeWidth="2" />
       <circle cx={cx} cy={cy} r={18} fill="url(#centerGrad)" opacity="0.85" filter="url(#centerGlow)" />
@@ -114,12 +105,11 @@ function WheelSVG({ config, rotation, transitioning, winningSegIdx, settled }: {
   );
 }
 
-// ── Neon Atom Loader (same as roulette) ───────────────────────────────────────
-type LoadPhase = "wallet" | "broadcast" | "vrf";
+// ── Atom Loader ───────────────────────────────────────────────────────────────
+type LoadPhase = "broadcast" | "vrf";
 const PHASE_CONFIG: Record<LoadPhase, { title: string; detail: string; colors: [string, string, string] }> = {
-  wallet:    { title: "Confirm in Wallet",        detail: "Open MetaMask and approve the transaction to lock your stake on-chain.", colors: [ACCENT, "#00d4ff", "#ffffff"] },
-  broadcast: { title: "Broadcasting Transaction", detail: "Your spin is being written to the Polygon blockchain. Awaiting confirmation…", colors: ["#00d4ff", GREEN_C, ACCENT] },
-  vrf:       { title: "Awaiting Chainlink VRF",   detail: "A tamper-proof random number is being generated on-chain. This takes ~30–60 seconds.", colors: [GREEN_C, ACCENT, "#00d4ff"] },
+  broadcast: { title: "Placing Bet On-Chain",    detail: "House wallet is submitting your spin to the Polygon blockchain…", colors: ["#00d4ff", GREEN_C, ACCENT] },
+  vrf:       { title: "Awaiting Chainlink VRF",  detail: "A tamper-proof random number is being generated on-chain. This takes ~30–60 seconds.", colors: [GREEN_C, ACCENT, "#00d4ff"] },
 };
 
 function AtomLoader({ phase }: { phase: LoadPhase }) {
@@ -169,11 +159,17 @@ function AtomLoader({ phase }: { phase: LoadPhase }) {
 }
 
 // ── Right Panel ───────────────────────────────────────────────────────────────
+interface SettledResult {
+  won: boolean; riskMode: string; stopPosition: number; segmentIndex: number;
+  multiplier100: number; netPayoutGzo: number; grossPayoutGzo: number;
+  feeGzo: number; balanceAfter: number; stakeGzo: number; roundId: string;
+}
+
 function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisplay,
   isWin, resultColor, netPayoutDisplay, stakeNum, activeRoundId }: {
   config: WheelConfig; risk: WheelRisk; isSettled: boolean; isWaiting: boolean;
   winSeg: WheelSegment | null; multiplierDisplay: string; isWin: boolean;
-  resultColor: string; netPayoutDisplay: string; stakeNum: number; activeRoundId: `0x${string}` | undefined;
+  resultColor: string; netPayoutDisplay: string; stakeNum: number; activeRoundId: string | null;
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
@@ -204,7 +200,6 @@ function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisp
           )}
         </div>
       ) : (
-        /* Payout reference — segments for current risk mode */
         <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
           <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff",
             textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.625rem" }}>
@@ -231,7 +226,7 @@ function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisp
         </div>
       )}
 
-      {/* Provably Fair — always visible */}
+      {/* Provably Fair */}
       <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
         <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff",
           textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
@@ -272,14 +267,10 @@ function RPRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-// ── Risk mode map ─────────────────────────────────────────────────────────────
-const RISK_MODE_MAP: Record<WheelRisk, 0 | 1 | 2> = { low: 0, medium: 1, high: 2 };
-
 // ── Main Page ─────────────────────────────────────────────────────────────────
-function WheelPageInner() {
-  const { address } = useAccount();
-  const chainId = useChainId();
-  const { formatted: balanceFormatted, refetch: refetchBalance } = useGZOBalance();
+export default function WheelPage() {
+  const { user: walletUser } = useWalletUser();
+  const { balance, formatted: balanceFormatted, refetch: refetchBalance } = useDBBalance();
 
   const [chipValue,     setChipValue]     = useState(100);
   const [customStake,   setCustomStake]   = useState(100);
@@ -287,113 +278,139 @@ function WheelPageInner() {
   const [spinning,      setSpinning]      = useState(false);
   const [rotation,      setRotation]      = useState(0);
   const [transitioning, setTransitioning] = useState(false);
-  const [activeRoundId, setActiveRoundId] = useState<`0x${string}` | undefined>(undefined);
+  const [activeRoundId, setActiveRoundId] = useState<string | null>(null);
+  const [loadPhase,     setLoadPhase]     = useState<LoadPhase | null>(null);
+  const [settledResult, setSettledResult] = useState<SettledResult | null>(null);
   const [showResult,    setShowResult]    = useState(false);
+  const [spinError,     setSpinError]     = useState<string | null>(null);
   const [historyTick,   setHistoryTick]   = useState(0);
   const [spinHint,      setSpinHint]      = useState(false);
 
-  const rotationRef = useRef(0);
-  const recordedRef = useRef<string | null>(null);
+  const rotationRef    = useRef(0);
+  const animTriggered  = useRef(false);
+  const isMounted      = useRef(true);
+  const pollTimerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const animTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const config = WHEEL_CONFIGS[risk];
-  const { recordBet } = useRecordBet();
-
-  const { spin, hash, isPending, isConfirming, isSuccess, roundId: newRoundId, error: spinError, reset } = useSpinWheel();
-  const { round } = useWheelRound(activeRoundId);
-
-  const stakeWei = chipValue > 0 ? parseEther(String(chipValue)) : BigInt(0);
-
-  const WHEEL_MAX_MULT100: Record<string, number> = { low: 500, medium: 2500, high: 10000 };
-  const maxMult100 = WHEEL_MAX_MULT100[risk] ?? 500;
-  const maxGrossWei = stakeWei > 0n && maxMult100 > 0 ? (stakeWei * BigInt(maxMult100)) / 100n : 0n;
-  const { data: canPayData } = useReadContract({
-    address: ADDRESSES.treasuryVault, abi: TREASURY_ABI, functionName: "canPay",
-    args: [maxGrossWei], query: { enabled: maxGrossWei > 0n, refetchInterval: 5000 },
-  });
-  const { data: vaultGzoBalance } = useReadContract({
-    address: ADDRESSES.gzoToken, abi: GZO_ABI, functionName: "balanceOf",
-    args: [ADDRESSES.treasuryVault], query: { refetchInterval: 5000 },
-  });
-  const { data: vaultTotalLocked } = useReadContract({
-    address: ADDRESSES.treasuryVault, abi: TREASURY_ABI, functionName: "totalLocked",
-    query: { refetchInterval: 5000 },
-  });
-  const solvencyLoading = maxGrossWei > 0n && canPayData === undefined;
-  const isSolvent = maxGrossWei === 0n || canPayData === true || solvencyLoading;
-  const _vaultBal = typeof vaultGzoBalance === "bigint" ? vaultGzoBalance : 0n;
-  const _vaultLocked = typeof vaultTotalLocked === "bigint" ? vaultTotalLocked : 0n;
-  const vaultFree = _vaultBal > _vaultLocked ? _vaultBal - _vaultLocked : 0n;
-  const maxSafeStakeWei = maxMult100 > 0 && vaultFree > 0n ? (vaultFree * 100n) / BigInt(maxMult100) : 0n;
-  const maxSafeStakeGzo = maxSafeStakeWei > 0n ? Math.floor(Number(formatEther(maxSafeStakeWei))) : 0;
-
-  const txStatus = useTxStatus({ isPending, isConfirming, isSuccess: isSuccess && !activeRoundId, error: spinError ?? null });
 
   useEffect(() => {
-    if (isSuccess && newRoundId && !activeRoundId) setActiveRoundId(newRoundId);
-  }, [isSuccess, newRoundId, activeRoundId]);
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+      if (animTimerRef.current) clearTimeout(animTimerRef.current);
+    };
+  }, []);
 
+  // ── VRF Polling ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!round || !(round as any).settled || showResult) return;
-    const r = round as any;
-    const stopPos = Number(r.stopPosition);
-    const centerAngle = stopCenterAngle(stopPos, config.totalWeight);
-    const targetOffset = (360 - centerAngle % 360) % 360;
-    const extraSpins = 6 * 360;
-    const currentRot = rotationRef.current;
-    const delta = ((targetOffset - currentRot % 360) + 360) % 360;
-    const newRotation = currentRot + delta + extraSpins;
-    rotationRef.current = newRotation;
-    setTransitioning(true);
-    setRotation(newRotation);
-    setSpinning(true);
+    if (!activeRoundId || settledResult) return;
 
-    setTimeout(() => {
-      setTransitioning(false);
-      setShowResult(true);
-      setSpinning(false);
-      refetchBalance();
-      const rid = activeRoundId;
-      if (rid && recordedRef.current !== rid) {
-        recordedRef.current = rid;
-        recordBet({
-          gameType: "WHEEL", onchainRoundId: rid, txHash: hash ?? "",
-          stakeGzo: chipValue, netPayoutGzo: Number(formatEther(r.netPayout as bigint)),
-          won: Number(r.multiplier100) > 0,
-          resultJson: { riskMode: risk, segmentIndex: Number(r.segmentIndex), multiplier100: Number(r.multiplier100) },
-          contractAddress: ADDRESSES.wheelGame, chainId,
-        }).then(() => setHistoryTick(t => t + 1));
+    let elapsed = 0;
+    const TIMEOUT       = 8 * 60 * 1000;
+    const POLL_INTERVAL = 3_000;
+
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    animTriggered.current = false;
+
+    pollTimerRef.current = setInterval(async () => {
+      elapsed += POLL_INTERVAL;
+      if (elapsed >= TIMEOUT) {
+        if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+        if (!isMounted.current) return;
+        setLoadPhase(null);
+        setActiveRoundId(null);
+        setSpinError("VRF timeout — Chainlink took too long. Please try again.");
+        return;
       }
-    }, 5400);
-  }, [round]); // eslint-disable-line
 
-  const settledRound = round as any;
-  const isWaiting = !!(activeRoundId && !settledRound?.settled);
-  useVRFAutoFulfill(isWaiting);
-  const isSettled = showResult && settledRound?.settled;
-  const isBusy = isPending || isConfirming || spinning || isWaiting;
-  const canSpin = !!address && chipValue > 0 && !isBusy;
+      try {
+        const res = await fetch(`/api/games/wheel/status?roundId=${encodeURIComponent(activeRoundId)}`);
+        const data = await res.json();
+        if (!isMounted.current) return;
 
-  const multiplier100 = isSettled ? Number(settledRound.multiplier100) : 0;
-  const multiplierDisplay = (multiplier100 / 100).toFixed(2).replace(/\.00$/, "");
-  const netPayoutWei: bigint = isSettled ? settledRound.netPayout : BigInt(0);
-  const netPayoutDisplay = isSettled ? Number(formatEther(netPayoutWei)).toLocaleString(undefined, { maximumFractionDigits: 4 }) : "0";
-  const isWin = isSettled && multiplier100 > 0;
-  const resultColor = isSettled ? (isWin ? GREEN_C : RED_C) : ACCENT;
-  const winningSegIdx: number | null = isSettled ? Number(settledRound.segmentIndex) : null;
-  const winSeg = winningSegIdx !== null ? config.segments[winningSegIdx] : null;
+        if (data.settled && !animTriggered.current) {
+          animTriggered.current = true;
+          if (pollTimerRef.current) clearInterval(pollTimerRef.current);
 
-  const loadPhase: LoadPhase | null = isPending ? "wallet" : isConfirming ? "broadcast" : (isWaiting && !spinning) ? "vrf" : null;
+          // Trigger wheel animation
+          const stopPos = data.stopPosition as number;
+          const centerAngle = stopCenterAngle(stopPos, config.totalWeight);
+          const targetOffset = (360 - centerAngle % 360) % 360;
+          const extraSpins = 6 * 360;
+          const currentRot = rotationRef.current;
+          const delta = ((targetOffset - currentRot % 360) + 360) % 360;
+          const newRotation = currentRot + delta + extraSpins;
+          rotationRef.current = newRotation;
 
-  function handleSpin() {
+          setLoadPhase(null);
+          setSettledResult(data as SettledResult);
+          setTransitioning(true);
+          setRotation(newRotation);
+          setSpinning(true);
+
+          animTimerRef.current = setTimeout(() => {
+            if (!isMounted.current) return;
+            setTransitioning(false);
+            setShowResult(true);
+            setSpinning(false);
+            refetchBalance();
+            setHistoryTick(t => t + 1);
+          }, 5400);
+        }
+      } catch {
+        // poll continues on network error
+      }
+    }, POLL_INTERVAL);
+
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
+  }, [activeRoundId]); // eslint-disable-line
+
+  const isBusy = !!(loadPhase || spinning || (activeRoundId && !settledResult));
+  const canSpin = !!walletUser && chipValue > 0 && !isBusy && balance >= chipValue;
+
+  async function handleSpin() {
+    if (!walletUser) { setSpinHint(true); setTimeout(() => setSpinHint(false), 3000); return; }
     if (!canSpin) { setSpinHint(true); setTimeout(() => setSpinHint(false), 3000); return; }
-    reset();
+
     setShowResult(false);
-    setActiveRoundId(undefined);
+    setActiveRoundId(null);
+    setSettledResult(null);
+    setSpinError(null);
     setSpinHint(false);
-    spin(stakeWei, RISK_MODE_MAP[risk]);
+    animTriggered.current = false;
+    setLoadPhase("broadcast");
+
+    try {
+      const res = await fetch("/api/games/wheel/spin", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ stakeGzo: chipValue, risk }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Spin failed");
+
+      if (!isMounted.current) return;
+      setActiveRoundId(data.roundId);
+      setLoadPhase("vrf");
+    } catch (err) {
+      if (!isMounted.current) return;
+      setLoadPhase(null);
+      setSpinError(err instanceof Error ? err.message : "Spin failed");
+    }
   }
 
   function handleNewRound() {
-    setShowResult(false); setActiveRoundId(undefined); reset(); setSpinHint(false);
+    setShowResult(false);
+    setActiveRoundId(null);
+    setSettledResult(null);
+    setLoadPhase(null);
+    setSpinError(null);
+    setSpinHint(false);
+    animTriggered.current = false;
   }
 
   function changeRisk(r: WheelRisk) {
@@ -401,6 +418,16 @@ function WheelPageInner() {
     setRisk(r);
     handleNewRound();
   }
+
+  const isSettled = showResult && !!settledResult;
+  const isWaiting = !!(activeRoundId && !settledResult && !spinning);
+  const multiplier100 = settledResult ? settledResult.multiplier100 : 0;
+  const multiplierDisplay = (multiplier100 / 100).toFixed(2).replace(/\.00$/, "");
+  const netPayoutDisplay = settledResult ? settledResult.netPayoutGzo.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "0";
+  const isWin = isSettled && multiplier100 > 0;
+  const resultColor = isSettled ? (isWin ? GREEN_C : RED_C) : ACCENT;
+  const winningSegIdx: number | null = settledResult ? settledResult.segmentIndex : null;
+  const winSeg = winningSegIdx !== null ? config.segments[winningSegIdx] : null;
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -412,7 +439,7 @@ function WheelPageInner() {
           Wheel
         </h1>
         <p style={{ color: "#8888aa", fontSize: "0.875rem" }}>Spin the wheel — land on a multiplier segment and win big.</p>
-        {address && (
+        {walletUser && (
           <p style={{ color: "#555577", fontSize: "0.8rem", marginTop: "0.25rem" }}>
             Balance: <span style={{ color: ACCENT, fontWeight: 700 }}>{balanceFormatted} GZO</span>
           </p>
@@ -489,7 +516,14 @@ function WheelPageInner() {
             </div>
           </div>
 
-          {txStatus !== "idle" && <TxStatus status={txStatus} hash={hash} error={spinError ?? null} compact />}
+          {/* Error display */}
+          {spinError && (
+            <div style={{ padding: "0.5rem 0.6rem", borderRadius: "7px",
+              background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.3)",
+              fontSize: "0.72rem", color: "#ff8080", lineHeight: 1.5 }}>
+              {spinError}
+            </div>
+          )}
 
           {/* Spin button */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
@@ -500,53 +534,29 @@ function WheelPageInner() {
                 New Spin
               </button>
             ) : (
-              <>
-                {!isSolvent && !isBusy && chipValue > 0 && (
-                  <div style={{
-                    padding: "0.5rem 0.6rem", borderRadius: "7px",
-                    background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.35)",
-                    fontSize: "0.68rem", color: "#fb923c", lineHeight: 1.5,
+              <div style={{ position: "relative" }}>
+                <button onClick={handleSpin} disabled={isBusy}
+                  className={canSpin ? "spin-btn-active-wheel" : ""}
+                  style={{
+                    background: canSpin ? `linear-gradient(135deg, ${ACCENT}, #f97316)` : "#2a2a50",
+                    border: canSpin ? `1px solid ${ACCENT}66` : "1px solid #3a3a60",
+                    borderRadius: "8px", color: canSpin ? "#0a0a18" : "#666688",
+                    fontWeight: 800, fontSize: "0.9375rem", padding: "0.75rem",
+                    cursor: isBusy ? "not-allowed" : "pointer", opacity: isBusy ? 0.5 : 1,
+                    width: "100%", transition: "all 0.2s ease",
+                    boxShadow: canSpin ? `0 0 24px ${ACCENT}55, 0 0 48px ${ACCENT}22` : "none",
                   }}>
-                    <strong>House bankroll too low</strong> for this bet.<br />
-                    {maxSafeStakeGzo > 0 ? `Max safe stake: ${maxSafeStakeGzo} GZO per bet` : "Reduce your stake."}
-                    {maxSafeStakeGzo > 0 && (
-                      <button
-                        onClick={() => { setCustomStake(maxSafeStakeGzo); setChipValue(maxSafeStakeGzo); }}
-                        style={{ display: "block", marginTop: "0.3rem", background: "rgba(251,146,60,0.15)",
-                          border: "1px solid rgba(251,146,60,0.4)", borderRadius: "5px", color: "#fb923c",
-                          fontSize: "0.65rem", padding: "0.2rem 0.5rem", cursor: "pointer", fontWeight: 700 }}
-                      >
-                        Use {maxSafeStakeGzo} GZO
-                      </button>
-                    )}
+                  {loadPhase === "broadcast" ? "Placing bet…" : loadPhase === "vrf" ? "Awaiting VRF…" : spinning ? "Spinning…" : !walletUser ? "Sign in to spin" : "Spin"}
+                </button>
+                {spinHint && (
+                  <div style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
+                    transform: "translateX(-50%)", background: "#1a1a35", border: `1px solid ${ACCENT}44`,
+                    borderRadius: "8px", padding: "0.4rem 0.75rem", fontSize: "0.72rem", color: ACCENT,
+                    whiteSpace: "nowrap", boxShadow: "0 4px 16px rgba(0,0,0,0.5)", animation: "fadeIn 0.2s ease" }}>
+                    {!walletUser ? "Sign in with your wallet to spin" : "Set a stake amount to spin"}
                   </div>
                 )}
-                <ApproveGZO spender={ADDRESSES.treasuryVault} requiredAmount={stakeWei}>
-                <div style={{ position: "relative" }}>
-                  <button onClick={handleSpin} disabled={isBusy || !isSolvent}
-                    className={canSpin ? "spin-btn-active-wheel" : ""}
-                    style={{
-                      background: canSpin ? `linear-gradient(135deg, ${ACCENT}, #f97316)` : "#2a2a50",
-                      border: canSpin ? `1px solid ${ACCENT}66` : "1px solid #3a3a60",
-                      borderRadius: "8px", color: canSpin ? "#0a0a18" : "#666688",
-                      fontWeight: 800, fontSize: "0.9375rem", padding: "0.75rem",
-                      cursor: isBusy ? "not-allowed" : "pointer", opacity: isBusy ? 0.5 : 1,
-                      width: "100%", transition: "all 0.2s ease",
-                      boxShadow: canSpin ? `0 0 24px ${ACCENT}55, 0 0 48px ${ACCENT}22` : "none",
-                    }}>
-                    {isPending ? "Confirm in wallet…" : isConfirming ? "Broadcasting…" : isWaiting ? "Awaiting VRF…" : spinning ? "Spinning…" : "Spin"}
-                  </button>
-                  {spinHint && (
-                    <div style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
-                      transform: "translateX(-50%)", background: "#1a1a35", border: `1px solid ${ACCENT}44`,
-                      borderRadius: "8px", padding: "0.4rem 0.75rem", fontSize: "0.72rem", color: ACCENT,
-                      whiteSpace: "nowrap", boxShadow: "0 4px 16px rgba(0,0,0,0.5)", animation: "fadeIn 0.2s ease" }}>
-                      Set a stake amount to spin
-                    </div>
-                  )}
-                </div>
-              </ApproveGZO>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -568,14 +578,12 @@ function WheelPageInner() {
 
             {/* Pointer + Wheel */}
             <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {/* Orange pointer triangle at top */}
               <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
                 width: 0, height: 0,
                 borderLeft: "11px solid transparent", borderRight: "11px solid transparent",
                 borderTop: `18px solid ${ACCENT}`, zIndex: 10,
                 filter: `drop-shadow(0 0 6px ${ACCENT}aa)` }} />
 
-              {/* Idle glow ring — pulsing accent ring when not spinning or settled */}
               {!isSettled && !spinning && (
                 <div className="wheel-idle-glow" style={{
                   position: "absolute", width: 336, height: 336, borderRadius: "50%",
@@ -585,7 +593,6 @@ function WheelPageInner() {
                 }} />
               )}
 
-              {/* Glow ring when settled */}
               {isSettled && (
                 <div style={{ position: "absolute", width: 340, height: 340, borderRadius: "50%",
                   border: `3px solid ${resultColor}`, boxShadow: `0 0 30px ${resultColor}44`,
@@ -628,27 +635,27 @@ function WheelPageInner() {
       </div>
 
       {/* ── How to Play ──────────────────────────────────────────────────── */}
-      <div className="card" style={{ background: "rgba(0,212,255,0.03)", borderColor: "rgba(0,212,255,0.2)",
-        marginBottom: "1.25rem", padding: "1.25rem" }}>
-        <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: "#00d4ff",
+      <div className="card" style={{ background: `rgba(251,146,60,0.02)`, borderColor: `rgba(251,146,60,0.15)`,
+        marginBottom: "1.25rem", marginTop: "1.25rem", padding: "1.25rem" }}>
+        <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "1rem", color: ACCENT,
           display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <SiTarget size={16} color="#00d4ff" /> How to Play
+          <SiTarget size={16} color={ACCENT} /> How to Play
         </h2>
         <div className="howto-grid">
           {[
-            { step:"1", title:"Connect Wallet",     desc:"Connect MetaMask on Polygon Amoy. You need GZO tokens to play.", icon: <SiWallet size={14} color="#00d4ff" /> },
-            { step:"2", title:"Pick a Chip Value",  desc:"Select your bet amount — 10, 50, 100, or 500 GZO. Or enter a custom amount.", icon: <SiChip size={14} color="#00d4ff" /> },
-            { step:"3", title:"Choose Risk Mode",   desc:"Low gives smaller but more frequent wins. High gives rare but massive multipliers (up to 100×). Medium is balanced.", icon: <SiSliders size={14} color="#00d4ff" /> },
-            { step:"4", title:"Hit Spin",           desc:"Confirm in MetaMask. Your stake locks on-chain while Chainlink VRF generates the provably fair landing segment.", icon: <SiRefresh size={14} color="#00d4ff" /> },
-            { step:"5", title:"Watch the Wheel",   desc:"The wheel spins and lands on a segment. Each segment shows its multiplier. Larger segments appear more often.", icon: <SiWheel size={14} color="#00d4ff" /> },
-            { step:"6", title:"Collect Winnings",  desc:"Your payout = stake × multiplier. If you land on 0×, the stake goes to the house. Winnings transfer to your wallet instantly.", icon: <SiCoins size={14} color="#00d4ff" /> },
+            { step:"1", title:"Sign In",            desc:"Sign in with your wallet. Your GZO balance is managed custodially — no token approvals or gas fees needed.", icon: <SiWallet size={14} color={ACCENT} /> },
+            { step:"2", title:"Pick a Chip Value",  desc:"Select your bet amount — 10, 50, 100, or 500 GZO. Or enter a custom amount.", icon: <SiChip size={14} color={ACCENT} /> },
+            { step:"3", title:"Choose Risk Mode",   desc:"Low gives smaller but more frequent wins. High gives rare but massive multipliers (up to 100×). Medium is balanced.", icon: <SiSliders size={14} color={ACCENT} /> },
+            { step:"4", title:"Hit Spin",           desc:"Click Spin — the house places the bet on-chain. No wallet popup needed. Chainlink VRF generates the provably fair result.", icon: <SiRefresh size={14} color={ACCENT} /> },
+            { step:"5", title:"Watch the Wheel",   desc:"The wheel animates and lands on a segment. Each segment shows its multiplier. Larger segments appear more often.", icon: <SiWheel size={14} color={ACCENT} /> },
+            { step:"6", title:"Collect Winnings",  desc:"Your payout = stake × multiplier, minus 10% fee on profit. Winnings are credited to your GZO balance instantly.", icon: <SiCoins size={14} color={ACCENT} /> },
           ].map(item => (
-            <div key={item.step} style={{ background: "rgba(0,212,255,0.04)", border: "1px solid rgba(0,212,255,0.12)",
+            <div key={item.step} style={{ background: `rgba(251,146,60,0.04)`, border: `1px solid rgba(251,146,60,0.12)`,
               borderRadius: "10px", padding: "0.875rem", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
               <div style={{ flexShrink: 0, width: "28px", height: "28px", borderRadius: "50%",
-                background: "rgba(0,212,255,0.15)", border: "1px solid rgba(0,212,255,0.3)",
+                background: `rgba(251,146,60,0.15)`, border: `1px solid rgba(251,146,60,0.3)`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "0.7rem", fontWeight: 800, color: "#00d4ff" }}>{item.step}</div>
+                fontSize: "0.7rem", fontWeight: 800, color: ACCENT }}>{item.step}</div>
               <div>
                 <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#f0f0ff", marginBottom: "0.2rem" }}>{item.icon} {item.title}</div>
                 <div style={{ fontSize: "0.7rem", color: "#8888aa", lineHeight: 1.5 }}>{item.desc}</div>
@@ -670,10 +677,10 @@ function WheelPageInner() {
         </h2>
         <div className="stat-grid-2">
           {[
-            { icon: <SiLock size={20} color={ACCENT} />, title:"Stake Locking", desc:"When you spin, your GZO stake is transferred into the TreasuryVault smart contract and locked on-chain for the round duration. No funds leave the blockchain." },
+            { icon: <SiLock size={20} color={ACCENT} />, title:"Custodial Bet", desc:"When you click Spin, your GZO stake is debited from your account balance instantly. The house wallet submits the bet on-chain on your behalf — no wallet popup, no gas fee." },
             { icon: <SiDice size={20} color={ACCENT} />, title:"Chainlink VRF Stop Position", desc:"The WheelGame contract calls RandomnessCoordinator, which requests a random number from Chainlink VRF. This number maps to a stop position [0, totalWeight). The result is cryptographically provable and manipulation-proof." },
             { icon: <SiBarChart size={20} color={ACCENT} />, title:"Segment Resolution", desc:"The wheel has 54 total weight units. Each segment occupies a share of that weight. The VRF stop position falls within exactly one segment, determining the multiplier. Larger segments (0×) appear more often." },
-            { icon: <SiZap size={20} color={ACCENT} />, title:"Payout & Settlement", desc:"Win payout = stake × multiplier, minus 10% fee on profit only. E.g., 100 GZO stake × 5× = 500 GZO gross → 460 GZO net (40 GZO fee on 400 GZO profit). A 0× result means your stake is absorbed by the vault as bankroll." },
+            { icon: <SiZap size={20} color={ACCENT} />, title:"Payout & Settlement", desc:"Win payout = stake × multiplier, minus 10% fee on profit only. E.g., 100 GZO stake × 5× = 500 GZO gross → 460 GZO net (40 GZO fee on 400 GZO profit). A 0× result means your stake is absorbed as house bankroll." },
           ].map(item => (
             <div key={item.title} style={{ background: `rgba(251,146,60,0.03)`, border: `1px solid rgba(251,146,60,0.1)`,
               borderRadius: "10px", padding: "0.875rem" }}>
@@ -717,10 +724,6 @@ function WheelPageInner() {
       `}</style>
     </div>
   );
-}
-
-export default function WheelPage() {
-  return <NetworkGuard><WheelPageInner /></NetworkGuard>;
 }
 
 const labelStyle: React.CSSProperties = {

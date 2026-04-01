@@ -65,6 +65,8 @@ contract WheelGame is
         uint256 netPayout;
         bool    settled;
         uint64  createdAt;
+        /// @dev v2: true = custodial bet; funds tracked in DB, no on-chain token transfers
+        bool    custodial;
     }
 
     mapping(bytes32 => Round)   public rounds;
@@ -103,6 +105,38 @@ contract WheelGame is
         _mults[2] = [uint32(0), 200, 500, 1000, 5000, 10000];
     }
 
+    /// @notice Spin the wheel on behalf of a player (OPERATOR only — custodial flow).
+    ///         Funds tracked in off-chain DB — no token pull from player wallet.
+    ///         Chainlink VRF still resolves the stop position on-chain.
+    function spinFor(address player, uint256 stake, uint8 riskMode)
+        external onlyRole(OPERATOR_ROLE) whenNotPaused nonReentrant returns (bytes32 roundId)
+    {
+        require(player != address(0), "invalid player");
+        require(stake >= minStake && stake <= maxStake, "stake out of range");
+        require(riskMode < NUM_MODES, "invalid risk mode");
+
+        // Use "wheel-c" prefix to distinguish custodial rounds
+        roundId = keccak256(abi.encodePacked("wheel-c", player, block.timestamp, stake, riskMode));
+
+        rounds[roundId] = Round({
+            player:        player,
+            stake:         stake,
+            riskMode:      riskMode,
+            stopPosition:  0,
+            segmentIndex:  0,
+            multiplier100: 0,
+            netPayout:     0,
+            settled:       false,
+            createdAt:     uint64(block.timestamp),
+            custodial:     true
+        });
+
+        uint256 vrfId = randomness.requestRandomness(GAME_ID, roundId, address(this));
+        vrfToRound[vrfId] = roundId;
+
+        emit BetPlaced(roundId, player, stake, riskMode);
+    }
+
     /// @notice Spin the wheel.
     /// @param riskMode 0=low, 1=med, 2=high
     function spin(uint256 stake, uint8 riskMode)
@@ -119,15 +153,16 @@ contract WheelGame is
         roundId = keccak256(abi.encodePacked("wheel", msg.sender, block.timestamp, stake, riskMode));
 
         rounds[roundId] = Round({
-            player:       msg.sender,
-            stake:        stake,
-            riskMode:     riskMode,
-            stopPosition: 0,
-            segmentIndex: 0,
+            player:        msg.sender,
+            stake:         stake,
+            riskMode:      riskMode,
+            stopPosition:  0,
+            segmentIndex:  0,
             multiplier100: 0,
-            netPayout:    0,
-            settled:      false,
-            createdAt:    uint64(block.timestamp)
+            netPayout:     0,
+            settled:       false,
+            createdAt:     uint64(block.timestamp),
+            custodial:     false
         });
 
         treasury.lockStake(GAME_ID, roundId, msg.sender, stake);
@@ -161,14 +196,27 @@ contract WheelGame is
         uint256 fee = 0;
         bool won = r.multiplier100 > 0;
 
-        if (won) {
-            uint256 gross = (r.stake * r.multiplier100) / 100;
-            GameMath.Settlement memory s = GameMath.settle(r.stake, gross);
-            r.netPayout = s.netPayout;
-            fee = s.feeAmount;
-            treasury.payout(GAME_ID, roundId, r.player, s.netPayout, s.feeAmount);
+        if (!r.custodial) {
+            // ── Original flow: real token transfers through treasury ───────────
+            if (won) {
+                uint256 gross = (r.stake * r.multiplier100) / 100;
+                GameMath.Settlement memory s = GameMath.settle(r.stake, gross);
+                r.netPayout = s.netPayout;
+                fee = s.feeAmount;
+                treasury.payout(GAME_ID, roundId, r.player, s.netPayout, s.feeAmount);
+            } else {
+                treasury.refundLoss(GAME_ID, roundId, r.player, r.stake);
+            }
         } else {
-            treasury.refundLoss(GAME_ID, roundId, r.player, r.stake);
+            // ── Custodial flow: compute result, no token transfers ─────────────
+            // DB balance updated off-chain by backend once it reads the settled round.
+            if (won) {
+                uint256 gross = (r.stake * r.multiplier100) / 100;
+                GameMath.Settlement memory s = GameMath.settle(r.stake, gross);
+                r.netPayout = s.netPayout;
+                fee = s.feeAmount;
+            }
+            // Loss: nothing to do on-chain; stake already debited from DB.
         }
 
         emit RoundSettled(roundId, r.player, r.stopPosition, r.segmentIndex, r.multiplier100, won, r.netPayout, fee);

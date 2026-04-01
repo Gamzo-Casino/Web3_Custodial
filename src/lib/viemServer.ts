@@ -576,3 +576,66 @@ export const KENO_GAME_ABI = [
     ],
   },
 ] as const;
+
+// WheelGame v2 ABI (server-side — includes spinFor for custodial bets)
+export const WHEEL_GAME_ABI = [
+  {
+    name: "spinFor",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "player",   type: "address" },
+      { name: "stake",    type: "uint256" },
+      { name: "riskMode", type: "uint8"   },
+    ],
+    outputs: [{ name: "roundId", type: "bytes32" }],
+  },
+  {
+    name: "getRound",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "roundId", type: "bytes32" }],
+    outputs: [
+      {
+        name: "r",
+        type: "tuple",
+        components: [
+          { name: "player",        type: "address" },
+          { name: "stake",         type: "uint256" },
+          { name: "riskMode",      type: "uint8"   },
+          { name: "stopPosition",  type: "uint256" },
+          { name: "segmentIndex",  type: "uint8"   },
+          { name: "multiplier100", type: "uint256" },
+          { name: "netPayout",     type: "uint256" },
+          { name: "settled",       type: "bool"    },
+          { name: "createdAt",     type: "uint64"  },
+          { name: "custodial",     type: "bool"    },
+        ],
+      },
+    ],
+  },
+  {
+    name: "BetPlaced",
+    type: "event",
+    inputs: [
+      { name: "roundId",  type: "bytes32", indexed: true  },
+      { name: "player",   type: "address", indexed: true  },
+      { name: "stake",    type: "uint256", indexed: false },
+      { name: "riskMode", type: "uint8",   indexed: false },
+    ],
+  },
+  {
+    name: "RoundSettled",
+    type: "event",
+    inputs: [
+      { name: "roundId",       type: "bytes32", indexed: true  },
+      { name: "player",        type: "address", indexed: true  },
+      { name: "stopPosition",  type: "uint256", indexed: false },
+      { name: "segmentIndex",  type: "uint8",   indexed: false },
+      { name: "multiplier100", type: "uint256", indexed: false },
+      { name: "won",           type: "bool",    indexed: false },
+      { name: "netPayout",     type: "uint256", indexed: false },
+      { name: "fee",           type: "uint256", indexed: false },
+    ],
+  },
+] as const;

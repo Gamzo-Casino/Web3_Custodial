@@ -34,6 +34,7 @@ export declare namespace WheelGame {
     netPayout: BigNumberish;
     settled: boolean;
     createdAt: BigNumberish;
+    custodial: boolean;
   };
 
   export type RoundStructOutput = [
@@ -45,7 +46,8 @@ export declare namespace WheelGame {
     multiplier100: bigint,
     netPayout: bigint,
     settled: boolean,
-    createdAt: bigint
+    createdAt: bigint,
+    custodial: boolean
   ] & {
     player: string;
     stake: bigint;
@@ -56,6 +58,7 @@ export declare namespace WheelGame {
     netPayout: bigint;
     settled: boolean;
     createdAt: bigint;
+    custodial: boolean;
   };
 }
 
@@ -87,6 +90,7 @@ export interface WheelGameInterface extends Interface {
       | "rounds"
       | "setLimits"
       | "spin"
+      | "spinFor"
       | "supportsInterface"
       | "treasury"
       | "unpause"
@@ -181,6 +185,10 @@ export interface WheelGameInterface extends Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "spinFor",
+    values: [AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
@@ -244,6 +252,7 @@ export interface WheelGameInterface extends Interface {
   decodeFunctionResult(functionFragment: "rounds", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setLimits", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "spin", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "spinFor", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -562,7 +571,8 @@ export interface WheelGame extends BaseContract {
         bigint,
         bigint,
         boolean,
-        bigint
+        bigint,
+        boolean
       ] & {
         player: string;
         stake: bigint;
@@ -573,6 +583,7 @@ export interface WheelGame extends BaseContract {
         netPayout: bigint;
         settled: boolean;
         createdAt: bigint;
+        custodial: boolean;
       }
     ],
     "view"
@@ -586,6 +597,12 @@ export interface WheelGame extends BaseContract {
 
   spin: TypedContractMethod<
     [stake: BigNumberish, riskMode: BigNumberish],
+    [string],
+    "nonpayable"
+  >;
+
+  spinFor: TypedContractMethod<
+    [player: AddressLike, stake: BigNumberish, riskMode: BigNumberish],
     [string],
     "nonpayable"
   >;
@@ -730,7 +747,8 @@ export interface WheelGame extends BaseContract {
         bigint,
         bigint,
         boolean,
-        bigint
+        bigint,
+        boolean
       ] & {
         player: string;
         stake: bigint;
@@ -741,6 +759,7 @@ export interface WheelGame extends BaseContract {
         netPayout: bigint;
         settled: boolean;
         createdAt: bigint;
+        custodial: boolean;
       }
     ],
     "view"
@@ -756,6 +775,13 @@ export interface WheelGame extends BaseContract {
     nameOrSignature: "spin"
   ): TypedContractMethod<
     [stake: BigNumberish, riskMode: BigNumberish],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "spinFor"
+  ): TypedContractMethod<
+    [player: AddressLike, stake: BigNumberish, riskMode: BigNumberish],
     [string],
     "nonpayable"
   >;
