@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     const bets = await (prisma as any).gameBet.findMany({
       where: {
         userId,
+        status: { not: "PENDING" },
         ...(game ? { gameType: game } : {}),
       },
       orderBy: { createdAt: "desc" },
