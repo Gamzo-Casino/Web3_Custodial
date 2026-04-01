@@ -155,8 +155,8 @@ export async function POST(req: NextRequest) {
   const splitStake  = splitCards ? Number(round.splitStakeGzo) : 0;
   const totalStake  = mainStake + splitStake;
 
-  const mainOutcome:  HandOutcome        = compareHands(playerCards, dealerCards, false);
-  const splitOutcome: HandOutcome | null = splitCards
+  let mainOutcome:  HandOutcome        = compareHands(playerCards, dealerCards, false);
+  let splitOutcome: HandOutcome | null = splitCards
     ? compareHands(splitCards, dealerCards, true)
     : null;
 
@@ -165,6 +165,21 @@ export async function POST(req: NextRequest) {
   const totalGross = mainGross + splitGross;
 
   const { profitGzo, feeGzo } = settle(totalStake, totalGross);
+
+  // Reconcile server-side outcome with on-chain financial truth.
+  // The contract is authoritative for whether money was paid — if it credited
+  // a payout that contradicts the server's compareHands result (e.g. both bust
+  // but contract only checks dealer bust), trust the contract.
+  if (netPayoutGzo > 0 && mainOutcome === "LOSS") {
+    mainOutcome = "WIN";
+  } else if (netPayoutGzo === 0 && (mainOutcome === "WIN" || mainOutcome === "BLACKJACK")) {
+    mainOutcome = "LOSS";
+  }
+  if (splitOutcome !== null) {
+    const splitNet = splitGross > 0 ? splitGross - Math.floor((splitGross - splitStake) * 0.1) : 0;
+    if (splitNet > 0 && splitOutcome === "LOSS") splitOutcome = "WIN";
+    else if (splitNet === 0 && (splitOutcome === "WIN" || splitOutcome === "BLACKJACK")) splitOutcome = "LOSS";
+  }
 
   // ── 6. Credit DB balance and mark round SETTLED ───────────────────────────
   let balanceAfter = 0;

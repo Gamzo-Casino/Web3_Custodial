@@ -39,7 +39,9 @@ export async function GET(request: NextRequest) {
         stakeGzo: stake,
         netPayoutGzo: net,
         profitGzo: bet.profitGzo != null ? Number(bet.profitGzo) : null,
-        won: net !== null && stake !== null ? net > stake : false,
+        won: bet.gameType === "BLACKJACK" && bet.resultJson?.mainOutcome
+          ? ["WIN", "BLACKJACK"].includes(bet.resultJson.mainOutcome)
+          : net !== null && stake !== null ? net > stake : false,
         status: bet.status,
         onchainRoundId: bet.onchainRoundId,
         txHash: bet.txHash,
