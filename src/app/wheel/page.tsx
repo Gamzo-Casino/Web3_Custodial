@@ -55,7 +55,7 @@ function WheelSVG({ config, rotation, transitioning, winningSegIdx, settled }: {
   });
 
   return (
-    <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}
+    <svg width="100%" height="100%" viewBox={`0 0 ${SIZE} ${SIZE}`}
       style={{ transform: `rotate(${rotation}deg)`,
         transition: transitioning ? "transform 5s cubic-bezier(0.17,0.78,0.16,1.0)" : "none",
         display: "block", filter: "drop-shadow(0 0 20px rgba(0,0,0,0.8))" }}>
@@ -225,6 +225,48 @@ function RightPanel({ config, risk, isSettled, isWaiting, winSeg, multiplierDisp
           </div>
         </div>
       )}
+
+      {/* Bet Stats */}
+      {(() => {
+        const winWeight = config.segments.reduce((s, seg) => s + (seg.multiplier > 0 ? seg.weight : 0), 0);
+        const winChance = (winWeight / config.totalWeight) * 100;
+        const bestMult  = Math.max(...config.segments.map(s => s.multiplier));
+        const maxGross  = stakeNum * bestMult;
+        const fee       = bestMult > 1 ? Math.floor((maxGross - stakeNum) * 0.1) : 0;
+        const maxNet    = maxGross - fee;
+        const profitOnWin = maxNet - stakeNum;
+        return (
+          <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
+            <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff",
+              textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.625rem" }}>
+              Bet Stats
+            </div>
+            {[
+              { label: "Win Chance",    val: `${winChance.toFixed(1)}%`,  color: ACCENT },
+              { label: "Best Multiplier", val: `${bestMult}×`,            color: "#e879f9" },
+              { label: "Max Gross Win", val: `${maxGross.toLocaleString()} GZO`, color: "#f0f0ff" },
+            ].map(row => (
+              <div key={row.label} style={{ display: "flex", justifyContent: "space-between",
+                alignItems: "center", padding: "0.3rem 0",
+                borderBottom: "1px solid #1a1a3544" }}>
+                <span style={{ fontSize: "0.7rem", color: "#8888aa", textTransform: "uppercase",
+                  letterSpacing: "0.07em", fontWeight: 600 }}>{row.label}</span>
+                <span style={{ fontSize: "0.82rem", fontWeight: 800, fontFamily: "monospace",
+                  color: row.color }}>{row.val}</span>
+              </div>
+            ))}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
+              paddingTop: "0.4rem" }}>
+              <span style={{ fontSize: "0.7rem", color: "#8888aa", textTransform: "uppercase",
+                letterSpacing: "0.07em", fontWeight: 600 }}>Profit on Max Win</span>
+              <span style={{ fontSize: "0.9rem", fontWeight: 800, fontFamily: "monospace",
+                color: GREEN_C }}>
+                {profitOnWin > 0 ? `+${profitOnWin.toLocaleString()}` : "—"} GZO
+              </span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Provably Fair */}
       <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35", flex: 1 }}>
@@ -576,9 +618,12 @@ export default function WheelPage() {
               </div>
             )}
 
-            {/* Pointer + Wheel */}
-            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
+            {/* Pointer + Wheel — responsive square container */}
+            <div style={{ position: "relative", width: "100%", maxWidth: "320px",
+              aspectRatio: "1 / 1", margin: "0 auto" }}>
+              {/* Pointer triangle */}
+              <div style={{ position: "absolute", top: "-4.4%", left: "50%",
+                transform: "translateX(-50%)",
                 width: 0, height: 0,
                 borderLeft: "11px solid transparent", borderRight: "11px solid transparent",
                 borderTop: `18px solid ${ACCENT}`, zIndex: 10,
@@ -586,7 +631,9 @@ export default function WheelPage() {
 
               {!isSettled && !spinning && (
                 <div className="wheel-idle-glow" style={{
-                  position: "absolute", width: 336, height: 336, borderRadius: "50%",
+                  position: "absolute", width: "105%", height: "105%",
+                  top: "-2.5%", left: "-2.5%",
+                  borderRadius: "50%",
                   border: `2px solid ${ACCENT}55`,
                   boxShadow: `0 0 28px ${ACCENT}33, 0 0 56px ${ACCENT}18`,
                   pointerEvents: "none",
@@ -594,7 +641,10 @@ export default function WheelPage() {
               )}
 
               {isSettled && (
-                <div style={{ position: "absolute", width: 340, height: 340, borderRadius: "50%",
+                <div style={{
+                  position: "absolute", width: "107%", height: "107%",
+                  top: "-3.5%", left: "-3.5%",
+                  borderRadius: "50%",
                   border: `3px solid ${resultColor}`, boxShadow: `0 0 30px ${resultColor}44`,
                   animation: "pulse 1.5s ease infinite", pointerEvents: "none" }} />
               )}
