@@ -54,8 +54,12 @@ function formatResult(gameType: string, resultJson: any): string {
       const wRisk = resultJson.riskMode ?? resultJson.risk ?? "";
       return `${wMult}× · ${wRisk} risk`;
     }
-    case "ROULETTE":
-      return `Number: ${resultJson.number}`;
+    case "ROULETTE": {
+      const num = resultJson.winningNumber ?? resultJson.number;
+      if (num == null) return "";
+      const color = resultJson.winningColor ?? "";
+      return `Number: ${num}${color ? ` · ${color}` : ""}`;
+    }
     case "KENO":
       return `${resultJson.matchCount} matches · ${(resultJson.multiplier100 / 100)?.toFixed(2)}×`;
     case "MINES":
