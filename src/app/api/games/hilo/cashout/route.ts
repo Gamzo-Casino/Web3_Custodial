@@ -164,38 +164,45 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      await tx.gameBet.create({
-        data: {
-          userId,
-          gameType:           "HILO",
-          stakeGzo:           String(stake),
-          status:             "SETTLED",
-          idempotencyKey:     `hilo-settle:${roundId}`,
-          serverSeedHash:     round.serverSeedHash,
-          serverSeedRevealed: round.serverSeed,
-          clientSeed:         round.clientSeed,
-          nonce:              round.nonce,
-          publicSeed:         round.publicSeed,
-          referenceId:        roundId,
-          onchainRoundId,
-          settledAt:          now,
-          txHash,
-          chainId:        80002,
-          contractAddress: HILO_GAME_ADDRESS,
-          resultJson: {
-            outcome:      "CASHED_OUT",
-            steps:        guessHistory.length,
-            multiplier100: Math.round(currentMultiplier * 100),
-            guessHistory,
-            rngVersion: round.rngVersion,
-            onChain: true,
-          },
-          grossPayoutGzo: String(grossPayout),
-          profitGzo:      String(profitGzo),
-          feeGzo:         String(feeGzo),
-          netPayoutGzo:   String(netPayoutGzo),
+      const settlementData = {
+        status:             "SETTLED",
+        idempotencyKey:     `hilo-settle:${roundId}`,
+        serverSeedHash:     round.serverSeedHash,
+        serverSeedRevealed: round.serverSeed,
+        clientSeed:         round.clientSeed,
+        nonce:              round.nonce,
+        publicSeed:         round.publicSeed,
+        referenceId:        roundId,
+        onchainRoundId,
+        settledAt:          now,
+        txHash,
+        chainId:            80002,
+        contractAddress:    HILO_GAME_ADDRESS,
+        resultJson: {
+          outcome:       "CASHED_OUT",
+          steps:         guessHistory.length,
+          multiplier100: Math.round(currentMultiplier * 100),
+          guessHistory,
+          rngVersion:    round.rngVersion,
+          onChain:       true,
         },
+        grossPayoutGzo: String(grossPayout),
+        profitGzo:      String(profitGzo),
+        feeGzo:         String(feeGzo),
+        netPayoutGzo:   String(netPayoutGzo),
+      };
+
+      // Update the existing PENDING bet for this round; only create if none found
+      const pendingBet = await tx.gameBet.findFirst({
+        where: { userId, gameType: "HILO", status: "PENDING", onchainRoundId },
       });
+      if (pendingBet) {
+        await tx.gameBet.update({ where: { id: pendingBet.id }, data: settlementData });
+      } else {
+        await tx.gameBet.create({
+          data: { userId, gameType: "HILO", stakeGzo: String(stake), ...settlementData },
+        });
+      }
 
       return { updatedRound, balanceAfter: newBalance };
     });

@@ -111,41 +111,51 @@ export async function POST(req: NextRequest) {
 
         const onchainRoundId = round.serverSeedHash as string;
 
-        const createdBet = await tx.gameBet.create({
-          data: {
-            userId,
-            gameType:           "HILO",
-            stakeGzo:           String(stake),
-            status:             "SETTLED",
-            idempotencyKey:     `hilo-settle:${roundId}`,
-            serverSeedHash:     round.serverSeedHash,
-            serverSeedRevealed: round.serverSeed,
-            clientSeed:         round.clientSeed,
-            nonce:              round.nonce,
-            publicSeed:         round.publicSeed,
-            referenceId:        roundId,
-            onchainRoundId,
-            chainId:            80002,
-            contractAddress:    HILO_GAME_ADDRESS,
-            settledAt:          now,
-            resultJson: {
-              outcome:      "LOST",
-              steps:        guessHistory.length,
-              multiplier100: 0,
-              guessHistory,
-              finalCard: nextCard,
-              rngVersion: round.rngVersion,
-            },
-            grossPayoutGzo: "0",
-            profitGzo:      String(-stake),
-            feeGzo:         "0",
-            netPayoutGzo:   "0",
+        const lossSettlementData = {
+          status:             "SETTLED",
+          idempotencyKey:     `hilo-settle:${roundId}`,
+          serverSeedHash:     round.serverSeedHash,
+          serverSeedRevealed: round.serverSeed,
+          clientSeed:         round.clientSeed,
+          nonce:              round.nonce,
+          publicSeed:         round.publicSeed,
+          referenceId:        roundId,
+          onchainRoundId,
+          chainId:            80002,
+          contractAddress:    HILO_GAME_ADDRESS,
+          settledAt:          now,
+          resultJson: {
+            outcome:       "LOST",
+            steps:         guessHistory.length,
+            multiplier100: 0,
+            guessHistory,
+            finalCard:     nextCard,
+            rngVersion:    round.rngVersion,
           },
+          grossPayoutGzo: "0",
+          profitGzo:      String(-stake),
+          feeGzo:         "0",
+          netPayoutGzo:   "0",
+        };
+
+        // Update existing PENDING bet; only create if none found
+        const pendingBet = await tx.gameBet.findFirst({
+          where: { userId, gameType: "HILO", status: "PENDING", onchainRoundId },
         });
+        let settledBetId: string;
+        if (pendingBet) {
+          await tx.gameBet.update({ where: { id: pendingBet.id }, data: lossSettlementData });
+          settledBetId = pendingBet.id;
+        } else {
+          const createdBet = await tx.gameBet.create({
+            data: { userId, gameType: "HILO", stakeGzo: String(stake), ...lossSettlementData },
+          });
+          settledBetId = createdBet.id;
+        }
 
         return {
           updatedRound,
-          loseBetId: createdBet.id,
+          loseBetId: settledBetId,
           loseOnchain: { onchainRoundId, cards, positions, guesses: allGuessCodes, lostAtStep },
         };
       }
