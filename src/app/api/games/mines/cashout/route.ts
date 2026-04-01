@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
       functionName: "cashoutFor",
       args:         [roundId as `0x${string}`, revealedTiles.map(Number) as number[]],
       account,
+      gas:          500_000n,
     });
     const txHash = await walletClient.writeContract(request);
     const receipt = await publicClient.waitForTransactionReceipt({
@@ -181,7 +182,7 @@ export async function POST(req: NextRequest) {
       txHash,
     });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Internal error";
+    const msg = err instanceof Error ? err.message : String(err);
     const clientErrors = [
       "Round not found",
       "Round is not active",
@@ -191,6 +192,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: msg }, { status: 400 });
     }
     console.error("mines/cashout error:", err);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+
+    // Surface meaningful errors to the frontend for easier debugging
+    if (msg.includes("House treasury insufficient")) {
+      return NextResponse.json({ error: "House treasury low — contact support" }, { status: 500 });
+    }
+    if (msg.includes("status") || msg.includes("ACTIVE") || msg.includes("revert")) {
+      return NextResponse.json({ error: `Contract error: ${msg.slice(0, 200)}` }, { status: 500 });
+    }
+    return NextResponse.json({ error: `Cashout failed: ${msg.slice(0, 200)}` }, { status: 500 });
   }
 }

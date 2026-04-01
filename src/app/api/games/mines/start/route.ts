@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/getAuthUser";
 import { prisma } from "@/lib/prisma";
 import { LedgerEntryType } from "@/lib/ledger";
+import { creditHouseTx, HouseLedgerType } from "@/lib/house";
 import { getPublicClient, getHouseWalletClient, MINES_GAME_ABI } from "@/lib/viemServer";
 import { parseEther } from "viem";
 import { z } from "zod";
@@ -81,6 +82,8 @@ export async function POST(req: NextRequest) {
           reference:     null,
         },
       });
+
+      await creditHouseTx(tx, stake, HouseLedgerType.BET_IN);
 
       const key = `mines-chain:${userId}:${Date.now()}`;
       const bet = await tx.gameBet.create({

@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
         functionName: "loseRoundFor",
         args:         [roundId as `0x${string}`, tileIndex],
         account,
+        gas:          300_000n,
       });
       const loseTxHash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({
@@ -168,6 +169,7 @@ export async function POST(req: NextRequest) {
         functionName: "cashoutFor",
         args:         [roundId as `0x${string}`, newRevealed.map(Number) as number[]],
         account,
+        gas:          500_000n,
       });
       const cashTxHash = await walletClient.writeContract(request);
       const cashReceipt = await publicClient.waitForTransactionReceipt({
