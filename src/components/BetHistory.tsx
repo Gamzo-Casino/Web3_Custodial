@@ -58,8 +58,11 @@ function formatResult(gameType: string, resultJson: any): string {
       return `${resultJson.safePicks} safe picks · ${(resultJson.multiplier100 / 100)?.toFixed(2)}×`;
     case "BLACKJACK":
       return resultJson.outcome ?? "";
-    case "HILO":
-      return `${resultJson.steps} steps · ${(resultJson.multiplier100 / 100)?.toFixed(2)}×`;
+    case "HILO": {
+      if (resultJson.steps == null) return "";
+      const mult = resultJson.multiplier100 != null ? (resultJson.multiplier100 / 100).toFixed(2) : "0.00";
+      return `${resultJson.steps} steps · ${mult}×`;
+    }
     case "COINFLIP":
       return `${resultJson.outcome} · ${resultJson.won ? "Won" : "Lost"}`;
     case "AVIATOR":

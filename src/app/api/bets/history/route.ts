@@ -19,14 +19,18 @@ export async function GET(request: NextRequest) {
     const bets = await (prisma as any).gameBet.findMany({
       where: {
         userId,
-        status: { not: "PENDING" },
+        status: { notIn: ["PENDING"] },
         ...(game ? { gameType: game } : {}),
       },
       orderBy: { createdAt: "desc" },
       take: limit,
     });
 
-    const formatted = bets.map((bet: any) => {
+    // Exclude REFUNDED bets that have no result data — these are administrative
+    // ghost records from failed/stale rounds with no meaningful game info to show.
+    const settled = bets.filter((bet: any) => !(bet.status === "REFUNDED" && !bet.resultJson));
+
+    const formatted = settled.map((bet: any) => {
       const stake = bet.stakeGzo != null ? Number(bet.stakeGzo) : null;
       const net = bet.netPayoutGzo != null ? Number(bet.netPayoutGzo) : null;
       return {
