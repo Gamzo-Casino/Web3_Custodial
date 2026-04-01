@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import WalletButton from "./WalletButton";
+import { useWalletUser } from "@/contexts/WalletAuthContext";
 import {
   CoinFlipIcon, DiceIcon, PlinkoIcon,
   KenoIcon, MinesIcon, RouletteIcon, BlackjackIcon, HiloIcon, WheelIcon, AviatorIcon,
@@ -32,6 +33,7 @@ const TOOLS_NAV = [
 
 export default function NavBar() {
   const pathname = usePathname();
+  const { user: walletUser } = useWalletUser();
   const [open, setOpen] = useState(false);          // desktop single-player dropdown
   const [mobileOpen, setMobileOpen] = useState(false); // mobile full menu
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -230,6 +232,15 @@ export default function NavBar() {
               {label}
             </Link>
           ))}
+
+          {walletUser && (
+            <>
+              <span style={{ width: "1px", height: "16px", background: "#2a2a50", margin: "0 0.25rem" }} />
+              <Link href="/dashboard" className={`nav-link${pathname === "/dashboard" ? " active" : ""}`}>
+                Dashboard
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Right side: wallet button + hamburger */}
@@ -455,6 +466,26 @@ export default function NavBar() {
                   </Link>
                 );
               })}
+              {walletUser && (() => {
+                const active = pathname === "/dashboard";
+                return (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.875rem",
+                      padding: "0.65rem 0.875rem", borderRadius: "10px",
+                      textDecoration: "none", fontWeight: active ? 700 : 500,
+                      fontSize: "0.875rem",
+                      color: active ? "#00ff9d" : "#c0c0dd",
+                      background: active ? "rgba(0,255,157,0.08)" : "transparent",
+                      border: active ? "1px solid rgba(0,255,157,0.2)" : "1px solid transparent",
+                    }}
+                  >
+                    Dashboard
+                  </Link>
+                );
+              })()}
             </div>
           </div>
         </div>
