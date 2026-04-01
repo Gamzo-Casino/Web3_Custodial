@@ -619,7 +619,7 @@ export default function WheelPage() {
             )}
 
             {/* Pointer + Wheel — responsive square container */}
-            <div style={{ position: "relative", width: "calc(100% - 3rem)",
+            <div style={{ position: "relative", width: "calc((100% - 3rem) * 0.8)",
               margin: "0 auto", aspectRatio: "1 / 1" }}>
               {/* Pointer triangle */}
               <div style={{ position: "absolute", top: "-4.4%", left: "50%",
