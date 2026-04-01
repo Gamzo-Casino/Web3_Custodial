@@ -553,7 +553,7 @@ function MinesGame() {
       </div>
 
       {/* ── Main layout: Controls | Board | Stats ── */}
-      <div className="game-3col">
+      <div className="game-3col" style={{ alignItems: "stretch" }}>
 
         {/* ── LEFT — Controls ── */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem", background: "rgba(255,61,122,0.03)", borderColor: "rgba(255,61,122,0.2)" }}>
@@ -631,7 +631,7 @@ function MinesGame() {
           )}
 
           {/* Action buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "auto" }}>
             {phase === "idle" && (
               <button
                 className={canStart ? "btn-primary start-btn-glow" : "btn-primary"}
@@ -804,7 +804,7 @@ function MinesGame() {
         </div>
 
         {/* ── RIGHT — Stats panel ── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem", height: "100%" }}>
 
           {/* Idle: multiplier reference */}
           {phase === "idle" && (
@@ -885,7 +885,7 @@ function MinesGame() {
           </div>
 
           {/* Provably Fair */}
-          <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
+          <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35", flex: 1 }}>
             <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
               Provably Fair
             </div>

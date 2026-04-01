@@ -102,7 +102,7 @@ function RightPanel({ isSettled, isWaiting, won, displayMultiplier, netPayoutGzo
   animPath: boolean[] | null; roundId: string | null;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem", height: "100%" }}>
       {isSettled && displayMultiplier !== null ? (
         <div className="card" style={{
           padding: "0.875rem",
@@ -169,7 +169,7 @@ function RightPanel({ isSettled, isWaiting, won, displayMultiplier, netPayoutGzo
       )}
 
       {/* Provably Fair */}
-      <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
+      <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35", flex: 1 }}>
         <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
           Provably Fair
         </div>
@@ -542,7 +542,7 @@ function PlinkoInner() {
       </div>
 
       {/* ── 3-column layout ────────────────────────────────────────────────── */}
-      <div className="game-3col" style={{ alignItems: "start", marginBottom: "1.25rem" }}>
+      <div className="game-3col" style={{ alignItems: "stretch", marginBottom: "1.25rem" }}>
 
         {/* ── LEFT — Controls ─────────────────────────────────────────────── */}
         <div className="card" style={{
@@ -652,6 +652,7 @@ function PlinkoInner() {
           )}
 
           {/* Action button */}
+          <div style={{ marginTop: "auto" }} />
           {settled ? (
             <button
               onClick={handleDropAgain}
@@ -706,10 +707,11 @@ function PlinkoInner() {
               : showLoader ? "rgba(0,212,255,0.25)"
               : "#2a2a50",
             transition: "background 0.4s, border-color 0.3s",
+            display: "flex", flexDirection: "column", justifyContent: "center",
           }}
         >
           {showLoader ? (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "300px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
               <AtomLoader phaseText={VRF_PHASES[vrfPhase]} />
             </div>
           ) : (

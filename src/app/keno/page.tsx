@@ -311,7 +311,7 @@ function KenoInner() {
       </div>
 
       {/* 3-column layout */}
-      <div className="game-3col" style={{ alignItems: "start" }}>
+      <div className="game-3col" style={{ alignItems: "stretch" }}>
 
         {/* LEFT — Controls */}
         <div className="card" style={{ display: "flex", flexDirection: "column", gap: "0.75rem",
@@ -383,7 +383,7 @@ function KenoInner() {
           )}
 
           {/* Buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginTop: "auto" }}>
             {revealed ? (
               <button className="btn-primary" onClick={clearPicks}
                 style={{ width: "100%", padding: "0.6rem 0.75rem",
@@ -440,6 +440,7 @@ function KenoInner() {
             : isVrfPending ? "rgba(0,212,255,0.25)"
             : `rgba(168,85,247,0.2)`,
           transition: "background 0.4s, border-color 0.3s", position: "relative",
+          display: "flex", flexDirection: "column", justifyContent: "center",
         }}>
 
           {/* AtomLoader overlay */}
@@ -491,7 +492,7 @@ function KenoInner() {
         </div>
 
         {/* RIGHT — Result / Rules + Provably Fair */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem", height: "100%" }}>
 
           {revealed && settledResult ? (
             <div className="card" style={{
@@ -562,7 +563,7 @@ function KenoInner() {
           )}
 
           {/* Provably Fair */}
-          <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35" }}>
+          <div className="card" style={{ padding: "0.875rem", background: "#0a0a18", borderColor: "#1a1a35", flex: 1 }}>
             <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#f0f0ff",
               textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
               Provably Fair
