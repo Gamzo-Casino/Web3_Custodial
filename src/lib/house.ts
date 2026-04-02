@@ -21,6 +21,7 @@ export const HouseLedgerType = {
   INITIAL_FUND: "INITIAL_FUND",
   BET_IN: "BET_IN",
   BET_OUT: "BET_OUT",
+  BET_REFUND: "BET_REFUND",
   FEE: "FEE",
   TOPUP: "TOPUP",
 } as const;

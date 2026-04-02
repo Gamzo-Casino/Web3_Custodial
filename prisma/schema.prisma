@@ -499,6 +499,7 @@ enum HouseLedgerType {
   INITIAL_FUND
   BET_IN
   BET_OUT
+  BET_REFUND
   FEE
   TOPUP
 }

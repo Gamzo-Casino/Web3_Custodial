@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/getAuthUser";
 import { prisma } from "@/lib/prisma";
 import { LedgerEntryType } from "@/lib/ledger";
+import { creditHouseTx, debitHouseTx, HouseLedgerType } from "@/lib/house";
 import { getPublicClient, getHouseWalletClient, BLACKJACK_GAME_ABI } from "@/lib/viemServer";
 import { parseEther } from "viem";
 import { z } from "zod";
@@ -84,6 +85,8 @@ export async function POST(req: NextRequest) {
           reference:     null,
         },
       });
+
+      await creditHouseTx(tx, stake, HouseLedgerType.BET_IN);
 
       const key = `blackjack-chain:${userId}:${Date.now()}`;
       const bet = await tx.gameBet.create({
@@ -182,6 +185,7 @@ export async function POST(req: NextRequest) {
             reference:     `refund:${betId}`,
           },
         });
+        await debitHouseTx(tx, stake, HouseLedgerType.BET_REFUND, `refund:${betId}`);
         await tx.gameBet.update({
           where: { id: betId },
           data:  { status: "REFUNDED", settledAt: new Date() },

@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/getAuthUser";
 import { prisma } from "@/lib/prisma";
 import { LedgerEntryType } from "@/lib/ledger";
+import { creditHouseTx, debitHouseTx, HouseLedgerType } from "@/lib/house";
 import { getPublicClient, getHouseWalletClient, ROULETTE_GAME_ABI } from "@/lib/viemServer";
 import { parseEther, formatEther } from "viem";
 import { isValidArea } from "@/lib/roulette";
@@ -98,6 +99,8 @@ export async function POST(req: NextRequest) {
           reference:     null,
         },
       });
+
+      await creditHouseTx(tx, totalStake, HouseLedgerType.BET_IN);
 
       const key = `roulette-chain:${userId}:${Date.now()}`;
       const bet = await tx.gameBet.create({
@@ -198,6 +201,7 @@ export async function POST(req: NextRequest) {
             reference:     `refund:${betId}`,
           },
         });
+        await debitHouseTx(tx, totalStake, HouseLedgerType.BET_REFUND, `refund:${betId}`);
         await tx.gameBet.update({
           where: { id: betId },
           data:  { status: "REFUNDED", settledAt: new Date() },

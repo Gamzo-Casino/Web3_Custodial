@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/getAuthUser";
 import { prisma } from "@/lib/prisma";
 import { LedgerEntryType } from "@/lib/ledger";
+import { debitHouseTx, creditHouseTx, HouseLedgerType } from "@/lib/house";
 import { getPublicClient, ROULETTE_GAME_ABI } from "@/lib/viemServer";
 import { formatEther } from "viem";
 import { doesBetWin, getGrossMultiplier, getColor, Wager } from "@/lib/roulette";
@@ -139,6 +140,8 @@ export async function GET(req: NextRequest) {
               reference:     `roulette-win:${roundId}`,
             },
           });
+          await debitHouseTx(tx, totalGrossGzo, HouseLedgerType.BET_OUT, roundId);
+          if (feeGzo > 0) await creditHouseTx(tx, feeGzo, HouseLedgerType.FEE, roundId);
         }
 
         const resultJson = {
