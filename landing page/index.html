@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GamZO — White-Label Web3 Gaming Platform for Your Token</title>
+  <meta name="description" content="Deploy a full Web3 community gaming hub powered by your own token in days. 10 provably fair reward games, Chainlink VRF randomness, custodial architecture — built for token projects ready to unlock real utility." />
+  
+  
+  <link rel="stylesheet" href="fonts/fonts.css" />
+
+  <style>
+    /* ── Reset & Root ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    :root {
+      --bg-primary:   #0d0d1a;
+      --bg-secondary: #12122a;
+      --bg-card:      #1a1a35;
+      --bg-card-2:    #161630;
+      --neon-green:   #00ff9d;
+      --neon-purple:  #9b59ff;
+      --neon-blue:    #00d4ff;
+      --neon-yellow:  #f7c948;
+      --text-primary: #f0f0ff;
+      --text-muted:   #8888aa;
+      --border:       #2a2a50;
+      --border-glow:  rgba(0,255,157,0.25);
+      --gradient-btn: linear-gradient(135deg, #00ff9d 0%, #00d4ff 100%);
+      --gradient-hero: linear-gradient(135deg, #9b59ff 0%, #00d4ff 60%, #00ff9d 100%);
+    }
+
+    body {
+      background: var(--bg-primary);
+      background-image:
+        radial-gradient(ellipse at 15% 40%, rgba(155,89,255,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 15%, rgba(0,212,255,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 55% 85%, rgba(0,255,157,0.06) 0%, transparent 55%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Typography ───────────────────────────────────────────────── */
+    h1, h2, h3, h4 { font-family: 'Space Grotesk', 'Inter', sans-serif; line-height: 1.15; }
+    .gradient-text {
+      background: var(--gradient-hero);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .neon-text { color: var(--neon-green); text-shadow: 0 0 14px rgba(0,255,157,0.55); }
+    .muted { color: var(--text-muted); }
+
+    /* ── Layout ───────────────────────────────────────────────────── */
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: 100px 0; }
+    .section-sm { padding: 64px 0; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(42,42,80,0.7);
+      background: rgba(13,13,26,0.85);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem; font-weight: 800;
+      background: var(--gradient-btn);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 0.25rem; align-items: center; }
+    .nav-link {
+      color: var(--text-muted); text-decoration: none; font-size: 0.875rem;
+      font-weight: 500; padding: 0.4rem 0.85rem; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+    .nav-cta {
+      background: var(--gradient-btn); color: #0d0d1a; font-weight: 700;
+      padding: 0.45rem 1.25rem; border-radius: 8px; text-decoration: none;
+      font-size: 0.875rem; transition: opacity 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    .nav-mobile-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+
+    /* ── Buttons ──────────────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--gradient-btn); color: #0d0d1a;
+      font-weight: 700; border-radius: 10px;
+      padding: 0.85rem 2rem; border: none; cursor: pointer;
+      font-size: 1rem; text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      opacity: 0.9; transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,255,157,0.25);
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-primary); font-weight: 600; border-radius: 10px;
+      padding: 0.85rem 2rem; cursor: pointer; font-size: 1rem;
+      text-decoration: none; transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--neon-green); background: rgba(0,255,157,0.05);
+      transform: translateY(-2px);
+    }
+    .btn-lg { padding: 1.1rem 2.5rem; font-size: 1.125rem; }
+
+    /* ── Cards ────────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    }
+    .card:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 28px rgba(0,255,157,0.07);
+      transform: translateY(-3px);
+    }
+    .card-purple:hover { border-color: rgba(155,89,255,0.35); box-shadow: 0 0 28px rgba(155,89,255,0.09); }
+    .card-blue:hover   { border-color: rgba(0,212,255,0.35);  box-shadow: 0 0 28px rgba(0,212,255,0.09); }
+
+    /* ── Badge ────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.3rem 0.85rem;
+      border-radius: 100px; border: 1px solid;
+    }
+    .badge-green  { color: var(--neon-green);  border-color: rgba(0,255,157,0.3);  background: rgba(0,255,157,0.07); }
+    .badge-purple { color: var(--neon-purple); border-color: rgba(155,89,255,0.3); background: rgba(155,89,255,0.07); }
+    .badge-blue   { color: var(--neon-blue);   border-color: rgba(0,212,255,0.3);  background: rgba(0,212,255,0.07); }
+    .badge-yellow { color: var(--neon-yellow); border-color: rgba(247,201,72,0.3); background: rgba(247,201,72,0.07); }
+
+    /* ── Section Header ───────────────────────────────────────────── */
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .section-header h2 { font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; margin-bottom: 1rem; }
+    .section-header p { font-size: 1.125rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+    /* ── Divider ──────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);
+    }
+
+    /* ── Glow ─────────────────────────────────────────────────────── */
+    .glow-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green);
+      display: inline-block;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.45; transform:scale(0.7); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════════════════ */
+    #hero {
+      padding: 140px 0 100px;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(155,89,255,0.14) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 60%, rgba(0,212,255,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 3.75rem);
+      font-weight: 900; margin-bottom: 1.5rem;
+      line-height: 1.08;
+    }
+    .hero-sub {
+      font-size: 1.2rem; color: var(--text-muted);
+      margin-bottom: 2.5rem; line-height: 1.65;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex; gap: 2.5rem; margin-top: 3rem; flex-wrap: wrap;
+    }
+    .hero-stat-value {
+      font-size: 1.75rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .hero-stat-label { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.04em; }
+
+    /* Casino preview mockup */
+    .hero-visual {
+      position: relative;
+    }
+    .mockup-frame {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(155,89,255,0.12);
+    }
+    .mockup-topbar {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .mockup-dot { width:10px; height:10px; border-radius:50%; }
+    .mockup-title { flex:1; text-align:center; font-size:0.75rem; color:var(--text-muted); }
+    .mockup-body { padding: 1.5rem; }
+    .mockup-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      background: var(--gradient-btn);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 1rem;
+    }
+    .mockup-token-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(155,89,255,0.15); border: 1px solid rgba(155,89,255,0.3);
+      border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.75rem;
+      color: var(--neon-purple); font-weight: 600; margin-bottom: 1.25rem;
+    }
+    .mockup-games {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; margin-bottom: 1.25rem;
+    }
+    .mockup-game-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.75rem 0.5rem; text-align: center;
+      font-size: 0.7rem; color: var(--text-muted);
+    }
+    .mockup-game-card svg { display:block; margin: 0 auto 0.25rem; }
+    .mockup-balance {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mockup-bal-label { font-size: 0.7rem; color: var(--text-muted); }
+    .mockup-bal-val { font-size: 1rem; font-weight: 700; color: var(--neon-green); }
+    .mockup-token-name { font-size: 0.7rem; color: var(--neon-purple); font-weight: 600; }
+    .mockup-float-tag {
+      position: absolute; top: -16px; right: -16px;
+      background: var(--bg-secondary); border: 1px solid rgba(0,255,157,0.3);
+      border-radius: 12px; padding: 0.6rem 1rem;
+      font-size: 0.8rem; font-weight: 700; color: var(--neon-green);
+      box-shadow: 0 4px 20px rgba(0,255,157,0.15);
+      white-space: nowrap;
+    }
+    .mockup-float-tag-2 {
+      position: absolute; bottom: -16px; left: -16px;
+      background: var(--bg-secondary); border: 1px solid rgba(155,89,255,0.3);
+      border-radius: 12px; padding: 0.6rem 1rem;
+      font-size: 0.8rem; font-weight: 700; color: var(--neon-purple);
+      box-shadow: 0 4px 20px rgba(155,89,255,0.15);
+      white-space: nowrap;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       POWERED BY / TRUST BAR
+    ═══════════════════════════════════════════════════════════════ */
+    #trust {
+      padding: 52px 0;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+    .trust-header-wrap { text-align: center; margin-bottom: 2.25rem; }
+    .trust-heading {
+      display: inline-flex; align-items: center; gap: 1rem;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--text-muted);
+    }
+    .trust-heading::before, .trust-heading::after {
+      content: ''; display: block; width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+    .trust-heading::after { background: linear-gradient(90deg, var(--border), transparent); }
+    .trust-inner {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    .trust-tech {
+      display: flex; flex-direction: column; align-items: center; gap: 0.65rem;
+      padding: 1.1rem 1.4rem 0.9rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; min-width: 90px;
+      opacity: 0.6; cursor: default;
+      transition: opacity 0.25s, transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .trust-tech:hover { opacity: 1; transform: translateY(-4px); }
+    .trust-tech-label {
+      font-size: 0.68rem; font-weight: 700; color: var(--text-muted);
+      letter-spacing: 0.03em; white-space: nowrap; text-align: center;
+    }
+    .trust-chainlink:hover { border-color: rgba(55,91,210,0.55);  box-shadow: 0 10px 28px rgba(55,91,210,0.12); }
+    .trust-oz:hover        { border-color: rgba(78,94,228,0.55);  box-shadow: 0 10px 28px rgba(78,94,228,0.12); }
+    .trust-next:hover      { border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 28px rgba(255,255,255,0.06); }
+    .trust-prisma:hover    { border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 28px rgba(255,255,255,0.06); }
+    .trust-rainbow:hover   { border-color: rgba(99,179,237,0.4);  box-shadow: 0 10px 28px rgba(99,179,237,0.1); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CHAINS SUPPORTED
+    ═══════════════════════════════════════════════════════════════ */
+    #chains {
+      padding: 52px 0;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(155,89,255,0.04) 0%, rgba(0,212,255,0.02) 100%);
+    }
+    .chains-header-wrap { text-align: center; margin-bottom: 2.25rem; }
+    .chains-heading {
+      display: inline-flex; align-items: center; gap: 1rem;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--text-muted);
+    }
+    .chains-heading::before, .chains-heading::after {
+      content: ''; display: block; width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+    .chains-heading::after { background: linear-gradient(90deg, var(--border), transparent); }
+    .chains-flex {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    .chain-item {
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+      padding: 1rem 1.1rem 0.85rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; min-width: 76px;
+      opacity: 0.65; cursor: default;
+      transition: opacity 0.25s, transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .chain-item:hover { opacity: 1; transform: translateY(-4px); }
+    .chain-arb:hover   { border-color:rgba(40,160,240,0.5);  box-shadow:0 10px 28px rgba(40,160,240,0.12); }
+    .chain-avax:hover  { border-color:rgba(232,65,66,0.5);   box-shadow:0 10px 28px rgba(232,65,66,0.12); }
+    .chain-base:hover  { border-color:rgba(0,82,255,0.5);    box-shadow:0 10px 28px rgba(0,82,255,0.12); }
+    .chain-bnb:hover   { border-color:rgba(243,186,47,0.5);  box-shadow:0 10px 28px rgba(243,186,47,0.12); }
+    .chain-eth:hover   { border-color:rgba(98,126,234,0.5);  box-shadow:0 10px 28px rgba(98,126,234,0.12); }
+    .chain-ftm:hover   { border-color:rgba(25,105,255,0.5);  box-shadow:0 10px 28px rgba(25,105,255,0.12); }
+    .chain-op:hover    { border-color:rgba(255,4,32,0.5);    box-shadow:0 10px 28px rgba(255,4,32,0.12); }
+    .chain-matic:hover { border-color:rgba(130,71,229,0.5);  box-shadow:0 10px 28px rgba(130,71,229,0.12); }
+    .chain-ronin:hover { border-color:rgba(18,115,234,0.5);  box-shadow:0 10px 28px rgba(18,115,234,0.12); }
+    .chain-son:hover   { border-color:rgba(123,111,232,0.5); box-shadow:0 10px 28px rgba(123,111,232,0.12); }
+    .chain-name {
+      font-size: 0.68rem; font-weight: 700; color: var(--text-muted);
+      letter-spacing: 0.04em; white-space: nowrap;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       OPPORTUNITY / UNLOCK
+    ═══════════════════════════════════════════════════════════════ */
+    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: stretch; }
+    .problem-side, .solution-side {
+      border-radius: 24px; padding: 2rem;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 0.7rem;
+    }
+    .problem-side {
+      background: linear-gradient(145deg, rgba(0,212,255,0.07) 0%, rgba(155,89,255,0.05) 100%);
+      border: 1px solid rgba(0,212,255,0.18);
+    }
+    .problem-side::after {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.14) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .solution-side {
+      background: linear-gradient(145deg, rgba(0,255,157,0.06) 0%, rgba(0,212,255,0.04) 100%);
+      border: 1px solid rgba(0,255,157,0.18);
+    }
+    .solution-side::after {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,255,157,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .opp-panel-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.5rem;
+    }
+    .opp-panel-label::before {
+      content: ''; display: block; width: 18px; height: 2px; border-radius: 2px;
+      background: currentColor; flex-shrink: 0;
+    }
+    .opp-label-blue { color: var(--neon-blue); }
+    .opp-label-green { color: var(--neon-green); }
+    /* 2×2 stat grid */
+    .stat-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 0; }
+    .stat-card-sm {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 1.1rem 1rem;
+      transition: border-color 0.2s;
+    }
+    .stat-card-sm:hover { border-color: rgba(0,212,255,0.25); }
+    .stat-big {
+      font-size: 1.65rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, var(--neon-blue) 20%, var(--neon-purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1; margin-bottom: 0.35rem;
+    }
+    .stat-tiny { font-size: 0.78rem; color: var(--text-muted); line-height: 1.35; }
+    /* Revenue Snapshot */
+    .rev-snap {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 1rem 1.1rem;
+    }
+    .rev-snap-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .rev-snap-title {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+    .rev-snap-note {
+      font-size: 0.65rem; color: rgba(255,255,255,0.25); font-style: italic;
+    }
+    .rev-row {
+      display: flex; align-items: center; gap: 0.55rem;
+      padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.045);
+    }
+    .rev-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .rev-tier {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.18rem 0.55rem; border-radius: 5px; min-width: 58px; text-align: center; flex-shrink: 0; white-space: nowrap;
+    }
+    .tier-ignite { background: rgba(0,212,255,0.1);  color: var(--neon-blue);   border: 1px solid rgba(0,212,255,0.2); }
+    .tier-growth { background: rgba(155,89,255,0.1); color: var(--neon-purple); border: 1px solid rgba(155,89,255,0.2); }
+    .tier-scale  { background: rgba(0,255,157,0.08); color: var(--neon-green);  border: 1px solid rgba(0,255,157,0.2); }
+    .rev-vol  { font-size: 0.8rem; color: var(--text-muted); flex: 1; }
+    .rev-sep  { color: rgba(255,255,255,0.15); font-size: 0.75rem; letter-spacing: 0.05em; }
+    .rev-earn {
+      font-size: 0.88rem; font-weight: 800; white-space: nowrap;
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, var(--neon-green) 30%, var(--neon-blue) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    /* Hero stat strip */
+    .stat-hero {
+      display: flex; align-items: center; gap: 1.25rem;
+      background: rgba(0,255,157,0.05); border: 1px solid rgba(0,255,157,0.14);
+      border-radius: 14px; padding: 1.1rem 1.25rem;
+    }
+    .stat-hero-num {
+      font-size: 1.65rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, var(--neon-green) 20%, var(--neon-blue) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      white-space: nowrap; line-height: 1;
+    }
+    .stat-hero-text { font-size: 0.82rem; color: var(--text-muted); line-height: 1.45; }
+    .stat-hero-text strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+    /* Feature cards (right panel) — 2×2 grid + 1 wide */
+    .feat-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 0.7rem; }
+    .feat-card-sm {
+      padding: 1.1rem 1rem; border-radius: 14px;
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .feat-card-sm:hover { border-color: rgba(0,255,157,0.22); background: rgba(0,255,157,0.03); }
+    .feat-icon-wrap {
+      width: 34px; height: 34px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.18);
+      margin-bottom: 0.65rem;
+    }
+    .feat-title {
+      font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.92);
+      margin-bottom: 0.2rem; font-family: 'Space Grotesk', sans-serif;
+    }
+    .feat-desc { font-size: 0.77rem; color: var(--text-muted); line-height: 1.4; }
+    .feat-card-wide {
+      display: flex; align-items: center; gap: 1.1rem;
+      padding: 1.1rem 1.25rem; border-radius: 14px;
+      background: rgba(0,255,157,0.05); border: 1px solid rgba(0,255,157,0.14);
+      transition: border-color 0.2s;
+      margin-top: auto;
+    }
+    .feat-card-wide:hover { border-color: rgba(0,255,157,0.28); }
+    .feat-icon-wrap-lg {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.22);
+    }
+    .feat-wide-title {
+      font-size: 0.88rem; font-weight: 700; color: rgba(255,255,255,0.92);
+      margin-bottom: 0.2rem; font-family: 'Space Grotesk', sans-serif;
+    }
+    .feat-wide-desc { font-size: 0.79rem; color: var(--text-muted); line-height: 1.45; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HOW IT WORKS
+    ═══════════════════════════════════════════════════════════════ */
+    .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; position: relative; }
+    /* Connector — hidden, sequence conveyed by 01/02/03 numbers */
+    .step-connector { display: none; }
+    /* Step card base */
+    .step-card { display: flex; flex-direction: column; position: relative; z-index: 1; }
+    /* Icon + number side-by-side row — fills top space, aligns across all cards */
+    .step-top-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.35rem;
+    }
+    .step-icon-wrap {
+      width: 58px; height: 58px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-icon-1 { background: rgba(155,89,255,0.09); border: 1px solid rgba(155,89,255,0.22); }
+    .step-icon-2 { background: rgba(0,212,255,0.07);  border: 1px solid rgba(0,212,255,0.22);  }
+    .step-icon-3 { background: rgba(0,255,157,0.06);  border: 1px solid rgba(0,255,157,0.22);  }
+    /* Who / timeframe label */
+    .step-who {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem;
+    }
+    .step-who::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor; display: block; flex-shrink: 0;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .step-who-1 { color: var(--neon-purple); }
+    .step-who-2 { color: var(--neon-blue); }
+    .step-who-3 { color: var(--neon-green); }
+    /* Large decorative step number */
+    .step-num {
+      font-size: 3rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif;
+      line-height: 1; margin-bottom: 0;
+      width: auto; height: auto; border-radius: 0; display: block; border: none;
+      opacity: 0.55;
+    }
+    .step-num-1 {
+      background: linear-gradient(135deg, var(--neon-purple) 20%, rgba(155,89,255,0.35) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .step-num-2 {
+      background: linear-gradient(135deg, var(--neon-blue) 20%, rgba(0,212,255,0.35) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .step-num-3 {
+      background: linear-gradient(135deg, var(--neon-green) 20%, rgba(0,255,157,0.35) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .step-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.85rem; }
+    /* Bullet list — scannable, not a wall of text */
+    .step-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; margin-bottom: 0; }
+    .step-bullets li {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      font-size: 0.855rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .step-bullets li .sb-dot {
+      width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 0.48rem;
+    }
+    .sb-dot-1 { background: rgba(155,89,255,0.7); }
+    .sb-dot-2 { background: rgba(0,212,255,0.7); }
+    .sb-dot-3 { background: rgba(0,255,157,0.7); }
+    /* Tag chips */
+    .step-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.4rem; padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .step-tag {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.22rem 0.6rem; border-radius: 6px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       GAMES GRID
+    ═══════════════════════════════════════════════════════════════ */
+    .games-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 0.875rem; }
+    .game-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.15rem 1.1rem;
+      display: flex; flex-direction: column; gap: 0.45rem;
+      position: relative; cursor: default;
+      transition: border-color 0.25s, box-shadow 0.22s, transform 0.22s;
+    }
+    .game-card:hover { transform: translateY(-3px); }
+    /* per-card color via --gc variable */
+    .gc-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+    .gc-icon { width: 38px; height: 38px; flex-shrink: 0; }
+    .gc-icon svg { width: 38px; height: 38px; display: block; }
+    .gc-mult {
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 0.03em;
+      padding: 0.17rem 0.48rem; border-radius: 6px; white-space: nowrap;
+      background: var(--gc-bg); border: 1px solid var(--gc-border); color: var(--gc);
+    }
+    .gc-name { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+    .gc-desc { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; flex: 1; }
+    .gc-footer {
+      display: flex; gap: 0.3rem; flex-wrap: wrap;
+      padding-top: 0.6rem; margin-top: 0.2rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .gc-tag {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.14rem 0.42rem; border-radius: 5px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FEATURES
+    ═══════════════════════════════════════════════════════════════ */
+    .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-top: 2px solid var(--fi-accent);
+      border-radius: 16px; padding: 2rem 1.85rem;
+      display: flex; flex-direction: column; gap: 0;
+      position: relative;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.22s, background 0.25s;
+    }
+    .feature-card:hover {
+      border-color: var(--fi-accent);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px var(--fi-border);
+      transform: translateY(-3px);
+      background: linear-gradient(160deg, var(--fi-bg) 0%, var(--bg-card) 55%);
+    }
+    .fi-icon-wrap {
+      width: 48px; height: 48px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--fi-bg); border: 1px solid var(--fi-border);
+      margin-bottom: 1.35rem; flex-shrink: 0;
+    }
+    .feature-title { font-size: 0.975rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary); }
+    .feature-desc  { font-size: 0.83rem; color: var(--text-muted); line-height: 1.68; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TOKEN UTILITY EXPLAINER
+    ═══════════════════════════════════════════════════════════════ */
+    #token-utility { background: var(--bg-secondary); }
+    .utility-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .utility-tag-cloud { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0; }
+    .utag {
+      padding: 0.5rem 1rem; border-radius: 100px; font-size: 0.825rem; font-weight: 600;
+      border: 1px solid;
+    }
+    .utag-g { color: var(--neon-green);  border-color: rgba(0,255,157,0.3);  background: rgba(0,255,157,0.07); }
+    .utag-p { color: var(--neon-purple); border-color: rgba(155,89,255,0.3); background: rgba(155,89,255,0.07); }
+    .utag-b { color: var(--neon-blue);   border-color: rgba(0,212,255,0.3);  background: rgba(0,212,255,0.07); }
+    .utag-y { color: var(--neon-yellow); border-color: rgba(247,201,72,0.3); background: rgba(247,201,72,0.07); }
+    .utility-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .utility-list li {
+      display: flex; align-items: flex-start; gap: 0.85rem;
+      font-size: 0.95rem; color: var(--text-muted);
+    }
+    .utility-list li strong { color: var(--text-primary); }
+    .check-icon {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,255,157,0.12); border: 1px solid rgba(0,255,157,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: var(--neon-green); margin-top: 1px;
+    }
+    .flow-diagram {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+    }
+    .flow-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .flow-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .flow-node {
+      flex: 1; text-align: center; padding: 0.65rem 0.5rem;
+      border-radius: 10px; font-size: 0.78rem; font-weight: 600;
+    }
+    .fn-user    { background: rgba(155,89,255,0.12); border: 1px solid rgba(155,89,255,0.25); color: var(--neon-purple); }
+    .fn-casino  { background: rgba(0,212,255,0.10);  border: 1px solid rgba(0,212,255,0.25);  color: var(--neon-blue); }
+    .fn-token   { background: rgba(0,255,157,0.09);  border: 1px solid rgba(0,255,157,0.25);  color: var(--neon-green); }
+    .fn-house   { background: rgba(247,201,72,0.09); border: 1px solid rgba(247,201,72,0.25); color: var(--neon-yellow); }
+    .flow-arrow { color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
+    .flow-desc  { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       PRICING
+    ═══════════════════════════════════════════════════════════════ */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0; align-items: stretch;
+    }
+    .pricing-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 0; padding: 2.25rem 2rem; position: relative;
+      display: flex; flex-direction: column;
+      transition: background 0.25s;
+    }
+    .pricing-card:first-child { border-radius: 20px 0 0 20px; }
+    .pricing-card:last-child  { border-radius: 0 20px 20px 0; }
+    .pricing-card.featured {
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 0 1px rgba(155,89,255,0.5), 0 0 60px rgba(155,89,255,0.14);
+      background: linear-gradient(160deg, rgba(155,89,255,0.08) 0%, var(--bg-card) 55%);
+      border-radius: 20px; z-index: 2;
+      margin: -16px -1px; padding: 2.75rem 2.25rem;
+    }
+    .pricing-popular {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--neon-purple), #7c3aed);
+      color: #fff; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; padding: 0.3rem 1rem; border-radius: 100px;
+      white-space: nowrap;
+    }
+    .pricing-plan {
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.12em; margin-bottom: 1.1rem;
+    }
+    .pricing-price {
+      font-size: 3rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif;
+      line-height: 1; margin-bottom: 0.2rem;
+    }
+    .pricing-price span { font-size: 0.95rem; font-weight: 400; color: var(--text-muted); margin-left: 0.2rem; }
+    .pricing-rev {
+      display: inline-flex; align-items: center;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em;
+      padding: 0.22rem 0.65rem; border-radius: 6px; margin: 0.6rem 0 0.5rem;
+    }
+    .pricing-rev-starter { background: rgba(0,212,255,0.08); color: var(--neon-blue); border: 1px solid rgba(0,212,255,0.2); }
+    .pricing-rev-pro     { background: rgba(155,89,255,0.1); color: var(--neon-purple); border: 1px solid rgba(155,89,255,0.25); }
+    .pricing-rev-ent     { background: rgba(0,255,157,0.07); color: var(--neon-green); border: 1px solid rgba(0,255,157,0.2); }
+    .pricing-setup {
+      font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07);
+      line-height: 1.5;
+    }
+    .pricing-setup b { color: var(--text-primary); font-weight: 700; }
+    .pricing-features {
+      list-style: none; display: flex; flex-direction: column;
+      gap: 0; flex: 1; margin-bottom: 1.75rem;
+    }
+    .pricing-features li {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      font-size: 0.84rem; color: var(--text-muted); padding: 0.33rem 0;
+      line-height: 1.4;
+    }
+    .pf-check { color: var(--neon-green); flex-shrink: 0; font-size: 0.75rem; margin-top: 0.15rem; }
+    .pf-group {
+      list-style: none; display: block;
+      font-size: 0.58rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.22); margin-top: 1.1rem; margin-bottom: 0.2rem;
+      padding-bottom: 0.35rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .pf-group:first-child { margin-top: 0; }
+    .pricing-cta { width: 100%; text-align: center; margin-top: auto; }
+    .btn-plan-featured {
+      display: block; width: 100%; text-align: center;
+      background: linear-gradient(135deg, var(--neon-purple) 0%, #7c3aed 100%);
+      color: #fff; font-weight: 700; border-radius: 10px; padding: 0.9rem;
+      border: none; cursor: pointer; font-size: 0.9rem; letter-spacing: 0.02em;
+      text-decoration: none; transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 4px 20px rgba(155,89,255,0.35);
+    }
+    .btn-plan-featured:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(155,89,255,0.45); }
+    .btn-plan {
+      display: block; width: 100%; text-align: center;
+      background: rgba(255,255,255,0.04); color: var(--text-primary);
+      font-weight: 700; border-radius: 10px; padding: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 0.9rem;
+      text-decoration: none; transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .btn-plan:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.07); }
+    .pricing-note {
+      text-align: center; margin-top: 3rem; font-size: 0.855rem; color: var(--text-muted);
+    }
+    .pricing-note a { color: var(--neon-green); text-decoration: none; }
+    .pricing-note a:hover { text-decoration: underline; }
+    .pricing-trust {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; flex-wrap: nowrap; margin: 0 auto 2.75rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 100px; padding: 0.5rem 0.25rem;
+      width: fit-content;
+    }
+    .pricing-trust-item {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; color: var(--text-muted);
+      padding: 0 1.1rem; white-space: nowrap;
+    }
+    .pricing-trust-item + .pricing-trust-item {
+      border-left: 1px solid rgba(255,255,255,0.08);
+    }
+    .pricing-trust-item svg { flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TESTIMONIALS / SOCIAL PROOF
+    ═══════════════════════════════════════════════════════════════ */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .testimonial-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem;
+    }
+    .testimonial-stars { color: var(--neon-yellow); font-size: 0.8rem; margin-bottom: 0.85rem; letter-spacing: 0.1em; }
+    .testimonial-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.25rem; }
+    .testimonial-author { display: flex; align-items: center; gap: 0.65rem; }
+    .testimonial-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; border: 1px solid var(--border);
+    }
+    .testimonial-name { font-size: 0.875rem; font-weight: 700; }
+    .testimonial-role { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FAQ
+    ═══════════════════════════════════════════════════════════════ */
+    .faq-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.75rem; max-width: 1060px; margin: 0 auto;
+    }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color 0.25s;
+    }
+    .faq-item.open {
+      border-color: rgba(0,255,157,0.25);
+    }
+    .faq-question {
+      width: 100%; text-align: left; background: none; border: none;
+      cursor: pointer; padding: 1.3rem 1.5rem;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+      font-size: 0.935rem; font-weight: 600; color: var(--text-primary);
+      font-family: 'Inter', sans-serif; transition: color 0.2s; line-height: 1.45;
+    }
+    .faq-question:hover { color: var(--neon-green); }
+    .faq-icon {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; line-height: 1; color: var(--text-muted);
+      transition: transform 0.3s, color 0.2s, background 0.2s, border-color 0.2s;
+      margin-top: 0.1rem;
+    }
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+      color: var(--neon-green); background: rgba(0,255,157,0.1);
+      border-color: rgba(0,255,157,0.3);
+    }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+      font-size: 0.855rem; color: var(--text-muted); line-height: 1.75;
+    }
+    .faq-item.open .faq-answer { max-height: 400px; }
+    .faq-answer-inner {
+      padding: 0 1.5rem 1.4rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FINAL CTA
+    ═══════════════════════════════════════════════════════════════ */
+    #final-cta {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    #final-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(155,89,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-box { text-align: center; position: relative; z-index: 1; }
+    .cta-box h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 1rem; }
+    .cta-box p  { font-size: 1.1rem; color: var(--text-muted); max-width: 560px; margin: 0 auto 2.5rem; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cta-reassurance {
+      margin-top: 1.75rem; display: flex; align-items: center; justify-content: center;
+      gap: 2rem; flex-wrap: wrap;
+    }
+    .cta-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════════════ */
+    footer {
+      padding: 3rem 0 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.25rem;
+      background: var(--gradient-btn);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .footer-tagline { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+    .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .footer-link { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .footer-link:hover { color: var(--neon-green); }
+    .footer-copy { font-size: 0.75rem; color: var(--text-muted); opacity: 0.6; text-align: center; margin-top: 2rem; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════════════════════ */
+    @keyframes float-up {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    .float { animation: float-up 4s ease-in-out infinite; }
+
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: fade-in-up 0.6s ease both; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════════════════ */
+    /* ─── 1200px: wide tablet / small laptop ─────────────────────── */
+    @media (max-width: 1200px) {
+      .container { padding: 0 2rem; }
+      .games-grid { grid-template-columns: repeat(5,1fr); gap: 0.75rem; }
+      .utility-inner { gap: 3rem; }
+    }
+
+    /* ─── 1024px: tablet landscape ───────────────────────────────── */
+    @media (max-width: 1024px) {
+      .games-grid       { grid-template-columns: repeat(4,1fr); }
+      .features-grid    { grid-template-columns: repeat(3,1fr); }
+      .pricing-card.featured { margin: -12px -1px; }
+      .steps-grid       { gap: 1rem; }
+    }
+
+    /* ─── 900px: tablet portrait ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .section          { padding: 72px 0; }
+      .container        { padding: 0 1.5rem; }
+
+      /* Nav */
+      .nav-links        { display: none; }
+      .nav-cta          { display: none; }
+      .nav-mobile-toggle { display: block; }
+      .nav-links.open {
+        display: flex !important; flex-direction: column; gap: 0.2rem;
+        position: absolute; top: 64px; left: 0; right: 0; z-index: 99;
+        background: rgba(13,13,26,0.97);
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(42,42,80,0.7);
+        padding: 0.85rem 1.5rem 1.25rem;
+      }
+      .nav-links.open .nav-link { font-size: 0.95rem; padding: 0.6rem 0.85rem; }
+
+      /* Hero */
+      .hero-inner       { grid-template-columns: 1fr; text-align: center; }
+      .hero-visual      { display: none; }
+      .hero-actions     { justify-content: center; }
+      .hero-stats       { justify-content: center; gap: 1.5rem; }
+      .hero-eyebrow     { justify-content: center; }
+
+      /* Opportunity */
+      .problem-grid     { grid-template-columns: 1fr; }
+      .stat-2x2         { grid-template-columns: 1fr 1fr; }
+
+      /* Steps */
+      .steps-grid       { grid-template-columns: 1fr; gap: 1rem; }
+      .step-connector   { display: none; }
+
+      /* Games */
+      .games-grid       { grid-template-columns: repeat(3,1fr); gap: 0.85rem; }
+
+      /* Token Utility */
+      .utility-inner    { grid-template-columns: 1fr; gap: 2.5rem; }
+
+      /* Pricing — stack with featured card no longer overflowing */
+      .pricing-grid     { grid-template-columns: 1fr; gap: 1rem; max-width: 520px; margin: 0 auto; }
+      .pricing-card     { border-radius: 16px !important; }
+      .pricing-card.featured { margin: 0; padding: 2.25rem 2rem; }
+
+      /* Features */
+      .features-grid    { grid-template-columns: repeat(2,1fr); }
+
+      /* FAQ */
+      .faq-grid         { grid-template-columns: 1fr; }
+
+      /* Testimonials */
+      .testimonials-grid { grid-template-columns: 1fr; }
+
+      /* Trust / Powered by */
+      .trust-inner      { gap: 0.75rem; }
+      .chains-flex      { gap: 0.5rem; }
+    }
+
+    /* ─── 640px: large phone ──────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .section          { padding: 56px 0; }
+      .container        { padding: 0 1.1rem; }
+
+      /* Section headers */
+      .section-header   { margin-bottom: 2.5rem; }
+      .section-header p { font-size: 0.9rem; }
+
+      /* Hero */
+      #hero             { padding: 110px 0 64px; }
+      .hero-sub         { font-size: 1rem; }
+      .hero-actions     { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+      .hero-actions a   { text-align: center; }
+      .hero-stats       { gap: 1.25rem; }
+      .hero-stat-value  { font-size: 1.4rem; }
+
+      /* Steps */
+      .step-who         { font-size: 0.65rem; }
+      .step-title       { font-size: 1.05rem; }
+
+      /* Games */
+      .games-grid       { grid-template-columns: repeat(2,1fr); gap: 0.7rem; }
+      .game-card        { padding: 0.95rem 0.9rem; }
+      .gc-desc          { display: none; }
+
+      /* Pricing */
+      .pricing-grid     { max-width: 100%; }
+      .pricing-price    { font-size: 2.35rem; }
+
+      /* Features */
+      .features-grid    { grid-template-columns: 1fr; }
+      .feature-card     { padding: 1.5rem 1.35rem; }
+
+      /* FAQ */
+      .faq-question     { font-size: 0.875rem; padding: 1.1rem 1.25rem; }
+      .faq-answer-inner { padding: 0 1.25rem 1.1rem; }
+
+      /* Testimonials */
+      .testimonials-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+      /* Trust pills */
+      .pricing-trust    { flex-wrap: wrap; border-radius: 12px; padding: 0.75rem 1rem; gap: 0.6rem; width: 100%; }
+      .pricing-trust-item { border-left: none !important; padding: 0.25rem 0; }
+      .trust-inner      { gap: 0.6rem; }
+      .trust-tech       { min-width: 78px; padding: 0.85rem 0.9rem 0.7rem; }
+      .chains-flex      { gap: 0.45rem; }
+      .chain-item       { min-width: 62px; padding: 0.75rem 0.7rem 0.65rem; }
+      .chain-item img   { width: 30px; height: 30px; }
+
+      /* Flow diagram */
+      .flow-diagram     { padding: 1.25rem; }
+      .flow-row         { flex-wrap: wrap; gap: 0.3rem; }
+      .flow-node        { font-size: 0.7rem; padding: 0.4rem 0.55rem; }
+
+      /* Opportunity panel */
+      .stat-card-sm     { padding: 0.75rem; }
+      .stat-big         { font-size: 1.35rem; }
+      .rev-snap         { padding: 0.85rem 0.9rem; }
+      .rev-row          { flex-wrap: wrap; gap: 0.3rem; }
+
+      /* CTA box */
+      .cta-box          { padding: 2.5rem 1.5rem; }
+
+      /* Footer */
+      .footer-inner     { flex-direction: column; gap: 1.5rem; text-align: center; }
+      .footer-links     { flex-wrap: wrap; justify-content: center; }
+    }
+
+    /* ─── 400px: small phone ──────────────────────────────────────── */
+    @media (max-width: 400px) {
+      .container        { padding: 0 0.85rem; }
+      .games-grid       { grid-template-columns: repeat(2,1fr); gap: 0.55rem; }
+      .game-card        { padding: 0.85rem 0.8rem; }
+      .gc-name          { font-size: 0.8rem; }
+      .pricing-price    { font-size: 2rem; }
+      .hero-stat-value  { font-size: 1.25rem; }
+      .stat-big         { font-size: 1.2rem; }
+      .step-tags        { display: none; }
+      .chain-item       { min-width: 56px; }
+      .trust-tech       { min-width: 68px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       NAV
+  ══════════════════════════════════════════ -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">GamZO</a>
+      <div class="nav-links">
+        <a href="#how-it-works" class="nav-link">How it Works</a>
+        <a href="#games"        class="nav-link">Games</a>
+        <a href="#features"     class="nav-link">Features</a>
+        <a href="#pricing"      class="nav-link">Pricing</a>
+        <a href="#faq"          class="nav-link">FAQ</a>
+      </div>
+      <a href="#pricing" class="nav-cta">Get Started →</a>
+      <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <!-- Left: Copy -->
+        <div class="animate-in">
+          <div class="hero-eyebrow">
+            <span class="glow-dot"></span>
+            <span class="badge badge-green">White-Label &nbsp;·&nbsp; Web3 Community Gaming Platform</span>
+          </div>
+          <h1 class="hero-title">
+            Launch a Play-to-Earn Hub<br />
+            <span class="gradient-text">On Your Own Token</span>
+          </h1>
+          <p class="hero-sub">
+            GamZO is a fully customizable, provably fair Web3 community gaming platform built for token projects. Deploy 10 live reward games under your brand, powered by your token — in days, not months.
+          </p>
+          <div class="hero-actions">
+            <a href="#pricing" class="btn-primary btn-lg">See Plans &amp; Pricing →</a>
+            <a href="#how-it-works" class="btn-ghost btn-lg">How it Works</a>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-value neon-text">10</div>
+              <div class="hero-stat-label">Reward Games</div>
+            </div>
+            <div>
+              <div class="hero-stat-value" style="color:var(--neon-purple)">7 days</div>
+              <div class="hero-stat-label">Avg. Deployment</div>
+            </div>
+            <div>
+              <div class="hero-stat-value" style="color:var(--neon-blue)">100%</div>
+              <div class="hero-stat-label">Verifiable Fair (VRF)</div>
+            </div>
+            <div>
+              <div class="hero-stat-value" style="color:var(--neon-yellow)">Any Token</div>
+              <div class="hero-stat-label">ERC-20 Compatible</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Mockup -->
+        <div class="hero-visual float" style="position:relative; padding: 16px;">
+          <div class="mockup-float-tag">🎮 Live on your chain</div>
+          <div class="mockup-float-tag-2">🪙 YOUR token, YOUR brand</div>
+          <div class="mockup-frame">
+            <div class="mockup-topbar">
+              <div class="mockup-dot" style="background:#ff6059"></div>
+              <div class="mockup-dot" style="background:#ffbd2e"></div>
+              <div class="mockup-dot" style="background:#28c840"></div>
+              <div class="mockup-title">yourplatform.io — powered by GamZO</div>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-brand">🎮 $PEPE GameHub</div>
+              <div class="mockup-token-badge">🪙 PEPE Token Balance</div>
+              <div class="mockup-games">
+                <div class="mockup-game-card"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" style="display:block;margin:0 auto 0.25rem"><rect x="5" y="5" width="38" height="38" rx="9" fill="rgba(0,212,255,0.07)" stroke="#00d4ff" stroke-width="2.5"/><circle cx="15" cy="15" r="3.5" fill="#00d4ff"/><circle cx="33" cy="15" r="3.5" fill="#00d4ff"/><circle cx="24" cy="24" r="3.5" fill="#00d4ff"/><circle cx="15" cy="33" r="3.5" fill="#00d4ff"/><circle cx="33" cy="33" r="3.5" fill="#00d4ff"/></svg>Dice</div>
+                <div class="mockup-game-card"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" style="display:block;margin:0 auto 0.25rem"><rect x="3.5" y="3.5" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/><rect x="18" y="3.5" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/><rect x="32.5" y="3.5" width="13" height="13" rx="2.5" fill="rgba(255,80,80,0.06)" stroke="#ff5555" stroke-width="1"/><path d="M35.5 6.5 L43.5 14.5 M43.5 6.5 L35.5 14.5" stroke="#ff5555" stroke-width="2" stroke-linecap="round"/><rect x="3.5" y="18" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/><rect x="18" y="18" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.13)" stroke="#ff3d7a" stroke-width="1.5"/><path d="M24.5 20 L29 24.5 L24.5 29 L19 24.5 Z" fill="#ff3d7a"/><rect x="32.5" y="18" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/><rect x="3.5" y="32.5" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/><rect x="18" y="32.5" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/><rect x="32.5" y="32.5" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.03)" stroke="rgba(255,61,122,0.19)" stroke-width="1"/></svg>Mines</div>
+                <div class="mockup-game-card"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" style="display:block;margin:0 auto 0.25rem"><circle cx="24" cy="6" r="4.5" fill="#ffd700"/><circle cx="22.5" cy="4.5" r="1.5" fill="rgba(255,215,0,0.5)"/><line x1="24" y1="10" x2="24" y2="18" stroke="rgba(255,215,0,0.25)" stroke-width="1" stroke-dasharray="2 2"/><circle cx="17" cy="21" r="3" fill="rgba(255,215,0,0.5)"/><circle cx="31" cy="21" r="3" fill="rgba(255,215,0,0.5)"/><circle cx="10" cy="32" r="2.5" fill="rgba(255,215,0,0.33)"/><circle cx="24" cy="32" r="2.5" fill="rgba(255,215,0,0.33)"/><circle cx="38" cy="32" r="2.5" fill="rgba(255,215,0,0.33)"/><rect x="3" y="39" width="9" height="6" rx="1.5" fill="rgba(255,215,0,0.08)" stroke="rgba(255,215,0,0.25)" stroke-width="1"/><rect x="14" y="39" width="9" height="6" rx="1.5" fill="rgba(255,215,0,0.25)" stroke="#ffd700" stroke-width="1.5"/><rect x="26" y="39" width="9" height="6" rx="1.5" fill="rgba(255,215,0,0.08)" stroke="rgba(255,215,0,0.25)" stroke-width="1"/><rect x="37" y="39" width="8" height="6" rx="1.5" fill="rgba(255,215,0,0.03)" stroke="rgba(255,215,0,0.09)" stroke-width="1"/></svg>Plinko</div>
+                <div class="mockup-game-card"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" style="display:block;margin:0 auto 0.25rem"><rect x="6" y="11" width="26" height="34" rx="4" fill="#12122a" stroke="rgba(20,184,166,0.27)" stroke-width="1.5"/><rect x="9" y="14" width="20" height="28" rx="2" fill="rgba(20,184,166,0.06)" stroke="rgba(20,184,166,0.13)" stroke-width="0.5"/><rect x="16" y="3" width="26" height="34" rx="4" fill="#f4f4ff" stroke="#14b8a6" stroke-width="2"/><path d="M29 16 C29 16 23 22 23 26 C23 28.5 25.5 29.5 29 27 C29 30 27.5 32 26 33 L32 33 C30.5 32 29 30 29 27 C32.5 29.5 35 28.5 35 26 C35 22 29 16 29 16Z" fill="#1a1a2e"/><text x="19" y="15" font-size="9" font-weight="900" fill="#1a1a2e" font-family="Georgia,serif">A</text><text x="19.5" y="24" font-size="7" fill="#1a1a2e" font-family="serif">♠</text></svg>Blackjack</div>
+                <div class="mockup-game-card"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" style="display:block;margin:0 auto 0.25rem"><path d="M8 34 L8 14 M8 14 L4 20 M8 14 L12 20" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="6" width="20" height="28" rx="3.5" fill="#f4f4ff" stroke="#818cf8" stroke-width="2"/><text x="24" y="27" font-size="15" font-weight="900" fill="#1a1a2e" font-family="Georgia,serif" text-anchor="middle">?</text><path d="M40 14 L40 34 M40 34 L36 28 M40 34 L44 28" stroke="rgba(129,140,248,0.4)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="36" width="18" height="8" rx="2" fill="rgba(129,140,248,0.09)" stroke="rgba(129,140,248,0.31)" stroke-width="1"/></svg>HiLo</div>
+                <div class="mockup-game-card"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" style="display:block;margin:0 auto 0.25rem"><circle cx="24" cy="24" r="21.5" fill="rgba(232,121,249,0.09)" stroke="#e879f9" stroke-width="2"/><path d="M 24 24 L 24 4 A 20 20 0 0 1 34 6.68 Z" fill="rgba(0,195,90,0.85)" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 34 6.68 A 20 20 0 0 1 41.32 14 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 41.32 14 A 20 20 0 0 1 44 24 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 44 24 A 20 20 0 0 1 41.32 34 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 41.32 34 A 20 20 0 0 1 34 41.32 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 34 41.32 A 20 20 0 0 1 24 44 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 24 44 A 20 20 0 0 1 14 41.32 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 14 41.32 A 20 20 0 0 1 6.68 34 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 6.68 34 A 20 20 0 0 1 4 24 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 4 24 A 20 20 0 0 1 6.68 14 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 6.68 14 A 20 20 0 0 1 14 6.68 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 14 6.68 A 20 20 0 0 1 24 4 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><circle cx="24" cy="24" r="8" fill="#08081a" stroke="#e879f9" stroke-width="1.5"/><circle cx="24" cy="24" r="4" fill="rgba(232,121,249,0.22)"/><circle cx="24" cy="24" r="2" fill="#e879f9"/><circle cx="24" cy="5.5" r="2.5" fill="white" stroke="#ccc" stroke-width="0.5"/></svg>Roulette</div>
+              </div>
+              <div class="mockup-balance">
+                <div>
+                  <div class="mockup-bal-label">Your Balance</div>
+                  <div class="mockup-bal-val">12,500 <span class="mockup-token-name">PEPE</span></div>
+                </div>
+                <div style="text-align:right">
+                  <div class="mockup-bal-label">Platform Fee</div>
+                  <div style="font-size:0.8rem;font-weight:700;color:var(--neon-yellow)">1–2%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       CHAINS SUPPORTED
+  ══════════════════════════════════════════ -->
+  <section id="chains">
+    <div class="container">
+      <div class="chains-header-wrap">
+        <div class="chains-heading">Chains Supported</div>
+      </div>
+      <div class="chains-flex">
+
+        <!-- Arbitrum -->
+        <div class="chain-item chain-arb">
+          <img src="assets/chains/arbitrum.png" width="40" height="40" alt="Arbitrum" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Arbitrum</span>
+        </div>
+
+        <!-- Avalanche -->
+        <div class="chain-item chain-avax">
+          <img src="assets/chains/avalanche.png" width="40" height="40" alt="Avalanche" style="border-radius:12px;display:block;" loading="lazy" />
+          <span class="chain-name">Avalanche</span>
+        </div>
+
+        <!-- Base -->
+        <div class="chain-item chain-base">
+          <img src="assets/chains/base.png" width="40" height="40" alt="Base" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Base</span>
+        </div>
+
+        <!-- BNB -->
+        <div class="chain-item chain-bnb">
+          <img src="assets/chains/bnb.png" width="40" height="40" alt="BNB Chain" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">BNB</span>
+        </div>
+
+        <!-- Ethereum -->
+        <div class="chain-item chain-eth">
+          <img src="assets/chains/ethereum.png" width="40" height="40" alt="Ethereum" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Ethereum</span>
+        </div>
+
+        <!-- Fantom -->
+        <div class="chain-item chain-ftm">
+          <img src="assets/chains/fantom.png" width="40" height="40" alt="Fantom" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Fantom</span>
+        </div>
+
+        <!-- Optimism -->
+        <div class="chain-item chain-op">
+          <img src="assets/chains/optimism.png" width="40" height="40" alt="Optimism" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">OP</span>
+        </div>
+
+        <!-- Polygon -->
+        <div class="chain-item chain-matic">
+          <img src="assets/chains/polygon.png" width="40" height="40" alt="Polygon" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Polygon</span>
+        </div>
+
+        <!-- Ronin -->
+        <div class="chain-item chain-ronin">
+          <img src="assets/chains/ronin.png" width="40" height="40" alt="Ronin" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Ronin</span>
+        </div>
+
+        <!-- Soneium -->
+        <div class="chain-item chain-son">
+          <img src="assets/chains/soneium.png" width="40" height="40" alt="Soneium" style="border-radius:50%;display:block;" loading="lazy" />
+          <span class="chain-name">Soneium</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       OPPORTUNITY / UNLOCK
+  ══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-blue" style="margin-bottom:1rem">The Opportunity</div>
+        <h2>Your Token Has an <span class="gradient-text">Untapped Growth Engine</span></h2>
+        <p>The Web3 community gaming market is growing faster than DeFi, NFTs, and L2s combined. Your community is already primed to engage — you just need the right infrastructure.</p>
+      </div>
+      <div class="problem-grid">
+
+        <!-- LEFT: Market Signal -->
+        <div class="problem-side">
+          <div class="opp-panel-label opp-label-blue">Market Signal</div>
+
+          <div class="stat-2x2">
+            <div class="stat-card-sm">
+              <div class="stat-big">$65B+</div>
+              <div class="stat-tiny">Web3 gaming market projected by 2027</div>
+            </div>
+            <div class="stat-card-sm">
+              <div class="stat-big">4×</div>
+              <div class="stat-tiny">Higher on-chain activity from gaming users</div>
+            </div>
+            <div class="stat-card-sm">
+              <div class="stat-big">78%</div>
+              <div class="stat-tiny">Of holders sell due to lack of real utility</div>
+            </div>
+            <div class="stat-card-sm">
+              <div class="stat-big">&lt; 7d</div>
+              <div class="stat-tiny">From your token details to live gaming platform</div>
+            </div>
+          </div>
+
+          <!-- Revenue Snapshot — fills the middle gap -->
+          <div class="rev-snap">
+            <div class="rev-snap-header">
+              <span class="rev-snap-title">Revenue Snapshot</span>
+              <span class="rev-snap-note">@ 5% avg platform fee</span>
+            </div>
+            <div class="rev-row">
+              <span class="rev-tier tier-ignite">Ignite</span>
+              <span class="rev-vol">$500K / mo volume</span>
+              <span class="rev-sep">——</span>
+              <span class="rev-earn">$25K / mo</span>
+            </div>
+            <div class="rev-row">
+              <span class="rev-tier tier-growth">Momentum</span>
+              <span class="rev-vol">$2M / mo volume</span>
+              <span class="rev-sep">——</span>
+              <span class="rev-earn">$100K / mo</span>
+            </div>
+            <div class="rev-row">
+              <span class="rev-tier tier-scale">Apex</span>
+              <span class="rev-vol">$10M / mo volume</span>
+              <span class="rev-sep">——</span>
+              <span class="rev-earn">$500K / mo</span>
+            </div>
+          </div>
+
+          <div class="stat-hero">
+            <div class="stat-hero-num">10%</div>
+            <div class="stat-hero-text">
+              <strong>10% platform fee on winning rounds</strong> — taken from profit only, never from entries. Unsuccessful rounds flow into your Reward Treasury vault, compounding your ecosystem reserve with every round played.
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: What You Unlock — mirrors left panel structure -->
+        <div class="solution-side">
+          <div class="opp-panel-label opp-label-green">What You Unlock</div>
+
+          <!-- 2×2 compact feature grid -->
+          <div class="feat-2x2">
+            <div class="feat-card-sm">
+              <div class="feat-icon-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div class="feat-title">Community Always On</div>
+              <div class="feat-desc">Leaderboards, jackpots &amp; streaks give your holders a reason to return every single day — not just on launch day.</div>
+            </div>
+
+            <div class="feat-card-sm">
+              <div class="feat-icon-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+              <div class="feat-title">On-Chain Activity Surge</div>
+              <div class="feat-desc">Every round is a verifiable on-chain tx — more activity, stronger project signals, better visibility to the market.</div>
+            </div>
+
+            <div class="feat-card-sm">
+              <div class="feat-icon-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                  <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                </svg>
+              </div>
+              <div class="feat-title">Holder Retention Loop</div>
+              <div class="feat-desc">Players who earn rewards stay and play again. Converts passive speculators into an active community that never wants to leave.</div>
+            </div>
+
+            <div class="feat-card-sm">
+              <div class="feat-icon-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
+                  <line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+                </svg>
+              </div>
+              <div class="feat-title">Zero Ops. Fully Managed.</div>
+              <div class="feat-desc">We own the infra end-to-end — servers, security, updates, uptime. You focus on your community, we keep the platform running.</div>
+            </div>
+          </div>
+
+          <!-- Full-width trust card — mirrors hero stat strip -->
+          <div class="feat-card-wide">
+            <div class="feat-icon-wrap-lg">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="feat-wide-title">Verifiably Fair — Your Community Will Trust It</div>
+              <div class="feat-wide-desc">Chainlink VRF makes every outcome publicly verifiable on-chain. The transparency layer your community demands and your competitors simply can't replicate.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><div class="divider"></div></div>
+
+  <!-- ══════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════ -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-blue" style="margin-bottom:1rem">How It Works</div>
+        <h2>From Token Contract to <span class="gradient-text">Live Gaming Platform</span></h2>
+        <p>The only thing we need from you is 15 minutes. Smart contracts, infrastructure, UI, VRF — all on us. You own the brand, the community, and the revenue.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-connector"></div>
+
+        <!-- Step 1 -->
+        <div class="card step-card" style="border-color:rgba(155,89,255,0.2); background:linear-gradient(145deg,rgba(155,89,255,0.05) 0%,var(--bg-card) 60%)" onmouseenter="this.style.borderColor='rgba(155,89,255,0.5)';this.style.boxShadow='0 0 32px rgba(155,89,255,0.18)'" onmouseleave="this.style.borderColor='rgba(155,89,255,0.2)';this.style.boxShadow=''">
+          <div class="step-who step-who-1">You &nbsp;·&nbsp; ~15 minutes</div>
+          <div class="step-top-row">
+            <div class="step-icon-wrap step-icon-1">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9b59ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </div>
+            <div class="step-num step-num-1">01</div>
+          </div>
+          <div class="step-title">Brief Us</div>
+          <ul class="step-bullets">
+            <li><span class="sb-dot sb-dot-1"></span>Share your token contract address and target chain</li>
+            <li><span class="sb-dot sb-dot-1"></span>Drop your logo, brand colors, and domain</li>
+            <li><span class="sb-dot sb-dot-1"></span>One kickoff call — we handle everything from there</li>
+          </ul>
+          <div class="step-tags">
+            <span class="step-tag">Token Contract</span>
+            <span class="step-tag">Chain Selection</span>
+            <span class="step-tag">Brand Kit</span>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="card step-card" style="border-color:rgba(0,212,255,0.2); background:linear-gradient(145deg,rgba(0,212,255,0.05) 0%,var(--bg-card) 60%)" onmouseenter="this.style.borderColor='rgba(0,212,255,0.5)';this.style.boxShadow='0 0 32px rgba(0,212,255,0.18)'" onmouseleave="this.style.borderColor='rgba(0,212,255,0.2)';this.style.boxShadow=''">
+          <div class="step-who step-who-2">Us &nbsp;·&nbsp; 5–7 days</div>
+          <div class="step-top-row">
+            <div class="step-icon-wrap step-icon-2">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+                <line x1="19" y1="5" x2="5" y2="19"/>
+              </svg>
+            </div>
+            <div class="step-num step-num-2">02</div>
+          </div>
+          <div class="step-title">We Build Everything</div>
+          <ul class="step-bullets">
+            <li><span class="sb-dot sb-dot-2"></span>Deploy audited smart contracts on your chain</li>
+            <li><span class="sb-dot sb-dot-2"></span>Integrate on-chain VRF for provably fair, verifiable outcomes</li>
+            <li><span class="sb-dot sb-dot-2"></span>White-label the full gaming platform UI to your brand identity</li>
+            <li><span class="sb-dot sb-dot-2"></span>Configure platform wallets, custodial ledger &amp; fee rates</li>
+          </ul>
+          <div class="step-tags">
+            <span class="step-tag">Smart Contracts</span>
+            <span class="step-tag">On-Chain VRF</span>
+            <span class="step-tag">White-Label UI</span>
+            <span class="step-tag">House Wallet</span>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="card step-card" style="border-color:rgba(0,255,157,0.2); background:linear-gradient(145deg,rgba(0,255,157,0.05) 0%,var(--bg-card) 60%)" onmouseenter="this.style.borderColor='rgba(0,255,157,0.5)';this.style.boxShadow='0 0 32px rgba(0,255,157,0.18)'" onmouseleave="this.style.borderColor='rgba(0,255,157,0.2)';this.style.boxShadow=''">
+          <div class="step-who step-who-3">Together &nbsp;·&nbsp; Ongoing</div>
+          <div class="step-top-row">
+            <div class="step-icon-wrap step-icon-3">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+              </svg>
+            </div>
+            <div class="step-num step-num-3">03</div>
+          </div>
+          <div class="step-title">Launch & Earn</div>
+          <ul class="step-bullets">
+            <li><span class="sb-dot sb-dot-3"></span>Point your domain — we flip the switch</li>
+            <li><span class="sb-dot sb-dot-3"></span>Community plays &amp; earns rewards with your token from day one</li>
+            <li><span class="sb-dot sb-dot-3"></span>Entry fees accrue to your Reward Treasury vault</li>
+            <li><span class="sb-dot sb-dot-3"></span>Live dashboard tracks revenue &amp; player activity</li>
+          </ul>
+          <div class="step-tags">
+            <span class="step-tag">Your Domain</span>
+            <span class="step-tag">Reward Treasury</span>
+            <span class="step-tag">Live Dashboard</span>
+            <span class="step-tag">Revenue Split</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       GAMES
+  ══════════════════════════════════════════ -->
+  <section id="games" class="section" style="background:var(--bg-secondary); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-green" style="margin-bottom:1rem">10 Reward Games Included</div>
+        <h2>Every Game. <span class="gradient-text">Zero Extra Cost.</span></h2>
+        <p>Every plan includes all 10 community reward games — from VRF-verified single-player challenges to real-time multiplayer coinflips. No add-ons, no per-game fees.</p>
+      </div>
+      <div class="games-grid">
+
+        <!-- Dice -->
+        <div class="game-card" style="--gc:#00d4ff;--gc-bg:rgba(0,212,255,0.1);--gc-border:rgba(0,212,255,0.3)" onmouseenter="this.style.borderColor='rgba(0,212,255,0.4)';this.style.boxShadow='0 8px 32px rgba(0,212,255,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="5" y="5" width="38" height="38" rx="9" fill="rgba(0,212,255,0.08)" stroke="#00d4ff" stroke-width="2"/><circle cx="15" cy="15" r="3.5" fill="#00d4ff"/><circle cx="33" cy="15" r="3.5" fill="#00d4ff"/><circle cx="24" cy="24" r="3.5" fill="#00d4ff"/><circle cx="15" cy="33" r="3.5" fill="#00d4ff"/><circle cx="33" cy="33" r="3.5" fill="#00d4ff"/></svg>
+            <span class="gc-mult">up to 99×</span>
+          </div>
+          <div class="gc-name">Dice</div>
+          <div class="gc-desc">Set a target number and roll under it to win. The riskier the target, the bigger the multiplier.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Over/Under</span><span class="gc-tag">Solo</span></div>
+        </div>
+
+        <!-- Mines -->
+        <div class="game-card" style="--gc:#ff5555;--gc-bg:rgba(255,85,85,0.1);--gc-border:rgba(255,85,85,0.3)" onmouseenter="this.style.borderColor='rgba(255,85,85,0.4)';this.style.boxShadow='0 8px 32px rgba(255,85,85,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="3.5" y="3.5" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/><rect x="18" y="3.5" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/><rect x="32.5" y="3.5" width="13" height="13" rx="2.5" fill="rgba(255,80,80,0.08)" stroke="#ff5555" stroke-width="1.5"/><path d="M35.5 6.5 L43.5 14.5 M43.5 6.5 L35.5 14.5" stroke="#ff5555" stroke-width="2" stroke-linecap="round"/><rect x="3.5" y="18" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/><rect x="18" y="18" width="13" height="13" rx="2.5" fill="rgba(255,61,122,0.15)" stroke="#ff3d7a" stroke-width="1.5"/><path d="M24.5 20 L29 24.5 L24.5 29 L19 24.5 Z" fill="#ff3d7a"/><rect x="32.5" y="18" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/><rect x="3.5" y="32.5" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/><rect x="18" y="32.5" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/><rect x="32.5" y="32.5" width="13" height="13" rx="2.5" fill="rgba(255,85,85,0.04)" stroke="rgba(255,85,85,0.2)" stroke-width="1"/></svg>
+            <span class="gc-mult">up to 25×</span>
+          </div>
+          <div class="gc-name">Mines</div>
+          <div class="gc-desc">Reveal safe tiles on a minefield grid. Cash out anytime — or hit a mine and lose it all.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Multi-step</span><span class="gc-tag">Risk/Reward</span></div>
+        </div>
+
+        <!-- Crash -->
+        <div class="game-card" style="--gc:#ff6b35;--gc-bg:rgba(255,107,53,0.1);--gc-border:rgba(255,107,53,0.3)" onmouseenter="this.style.borderColor='rgba(255,107,53,0.4)';this.style.boxShadow='0 8px 32px rgba(255,107,53,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><circle cx="8" cy="40" r="1.5" fill="rgba(255,107,53,0.15)"/><circle cx="12" cy="36" r="1.5" fill="rgba(255,107,53,0.25)"/><circle cx="16" cy="31" r="1.5" fill="rgba(255,107,53,0.35)"/><path d="M 6 42 Q 18 30 26 20 Q 32 13 42 6" stroke="rgba(255,107,53,0.3)" stroke-width="1.5" stroke-dasharray="3 3" fill="none" stroke-linecap="round"/><path d="M 34 14 L 44 6 L 42 16 L 34 14 Z" fill="#ff6b35" stroke="#ff6b35" stroke-width="1" stroke-linejoin="round"/><line x1="3" y1="44" x2="12" y2="44" stroke="rgba(255,107,53,0.2)" stroke-width="1"/><line x1="3" y1="38" x2="8" y2="38" stroke="rgba(255,107,53,0.25)" stroke-width="1"/><line x1="3" y1="32" x2="5" y2="32" stroke="rgba(255,107,53,0.35)" stroke-width="1"/></svg>
+            <span class="gc-mult">up to 10000×</span>
+          </div>
+          <div class="gc-name">Crash</div>
+          <div class="gc-desc">Multiplier climbs in real-time. Cash out before it crashes — or watch it soar past 1000×.</div>
+          <div class="gc-footer"><span class="gc-tag">Real-time</span><span class="gc-tag">Cashout</span><span class="gc-tag">Solo</span></div>
+        </div>
+
+        <!-- Plinko -->
+        <div class="game-card" style="--gc:#ffd700;--gc-bg:rgba(255,215,0,0.1);--gc-border:rgba(255,215,0,0.3)" onmouseenter="this.style.borderColor='rgba(255,215,0,0.4)';this.style.boxShadow='0 8px 32px rgba(255,215,0,0.1)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="6" r="4.5" fill="#ffd700"/><circle cx="22.5" cy="4.5" r="1.5" fill="rgba(255,215,0,0.5)"/><line x1="24" y1="10" x2="24" y2="18" stroke="rgba(255,215,0,0.25)" stroke-width="1" stroke-dasharray="2 2"/><circle cx="17" cy="21" r="3" fill="rgba(255,215,0,0.5)"/><circle cx="31" cy="21" r="3" fill="rgba(255,215,0,0.5)"/><circle cx="10" cy="32" r="2.5" fill="rgba(255,215,0,0.35)"/><circle cx="24" cy="32" r="2.5" fill="rgba(255,215,0,0.35)"/><circle cx="38" cy="32" r="2.5" fill="rgba(255,215,0,0.35)"/><rect x="3" y="39" width="9" height="6" rx="1.5" fill="rgba(255,215,0,0.08)" stroke="rgba(255,215,0,0.25)" stroke-width="1"/><rect x="14" y="39" width="9" height="6" rx="1.5" fill="rgba(255,215,0,0.28)" stroke="#ffd700" stroke-width="1.5"/><rect x="26" y="39" width="9" height="6" rx="1.5" fill="rgba(255,215,0,0.08)" stroke="rgba(255,215,0,0.25)" stroke-width="1"/><rect x="37" y="39" width="8" height="6" rx="1.5" fill="rgba(255,215,0,0.04)" stroke="rgba(255,215,0,0.1)" stroke-width="1"/></svg>
+            <span class="gc-mult">up to 1000×</span>
+          </div>
+          <div class="gc-name">Plinko</div>
+          <div class="gc-desc">Drop a ball through a pegged grid — VRF determines the path to a multiplier bucket below.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Path Drop</span><span class="gc-tag">Risk Modes</span></div>
+        </div>
+
+        <!-- HiLo -->
+        <div class="game-card" style="--gc:#818cf8;--gc-bg:rgba(129,140,248,0.1);--gc-border:rgba(129,140,248,0.3)" onmouseenter="this.style.borderColor='rgba(129,140,248,0.4)';this.style.boxShadow='0 8px 32px rgba(129,140,248,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><path d="M8 34 L8 14 M8 14 L4 20 M8 14 L12 20" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="6" width="20" height="28" rx="3.5" fill="#f4f4ff" stroke="#818cf8" stroke-width="2"/><text x="24" y="27" font-size="15" font-weight="900" fill="#1a1a2e" font-family="Georgia,serif" text-anchor="middle">?</text><path d="M40 14 L40 34 M40 34 L36 28 M40 34 L44 28" stroke="rgba(129,140,248,0.4)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="36" width="18" height="8" rx="2" fill="rgba(129,140,248,0.1)" stroke="rgba(129,140,248,0.35)" stroke-width="1"/></svg>
+            <span class="gc-mult">up to 10000×</span>
+          </div>
+          <div class="gc-name">HiLo</div>
+          <div class="gc-desc">Guess higher or lower on each revealed card. Chain correct guesses to build massive multipliers.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Cards</span><span class="gc-tag">Multi-guess</span></div>
+        </div>
+
+        <!-- Wheel -->
+        <div class="game-card" style="--gc:#fb923c;--gc-bg:rgba(251,146,60,0.1);--gc-border:rgba(251,146,60,0.3)" onmouseenter="this.style.borderColor='rgba(251,146,60,0.4)';this.style.boxShadow='0 8px 32px rgba(251,146,60,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><path d="M19 2 L29 2 L24 10 Z" fill="#fb923c"/><path d="M 24 27 L 24 9 A 18 18 0 0 1 36.73 14.27 Z" fill="rgba(251,146,60,1)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 36.73 14.27 A 18 18 0 0 1 42 27 Z" fill="rgba(251,146,60,0.12)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 42 27 A 18 18 0 0 1 36.73 39.73 Z" fill="rgba(251,146,60,0.65)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 36.73 39.73 A 18 18 0 0 1 24 45 Z" fill="rgba(251,146,60,0.12)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 24 45 A 18 18 0 0 1 11.27 39.73 Z" fill="rgba(251,146,60,0.45)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 11.27 39.73 A 18 18 0 0 1 6 27 Z" fill="rgba(251,146,60,0.12)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 6 27 A 18 18 0 0 1 11.27 14.27 Z" fill="rgba(251,146,60,0.65)" stroke="#08081a" stroke-width="0.6"/><path d="M 24 27 L 11.27 14.27 A 18 18 0 0 1 24 9 Z" fill="rgba(251,146,60,0.12)" stroke="#08081a" stroke-width="0.6"/><circle cx="24" cy="27" r="18" fill="none" stroke="#fb923c" stroke-width="2"/><circle cx="24" cy="27" r="5.5" fill="#08081a" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <span class="gc-mult">up to 100×</span>
+          </div>
+          <div class="gc-name">Wheel</div>
+          <div class="gc-desc">Spin the wheel across low, medium, or high risk modes. VRF-settled segment determines your payout.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Risk Modes</span><span class="gc-tag">Solo</span></div>
+        </div>
+
+        <!-- Keno -->
+        <div class="game-card" style="--gc:#a855f7;--gc-bg:rgba(168,85,247,0.1);--gc-border:rgba(168,85,247,0.3)" onmouseenter="this.style.borderColor='rgba(168,85,247,0.4)';this.style.boxShadow='0 8px 32px rgba(168,85,247,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><circle cx="11" cy="14" r="9" fill="rgba(168,85,247,0.06)" stroke="#a855f7" stroke-width="1.5"/><circle cx="8" cy="11" r="2.5" fill="rgba(168,85,247,0.2)"/><circle cx="24" cy="14" r="9" fill="rgba(168,85,247,0.18)" stroke="#a855f7" stroke-width="2"/><circle cx="21" cy="11" r="3" fill="rgba(168,85,247,0.45)"/><circle cx="37" cy="14" r="9" fill="rgba(168,85,247,0.06)" stroke="#a855f7" stroke-width="1.5"/><circle cx="34" cy="11" r="2.5" fill="rgba(168,85,247,0.2)"/><circle cx="11" cy="34" r="9" fill="rgba(168,85,247,0.06)" stroke="#a855f7" stroke-width="1.5"/><circle cx="8" cy="31" r="2.5" fill="rgba(168,85,247,0.2)"/><circle cx="24" cy="34" r="9" fill="rgba(168,85,247,0.18)" stroke="#a855f7" stroke-width="2"/><circle cx="21" cy="31" r="3" fill="rgba(168,85,247,0.45)"/><circle cx="37" cy="34" r="9" fill="rgba(168,85,247,0.06)" stroke="#a855f7" stroke-width="1.5"/><circle cx="34" cy="31" r="2.5" fill="rgba(168,85,247,0.2)"/></svg>
+            <span class="gc-mult">up to 10000×</span>
+          </div>
+          <div class="gc-name">Keno</div>
+          <div class="gc-desc">Pick up to 10 numbers from a 40-ball grid. More matches = exponential multiplier growth.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Pick & Draw</span><span class="gc-tag">Solo</span></div>
+        </div>
+
+        <!-- Roulette -->
+        <div class="game-card" style="--gc:#e879f9;--gc-bg:rgba(232,121,249,0.1);--gc-border:rgba(232,121,249,0.3)" onmouseenter="this.style.borderColor='rgba(232,121,249,0.4)';this.style.boxShadow='0 8px 32px rgba(232,121,249,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="21.5" fill="rgba(232,121,249,0.08)" stroke="#e879f9" stroke-width="2"/><path d="M 24 24 L 24 4 A 20 20 0 0 1 34 6.68 Z" fill="rgba(0,195,90,0.85)" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 34 6.68 A 20 20 0 0 1 41.32 14 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 41.32 14 A 20 20 0 0 1 44 24 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 44 24 A 20 20 0 0 1 41.32 34 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 41.32 34 A 20 20 0 0 1 34 41.32 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 34 41.32 A 20 20 0 0 1 24 44 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 24 44 A 20 20 0 0 1 14 41.32 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 14 41.32 A 20 20 0 0 1 6.68 34 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 6.68 34 A 20 20 0 0 1 4 24 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 4 24 A 20 20 0 0 1 6.68 14 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 6.68 14 A 20 20 0 0 1 14 6.68 Z" fill="#e879f9" stroke="#08081a" stroke-width="0.8"/><path d="M 24 24 L 14 6.68 A 20 20 0 0 1 24 4 Z" fill="#1a1a35" stroke="#08081a" stroke-width="0.8"/><circle cx="24" cy="24" r="8" fill="#08081a" stroke="#e879f9" stroke-width="1.5"/><circle cx="24" cy="24" r="4" fill="rgba(232,121,249,0.22)"/><circle cx="24" cy="24" r="2" fill="#e879f9"/><circle cx="24" cy="5.5" r="2.5" fill="white" stroke="#ccc" stroke-width="0.5"/></svg>
+            <span class="gc-mult">up to 36×</span>
+          </div>
+          <div class="gc-name">Roulette</div>
+          <div class="gc-desc">Place multiple bets across numbers, colors, and rows. VRF spins the wheel, one transaction settles all.</div>
+          <div class="gc-footer"><span class="gc-tag">VRF</span><span class="gc-tag">Multi-bet</span><span class="gc-tag">Classic</span></div>
+        </div>
+
+        <!-- Blackjack -->
+        <div class="game-card" style="--gc:#14b8a6;--gc-bg:rgba(20,184,166,0.1);--gc-border:rgba(20,184,166,0.3)" onmouseenter="this.style.borderColor='rgba(20,184,166,0.4)';this.style.boxShadow='0 8px 32px rgba(20,184,166,0.12)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="6" y="11" width="26" height="34" rx="4" fill="#12122a" stroke="rgba(20,184,166,0.3)" stroke-width="1.5"/><rect x="9" y="14" width="20" height="28" rx="2" fill="rgba(20,184,166,0.06)" stroke="rgba(20,184,166,0.15)" stroke-width="0.5"/><rect x="16" y="3" width="26" height="34" rx="4" fill="#f4f4ff" stroke="#14b8a6" stroke-width="2"/><path d="M29 16 C29 16 23 22 23 26 C23 28.5 25.5 29.5 29 27 C29 30 27.5 32 26 33 L32 33 C30.5 32 29 30 29 27 C32.5 29.5 35 28.5 35 26 C35 22 29 16 29 16Z" fill="#1a1a2e"/><text x="19" y="15" font-size="9" font-weight="900" fill="#1a1a2e" font-family="Georgia,serif">A</text><text x="19.5" y="24" font-size="7" fill="#1a1a2e" font-family="serif">♠</text></svg>
+            <span class="gc-mult">up to 2.5×</span>
+          </div>
+          <div class="gc-name">Blackjack</div>
+          <div class="gc-desc">Hit, stand, or double down to beat the dealer. Blackjack pays 2.5×. Strategy meets provable fairness.</div>
+          <div class="gc-footer"><span class="gc-tag">Cards</span><span class="gc-tag">Strategy</span><span class="gc-tag">Classic</span></div>
+        </div>
+
+        <!-- CoinFlip -->
+        <div class="game-card" style="--gc:#00ff9d;--gc-bg:rgba(0,255,157,0.08);--gc-border:rgba(0,255,157,0.25)" onmouseenter="this.style.borderColor='rgba(0,255,157,0.4)';this.style.boxShadow='0 8px 32px rgba(0,255,157,0.1)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='';this.style.boxShadow='';this.style.transform=''">
+          <div class="gc-header">
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="21" fill="rgba(0,255,157,0.07)" stroke="#00ff9d" stroke-width="2.5"/><circle cx="24" cy="24" r="15" fill="rgba(0,255,157,0.02)" stroke="rgba(0,255,157,0.2)" stroke-width="1"/><path d="M24 11 L26.9 19.5 L35.9 19.8 L29.1 25.2 L31.4 34.2 L24 29.5 L16.6 34.2 L18.9 25.2 L12.1 19.8 L21.1 19.5 Z" fill="#00ff9d"/></svg>
+            <span class="gc-mult">2× PvP</span>
+          </div>
+          <div class="gc-name">CoinFlip</div>
+          <div class="gc-desc">Player vs. player coin toss. Create a match, another player joins — winner takes the pot instantly.</div>
+          <div class="gc-footer"><span class="gc-tag">PvP</span><span class="gc-tag">Instant</span><span class="gc-tag">Trustless</span></div>
+        </div>
+
+      </div>
+      <p class="muted" style="text-align:center; margin-top:2rem; font-size:0.875rem">More games added every quarter. All clients receive new games at no extra cost.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       TOKEN UTILITY
+  ══════════════════════════════════════════ -->
+  <section id="token-utility" class="section">
+    <div class="container">
+      <div class="utility-inner">
+        <!-- Left -->
+        <div>
+          <div class="badge badge-yellow" style="margin-bottom:1rem">Token Utility</div>
+          <h2 style="font-size:clamp(1.75rem,3.5vw,2.5rem); font-weight:800; margin-bottom:1rem">
+            Turn Speculation Into <span class="gradient-text">Real Demand</span>
+          </h2>
+          <p style="color:var(--text-muted); font-size:0.975rem; margin-bottom:1.5rem; line-height:1.7">
+            A community gaming hub creates the most powerful token utility loop possible: players must <strong style="color:var(--text-primary)">hold your token to play</strong>, must <strong style="color:var(--text-primary)">buy more to keep playing</strong>, and winners <strong style="color:var(--text-primary)">receive back your token</strong> — all on-chain.
+          </p>
+          <div class="utility-tag-cloud">
+            <span class="utag utag-g">Buy Pressure</span>
+            <span class="utag utag-p">Ecosystem Retention</span>
+            <span class="utag utag-b">Token Velocity</span>
+            <span class="utag utag-y">Holder Incentive</span>
+            <span class="utag utag-g">On-chain Activity</span>
+            <span class="utag utag-p">Community Engagement</span>
+            <span class="utag utag-b">Revenue for Project</span>
+          </div>
+          <ul class="utility-list">
+            <li>
+              <div class="check-icon">✓</div>
+              <div><strong>Demand loop:</strong> Every play is a token transaction — consistent on-chain activity and buy pressure that shows on analytics</div>
+            </li>
+            <li>
+              <div class="check-icon">✓</div>
+              <div><strong>Holder stickiness:</strong> Users top up wallets to keep playing, converting speculators into engaged token holders</div>
+            </li>
+            <li>
+              <div class="check-icon">✓</div>
+              <div><strong>Revenue for your treasury:</strong> Unsuccessful rounds flow straight to your Reward Treasury vault. Every winning round pays a 10% fee on profit — two revenue streams running 24/7</div>
+            </li>
+            <li>
+              <div class="check-icon">✓</div>
+              <div><strong>Community narrative:</strong> "Play &amp; earn with $YOUR token" is a concrete, shareable use case that drives new user acquisition</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right: Flow diagram -->
+        <div>
+          <div class="flow-diagram">
+            <div class="flow-title">Token Utility Flow</div>
+
+            <div class="flow-row">
+              <div class="flow-node fn-user">👤 Player</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node fn-token">🪙 Deposits $TOKEN</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node fn-casino">🎮 Game Balance</div>
+            </div>
+            <div class="flow-desc" style="padding-left:0.5rem; margin-bottom:1.25rem">Player buys/holds your token → deposits to play → token demand created</div>
+
+            <div class="flow-row">
+              <div class="flow-node fn-casino">🎮 Plays Round</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node fn-house" style="background:rgba(155,89,255,0.1); border-color:rgba(155,89,255,0.25); color:var(--neon-purple)">⛓️ VRF On-chain</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node fn-house">🏦 Result</div>
+            </div>
+            <div class="flow-desc" style="padding-left:0.5rem; margin-bottom:1.25rem">Chainlink VRF generates provably fair result — fully auditable, trustless</div>
+
+            <!-- Split outcomes -->
+            <div style="display:flex; flex-direction:column; gap:0.45rem; margin-bottom:0.5rem">
+              <!-- WIN path -->
+              <div style="display:flex; align-items:center; gap:0.4rem">
+                <span style="font-size:0.6rem; font-weight:800; letter-spacing:0.06em; padding:0.18rem 0.5rem; border-radius:5px; background:rgba(0,255,157,0.1); border:1px solid rgba(0,255,157,0.25); color:var(--neon-green); white-space:nowrap; flex-shrink:0">✅ WIN</span>
+                <div class="flow-arrow" style="flex-shrink:0">→</div>
+                <div class="flow-node fn-user" style="flex:1; font-size:0.72rem; padding:0.4rem 0.6rem">👤 Player nets payout</div>
+                <div class="flow-arrow" style="flex-shrink:0">→</div>
+                <div class="flow-node fn-token" style="background:rgba(247,201,72,0.09); border-color:rgba(247,201,72,0.25); color:var(--neon-yellow); font-size:0.72rem; padding:0.4rem 0.6rem; white-space:nowrap; flex-shrink:0">💰 10% fee → Treasury</div>
+              </div>
+              <!-- LOSE path -->
+              <div style="display:flex; align-items:center; gap:0.4rem">
+                <span style="font-size:0.6rem; font-weight:800; letter-spacing:0.06em; padding:0.18rem 0.5rem; border-radius:5px; background:rgba(255,85,85,0.1); border:1px solid rgba(255,85,85,0.25); color:#ff5555; white-space:nowrap; flex-shrink:0">❌ LOSE</span>
+                <div class="flow-arrow" style="flex-shrink:0">→</div>
+                <div class="flow-node fn-house" style="flex:1; font-size:0.72rem; padding:0.4rem 0.6rem">Full stake forfeited</div>
+                <div class="flow-arrow" style="flex-shrink:0">→</div>
+                <div class="flow-node fn-token" style="background:rgba(247,201,72,0.09); border-color:rgba(247,201,72,0.25); color:var(--neon-yellow); font-size:0.72rem; padding:0.4rem 0.6rem; white-space:nowrap; flex-shrink:0">💰 100% → Treasury</div>
+              </div>
+            </div>
+            <div class="flow-desc" style="padding-left:0.5rem; margin-bottom:1.25rem">Win or not — every round generates treasury revenue from two streams</div>
+
+            <div style="background:rgba(0,255,157,0.04); border:1px solid rgba(0,255,157,0.18); border-radius:12px; padding:1rem 1.1rem;">
+              <div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--neon-green); margin-bottom:0.6rem">Revenue Example</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.9rem">100 players · 10 rounds/day · 100 $TOKEN avg entry</div>
+              <div style="display:flex; flex-direction:column; gap:0; border:1px solid rgba(255,255,255,0.06); border-radius:8px; overflow:hidden; margin-bottom:0.85rem">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.75rem; background:rgba(255,255,255,0.02)">
+                  <span style="font-size:0.75rem; color:var(--text-muted)">Unsuccessful entries → vault</span>
+                  <span style="font-size:0.75rem; font-weight:700; color:var(--neon-yellow)">~50,000 $TOKEN</span>
+                </div>
+                <div style="height:1px; background:rgba(255,255,255,0.05)"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.75rem; background:rgba(255,255,255,0.02)">
+                  <span style="font-size:0.75rem; color:var(--text-muted)">10% fee on wins</span>
+                  <span style="font-size:0.75rem; font-weight:700; color:var(--neon-yellow)">~5,000 $TOKEN</span>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline">
+                <span style="font-size:0.75rem; color:var(--text-muted)">Net treasury / day</span>
+                <span style="font-size:1rem; font-weight:800; font-family:'Space Grotesk',sans-serif; background:linear-gradient(135deg,var(--neon-green) 30%,var(--neon-blue) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent">~55,000 $TOKEN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       PRICING
+  ══════════════════════════════════════════ -->
+  <section id="pricing" class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-purple" style="margin-bottom:1rem">Pricing</div>
+        <h2>Choose Your <span class="gradient-text">Launch Plan</span></h2>
+        <p>Every plan is fully deployed and managed by us — you focus on your community, we handle everything else. We grow when you grow.</p>
+      </div>
+
+      <!-- Trust strip -->
+      <div class="pricing-trust">
+        <div class="pricing-trust-item">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#00ff9d" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="#00ff9d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Fully deployed &amp; managed by us
+        </div>
+        <div class="pricing-trust-item">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#00ff9d" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="#00ff9d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          New games auto-added on release
+        </div>
+        <div class="pricing-trust-item">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#00ff9d" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="#00ff9d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Zero infra work on your end
+        </div>
+      </div>
+
+      <div class="pricing-grid">
+
+        <!-- Starter -->
+        <div class="pricing-card">
+          <div class="pricing-plan" style="color:var(--neon-blue)">Starter</div>
+          <div class="pricing-price-row" style="display:flex; align-items:baseline; gap:0.6rem; margin-bottom:0.2rem; flex-wrap:wrap">
+            <div class="pricing-price">$2,999 <span>/ setup</span></div>
+            <span style="font-size:1.35rem; font-weight:700; color:rgba(255,255,255,0.22); text-decoration:line-through; font-family:'Space Grotesk',sans-serif">$6,999</span>
+          </div>
+          <div style="font-size:0.68rem; font-weight:700; letter-spacing:0.06em; color:var(--neon-blue); margin-bottom:0.55rem; text-transform:uppercase">🏷 Launch offer — save $4,000</div>
+          <div class="pricing-rev pricing-rev-starter">50% revenue share</div>
+          <div class="pricing-setup">Then <b>$399 / month</b> — fully managed platform</div>
+          <ul class="pricing-features">
+            <li class="pf-group">Platform</li>
+            <li><span class="pf-check">✓</span> All 10 games, 1 EVM chain</li>
+            <li><span class="pf-check">✓</span> Your ERC-20 token as in-game currency</li>
+            <li><span class="pf-check">✓</span> White-label UI — your logo &amp; colors</li>
+            <li><span class="pf-check">✓</span> On-chain VRF, provably fair outcomes</li>
+            <li><span class="pf-check">✓</span> Admin dashboard — treasury &amp; payouts</li>
+            <li class="pf-group">Engagement</li>
+            <li><span class="pf-check">✓</span> Daily streak rewards</li>
+            <li><span class="pf-check">✓</span> Public leaderboard</li>
+            <li class="pf-group">Support</li>
+            <li><span class="pf-check">✓</span> Email support</li>
+          </ul>
+          <a href="mailto:hello@gamzo.io?subject=Starter Plan Inquiry" class="btn-plan pricing-cta">Get Started →</a>
+        </div>
+
+        <!-- Pro (featured) -->
+        <div class="pricing-card featured">
+          <div class="pricing-popular">Most Popular</div>
+          <div class="pricing-plan" style="color:var(--neon-purple)">Pro</div>
+          <div class="pricing-price-row" style="display:flex; align-items:baseline; gap:0.6rem; margin-bottom:0.2rem; flex-wrap:wrap">
+            <div class="pricing-price" style="color:var(--neon-purple)">$4,999 <span>/ setup</span></div>
+            <span style="font-size:1.35rem; font-weight:700; color:rgba(255,255,255,0.22); text-decoration:line-through; font-family:'Space Grotesk',sans-serif">$14,999</span>
+          </div>
+          <div style="font-size:0.68rem; font-weight:700; letter-spacing:0.06em; color:var(--neon-purple); margin-bottom:0.55rem; text-transform:uppercase">🏷 Launch offer — save $10,000</div>
+          <div class="pricing-rev pricing-rev-pro">30% revenue share</div>
+          <div class="pricing-setup">Then <b>$699 / month</b> — fully managed platform</div>
+          <ul class="pricing-features">
+            <li class="pf-group">Platform</li>
+            <li><span class="pf-check">✓</span> All 10 games, up to 2 EVM chains</li>
+            <li><span class="pf-check">✓</span> Your ERC-20 token as in-game currency</li>
+            <li><span class="pf-check">✓</span> Full white-label — zero GamZO branding</li>
+            <li><span class="pf-check">✓</span> Custom domain + SSL</li>
+            <li><span class="pf-check">✓</span> On-chain VRF + configurable platform fee</li>
+            <li><span class="pf-check">✓</span> Admin dashboard + revenue analytics</li>
+            <li class="pf-group">Retention &amp; Growth</li>
+            <li><span class="pf-check">✓</span> Streak rewards &amp; seasonal challenges</li>
+            <li><span class="pf-check">✓</span> Leaderboard + weekly competition events</li>
+            <li><span class="pf-check">✓</span> Referral &amp; affiliate system</li>
+            <li><span class="pf-check">✓</span> VIP tiers — volume-based holder perks</li>
+            <li><span class="pf-check">✓</span> Streak NFTs &amp; VIP membership NFTs</li>
+            <li class="pf-group">Support</li>
+            <li><span class="pf-check">✓</span> Dedicated Slack channel</li>
+            <li><span class="pf-check">✓</span> Priority support — 24h SLA</li>
+          </ul>
+          <a href="mailto:hello@gamzo.io?subject=Pro Plan Inquiry" class="btn-plan-featured pricing-cta">Get Started →</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card">
+          <div class="pricing-plan" style="color:var(--neon-green)">Enterprise</div>
+          <div class="pricing-price" style="font-size:2.4rem">Custom</div>
+          <div class="pricing-rev pricing-rev-ent">Negotiated revenue share</div>
+          <div class="pricing-setup">White-glove deployment on <b>dedicated infrastructure</b></div>
+          <ul class="pricing-features">
+            <li class="pf-group">Platform</li>
+            <li><span class="pf-check">✓</span> Everything in Pro</li>
+            <li><span class="pf-check">✓</span> Unlimited EVM chains</li>
+            <li><span class="pf-check">✓</span> Custom game development</li>
+            <li><span class="pf-check">✓</span> Dedicated server infrastructure</li>
+            <li><span class="pf-check">✓</span> Source code license</li>
+            <li class="pf-group">Retention &amp; Growth</li>
+            <li><span class="pf-check">✓</span> Custom NFT collection — streak, VIP, special drops</li>
+            <li><span class="pf-check">✓</span> Bespoke gamification &amp; reward rule engine</li>
+            <li><span class="pf-check">✓</span> Custom affiliate &amp; referral structure</li>
+            <li><span class="pf-check">✓</span> Custom tokenomics integration</li>
+            <li class="pf-group">Support</li>
+            <li><span class="pf-check">✓</span> Dedicated engineer assigned to your project</li>
+            <li><span class="pf-check">✓</span> 4h SLA + roadmap co-development</li>
+          </ul>
+          <a href="mailto:hello@gamzo.io?subject=Enterprise Inquiry" class="btn-plan pricing-cta">Contact Us →</a>
+        </div>
+
+      </div>
+      <p class="pricing-note">
+        Not sure which plan fits? <a href="mailto:hello@gamzo.io">Email us</a> — we'll map out the right setup for your token's stage and community size.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FEATURES
+  ══════════════════════════════════════════ -->
+  <section id="features" class="section" style="background:var(--bg-secondary); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-green" style="margin-bottom:1rem">Platform Features</div>
+        <h2>Built for Scale, <span class="gradient-text">From Day One</span></h2>
+        <p>Every feature you'd need to run a serious community gaming platform is already built in — no third-party integrations, no extra vendors.</p>
+      </div>
+      <div class="features-grid">
+
+        <!-- Provably Fair -->
+        <div class="feature-card" style="--fi-accent:#00ff9d;--fi-bg:rgba(0,255,157,0.07);--fi-border:rgba(0,255,157,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
+          <div class="feature-title">Provably Fair Outcomes</div>
+          <div class="feature-desc">Every result is settled by on-chain VRF — cryptographically verifiable by anyone, forever. Players can audit every single bet they've ever placed.</div>
+        </div>
+
+        <!-- House Treasury -->
+        <div class="feature-card" style="--fi-accent:#9b59ff;--fi-bg:rgba(155,89,255,0.07);--fi-border:rgba(155,89,255,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9b59ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+              <line x1="12" y1="12" x2="12" y2="16"/>
+              <line x1="10" y1="14" x2="14" y2="14"/>
+            </svg>
+          </div>
+          <div class="feature-title">Reward Treasury &amp; Ledger</div>
+          <div class="feature-desc">Double-entry accounting tracks every entry, payout, and fee. Full audit trail. Gas-free gameplay for players — treasury solvency enforced on every round.</div>
+        </div>
+
+        <!-- Any ERC-20 Token -->
+        <div class="feature-card" style="--fi-accent:#00d4ff;--fi-bg:rgba(0,212,255,0.07);--fi-border:rgba(0,212,255,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v2m0 8v2M8.5 8.5l1.5 1.5m4 4l1.5 1.5M6 12h2m8 0h2M8.5 15.5l1.5-1.5m4-4l1.5-1.5"/>
+            </svg>
+          </div>
+          <div class="feature-title">Any ERC-20 Token</div>
+          <div class="feature-desc">Bring your token contract address — we handle everything else. Supports all major EVM chains: Ethereum, Polygon, BSC, Base, Arbitrum, Avalanche.</div>
+        </div>
+
+        <!-- White-Label UI -->
+        <div class="feature-card" style="--fi-accent:#00ff9d;--fi-bg:rgba(0,255,157,0.07);--fi-border:rgba(0,255,157,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+          </div>
+          <div class="feature-title">Full White-Label UI</div>
+          <div class="feature-desc">Your logo, colors, and domain — everywhere. Zero GamZO branding visible to your players. The platform is entirely yours, indistinguishable from in-house.</div>
+        </div>
+
+        <!-- Wallet Auth -->
+        <div class="feature-card" style="--fi-accent:#9b59ff;--fi-bg:rgba(155,89,255,0.07);--fi-border:rgba(155,89,255,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9b59ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="14" rx="2"/>
+              <path d="M16 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="rgba(155,89,255,0.3)"/>
+              <path d="M22 10H18a2 2 0 0 0 0 4h4"/>
+              <path d="M6 2l4 4-4 4"/>
+            </svg>
+          </div>
+          <div class="feature-title">Wallet-Native Auth</div>
+          <div class="feature-desc">Sign-In With Ethereum — MetaMask, Coinbase Wallet, or any EVM wallet. No email, no KYC, no friction. Players connect in seconds and start playing.</div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="feature-card" style="--fi-accent:#00d4ff;--fi-bg:rgba(0,212,255,0.07);--fi-border:rgba(0,212,255,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <path d="M14 17.5h7M17.5 14v7"/>
+            </svg>
+          </div>
+          <div class="feature-title">Admin Control Panel</div>
+          <div class="feature-desc">Manage deposits, withdrawals, treasury balance, and fee collection from one secure dashboard. Full audit logs, player activity, and revenue analytics.</div>
+        </div>
+
+        <!-- Real-Time Games -->
+        <div class="feature-card" style="--fi-accent:#00ff9d;--fi-bg:rgba(0,255,157,0.07);--fi-border:rgba(0,255,157,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <div class="feature-title">Real-Time Game Engine</div>
+          <div class="feature-desc">Crash and CoinFlip run on a live server-side engine with sub-second response times. Provably fair flyaway points generated before each round starts.</div>
+        </div>
+
+        <!-- Retention & NFTs -->
+        <div class="feature-card" style="--fi-accent:#9b59ff;--fi-bg:rgba(155,89,255,0.07);--fi-border:rgba(155,89,255,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9b59ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div class="feature-title">Gamification &amp; NFT Rewards</div>
+          <div class="feature-desc">Streaks, leaderboards, VIP tiers, and on-chain NFT badges — streak NFTs, VIP membership tokens, and seasonal drop rewards that keep holders engaged.</div>
+        </div>
+
+        <!-- Deposit & Withdrawal -->
+        <div class="feature-card" style="--fi-accent:#00d4ff;--fi-bg:rgba(0,212,255,0.07);--fi-border:rgba(0,212,255,0.18)">
+          <div class="fi-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 16V4m0 0L3 8m4-4l4 4"/>
+              <path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+            </svg>
+          </div>
+          <div class="feature-title">Deposit &amp; Withdrawal Flow</div>
+          <div class="feature-desc">Custodial deposit and withdrawal system with admin approval. On-chain deposits confirmed by admin; withdrawals debit instantly with full reject-refund support.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       POWERED BY
+  ══════════════════════════════════════════ -->
+  <section id="trust">
+    <div class="container">
+      <div class="trust-header-wrap">
+        <div class="trust-heading">Powered By</div>
+      </div>
+      <div class="trust-inner">
+
+        <!-- Chainlink VRF -->
+        <div class="trust-tech trust-chainlink">
+          <img src="assets/tech/chainlink.svg" width="36" height="36" alt="Chainlink" style="display:block;" loading="lazy" />
+          <span class="trust-tech-label">Chainlink VRF</span>
+        </div>
+
+        <!-- OpenZeppelin -->
+        <div class="trust-tech trust-oz">
+          <img src="assets/tech/openzeppelin.svg" width="36" height="36" alt="OpenZeppelin" style="display:block;" loading="lazy" />
+          <span class="trust-tech-label">OpenZeppelin</span>
+        </div>
+
+        <!-- Next.js -->
+        <div class="trust-tech trust-next">
+          <img src="assets/tech/nextjs.svg" width="36" height="36" alt="Next.js" style="display:block;" loading="lazy" />
+          <span class="trust-tech-label">Next.js 16</span>
+        </div>
+
+        <!-- Prisma -->
+        <div class="trust-tech trust-prisma">
+          <img src="assets/tech/prisma.svg" width="36" height="36" alt="Prisma" style="display:block;" loading="lazy" />
+          <span class="trust-tech-label">Prisma + PostgreSQL</span>
+        </div>
+
+        <!-- RainbowKit -->
+        <div class="trust-tech trust-rainbow">
+          <img src="assets/tech/rainbowkit.svg" width="36" height="36" alt="RainbowKit" style="display:block;" loading="lazy" />
+          <span class="trust-tech-label">RainbowKit / SIWE</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       TESTIMONIALS
+  ══════════════════════════════════════════ -->
+  <section class="section" style="background:var(--bg-secondary); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-yellow" style="margin-bottom:1rem">Early Adopters</div>
+        <h2>What Token Projects <span class="gradient-text">Are Saying</span></h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"We launched $MEOW GameHub in 6 days. Our token volume on-chain jumped 4x in the first week — holders had a real reason to buy and stay. GamZO delivered exactly what they promised."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:rgba(0,255,157,0.1); border-color:rgba(0,255,157,0.3); color:var(--neon-green)">🐱</div>
+            <div>
+              <div class="testimonial-name">Alex K.</div>
+              <div class="testimonial-role">Founder, $MEOW Token</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The provably fair angle was huge for our community — they were skeptical of on-chain games but VRF with a verify link changed everything. Setup was smooth, docs are solid."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:rgba(155,89,255,0.1); border-color:rgba(155,89,255,0.3); color:var(--neon-purple)">⚡</div>
+            <div>
+              <div class="testimonial-name">Priya M.</div>
+              <div class="testimonial-role">CTO, DeFi Protocol</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"We were quoted $300k to build this in-house. GamZO gave us a production-grade gaming platform with 10 games in a week at under $5k. The platform treasury has already paid back the setup cost twice over."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:rgba(0,212,255,0.1); border-color:rgba(0,212,255,0.3); color:var(--neon-blue)">🚀</div>
+            <div>
+              <div class="testimonial-name">Marcus T.</div>
+              <div class="testimonial-role">Co-Founder, GameFi DAO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════ -->
+  <section id="faq" class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge badge-blue" style="margin-bottom:1rem">FAQ</div>
+        <h2>Questions <span class="gradient-text">Answered</span></h2>
+        <p>Everything a serious token project needs to know before getting started.</p>
+      </div>
+      <div class="faq-grid">
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Does my token need to be on a specific chain?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            We support any EVM-compatible chain — Ethereum, Polygon, BNB Chain, Base, Arbitrum, Avalanche, and more. Your token just needs to be a standard ERC-20 contract. We configure on-chain VRF, smart contracts, and infrastructure for your specific network. Multi-chain deployment is available on Pro and Enterprise plans.
+
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Who controls my Reward Treasury — and when do I access earnings?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            Your Reward Treasury is fully yours. Every unsuccessful round flows directly into it — we never touch those funds. Our revenue share is only taken from the 10% fee on winning rounds, settled monthly. You have real-time visibility through the admin dashboard and can initiate withdrawals from treasury to your project wallet at any time.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Do players need to sign a transaction on every bet?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            No — and this is a key UX advantage. Players deposit once (one on-chain transaction) and all gameplay is instant and gas-free through our custodial ledger. No MetaMask popup on every spin. Withdrawals trigger a single final on-chain transfer. Your community gets a smooth, app-like experience without sacrificing on-chain settlement.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Does my community need to KYC or create an account?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            No KYC, no email, no sign-up form. Players authenticate by signing a message with their wallet — Sign-In With Ethereum (SIWE). If they hold your token and have a wallet, they're in. This is critical for Web3 communities: zero friction, no data collection, and a native on-chain identity flow your holders already understand.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How does the platform fee actually work?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            Two revenue streams run simultaneously. First: every unsuccessful round — the full entry — goes directly into your Reward Treasury. Second: when a player wins, a 10% fee is taken from their profit and credited to your treasury. We take our revenue share only from this second stream. Unsuccessful round entries are entirely yours, untouched.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Will GamZO branding appear anywhere on my platform?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            On Pro and Enterprise plans: zero GamZO attribution anywhere visible to players. Your logo, your domain, your color palette — the platform looks 100% in-house. On the Starter plan, the UI is white-labeled with your brand, though minimal platform attribution may appear in non-player-facing areas. We can discuss specifics on a call.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How long does it take to go live?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            Starter: 5–7 business days. Pro: 3–5 business days. Enterprise: agreed per project scope. The timeline covers smart contract deployment, on-chain VRF setup, full UI branding, database provisioning, domain and SSL configuration, and a QA round before handover. Most projects go from kickoff call to live platform in under a week.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What do we need to provide to get started?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            Just five things: your ERC-20 token contract address, your target chain, your logo and brand colors, a domain you control, and initial Reward Treasury funding in your token. We recommend seeding 3–6 months of expected play volume as starting reserves to ensure solvency from day one. Everything else — infrastructure, contracts, UI, ops — is on us.
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FINAL CTA
+  ══════════════════════════════════════════ -->
+  <section id="final-cta" class="section">
+    <div class="container">
+      <div class="cta-box">
+        <div class="badge badge-green" style="margin-bottom:1.25rem">Ready to Launch?</div>
+        <h2>Your Platform.<br /><span class="gradient-text">Your Token. Your Revenue.</span></h2>
+        <p>Join the token projects already earning from their community's gaming activity. Setup is fast, the platform is proven, and the upside is yours.</p>
+        <div class="cta-actions">
+          <a href="mailto:hello@gamzo.io?subject=White-Label Gaming Platform Inquiry" class="btn-primary btn-lg">📩 &nbsp;Talk to Us</a>
+          <a href="#pricing" class="btn-ghost btn-lg">View Pricing →</a>
+        </div>
+        <div class="cta-reassurance">
+          <div class="cta-item"><span style="color:var(--neon-green)">✓</span> Live in 7 days</div>
+          <div class="cta-item"><span style="color:var(--neon-green)">✓</span> No coding needed</div>
+          <div class="cta-item"><span style="color:var(--neon-green)">✓</span> Any ERC-20 token</div>
+          <div class="cta-item"><span style="color:var(--neon-green)">✓</span> Provably fair (VRF)</div>
+          <div class="cta-item"><span style="color:var(--neon-green)">✓</span> Your brand, zero attribution</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-logo">GamZO</div>
+          <div class="footer-tagline">White-Label Web3 Community Gaming Platform</div>
+        </div>
+        <div class="footer-links">
+          <a href="#how-it-works" class="footer-link">How it Works</a>
+          <a href="#games"        class="footer-link">Games</a>
+          <a href="#features"     class="footer-link">Features</a>
+          <a href="#pricing"      class="footer-link">Pricing</a>
+          <a href="#faq"          class="footer-link">FAQ</a>
+          <a href="mailto:hello@gamzo.io" class="footer-link">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copy">© 2026 GamZO. All rights reserved. Community gaming products may be subject to local regulations — clients are responsible for ensuring legal compliance in their jurisdiction.</p>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════════════
+       JS
+  ══════════════════════════════════════════ -->
+  <script>
+    // Mobile nav — close on link tap
+    document.querySelectorAll('.nav-links .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+
+    // FAQ accordion
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // Intersection observer for animate-in
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.animationPlayState = 'running';
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.card, .game-card, .pricing-card, .testimonial-card, .step-num').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+      io.observe(el);
+    });
+
+    const io2 = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.card, .game-card, .pricing-card, .testimonial-card').forEach(el => io2.observe(el));
+
+    // Smooth nav active states
+    const navLinks = document.querySelectorAll('nav .nav-link');
+    const sections = document.querySelectorAll('section[id]');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 90) current = sec.id;
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+      });
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
