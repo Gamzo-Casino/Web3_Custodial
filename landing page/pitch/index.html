@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GamZO — Pitch Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    :root {
+      --bg:        #0a0a18;
+      --bg2:       #0f0f24;
+      --bg3:       #161630;
+      --card:      #1a1a35;
+      --border:    #2a2a50;
+      --green:     #00ff9d;
+      --purple:    #9b59ff;
+      --blue:      #00d4ff;
+      --yellow:    #f7c948;
+      --red:       #ff5555;
+      --text:      #f0f0ff;
+      --muted:     #8888aa;
+      --g-btn:     linear-gradient(135deg, #00ff9d, #00d4ff);
+      --g-hero:    linear-gradient(135deg, #9b59ff 0%, #00d4ff 60%, #00ff9d 100%);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      user-select: none;
+    }
+
+    /* ── Deck Shell ──────────────────────────────── */
+    #deck {
+      width: 100vw; height: 100vh;
+      position: relative; overflow: hidden;
+    }
+
+    /* ── Slide ───────────────────────────────────── */
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 64px 80px;
+      opacity: 0; pointer-events: none;
+      transform: translateX(60px);
+      transition: opacity 0.45s cubic-bezier(.4,0,.2,1), transform 0.45s cubic-bezier(.4,0,.2,1);
+    }
+    .slide.active {
+      opacity: 1; pointer-events: all; transform: translateX(0);
+    }
+    .slide.exit-left {
+      opacity: 0; transform: translateX(-60px);
+    }
+
+    /* ── Global Glow BG ─────────────────────────── */
+    .slide::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 15% 20%, rgba(155,89,255,.10) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 85% 80%, rgba(0,212,255,.07) 0%, transparent 65%);
+    }
+
+    /* ── Typography ──────────────────────────────── */
+    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; line-height: 1.1; }
+    .gradient-text {
+      background: var(--g-hero);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .neon { color: var(--green); text-shadow: 0 0 20px rgba(0,255,157,.4); }
+    .muted { color: var(--muted); }
+
+    /* ── Badge ───────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+      padding: .3rem .9rem; border-radius: 100px; border: 1px solid;
+      margin-bottom: 1.5rem;
+    }
+    .badge-g  { color: var(--green);  border-color: rgba(0,255,157,.3);  background: rgba(0,255,157,.07); }
+    .badge-p  { color: var(--purple); border-color: rgba(155,89,255,.3); background: rgba(155,89,255,.07); }
+    .badge-b  { color: var(--blue);   border-color: rgba(0,212,255,.3);  background: rgba(0,212,255,.07); }
+    .badge-y  { color: var(--yellow); border-color: rgba(247,201,72,.3); background: rgba(247,201,72,.07); }
+
+    /* ── Card ────────────────────────────────────── */
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem;
+    }
+
+    /* ── Progress Bar ────────────────────────────── */
+    #progress-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 3px; background: rgba(255,255,255,.05);
+    }
+    #progress-bar {
+      height: 100%; background: var(--g-btn);
+      transition: width .4s ease;
+    }
+
+    /* ── Nav Controls ────────────────────────────── */
+    #controls {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 1rem; z-index: 200;
+    }
+    .ctrl-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+      color: var(--text); font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, border-color .2s, transform .15s;
+    }
+    .ctrl-btn:hover { background: rgba(0,255,157,.1); border-color: rgba(0,255,157,.3); transform: scale(1.08); }
+    .ctrl-btn:disabled { opacity: .25; pointer-events: none; }
+    #slide-counter {
+      font-size: .72rem; font-weight: 700; color: var(--muted);
+      letter-spacing: .06em; min-width: 52px; text-align: center;
+    }
+
+    /* ── Dot Nav ─────────────────────────────────── */
+    #dots {
+      position: fixed; right: 28px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: .55rem; z-index: 200;
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.2); cursor: pointer;
+      transition: background .25s, transform .25s;
+    }
+    .dot.active { background: var(--green); transform: scale(1.4); box-shadow: 0 0 8px rgba(0,255,157,.5); }
+
+    /* ── Logo watermark ──────────────────────────── */
+    #logo-mark {
+      position: fixed; top: 20px; left: 28px; z-index: 200;
+      font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 1.1rem;
+      background: var(--g-btn); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 1 — COVER
+    ════════════════════════════════════════════════ */
+    #s1 { text-align: center; }
+    #s1::before {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(155,89,255,.18) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(0,212,255,.1) 0%, transparent 65%);
+    }
+    .cover-eyebrow { display: flex; align-items: center; justify-content: center; gap: .7rem; margin-bottom: 2rem; }
+    .cover-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+    .cover-h1 { font-size: clamp(2.8rem, 5.5vw, 4.5rem); font-weight: 900; margin-bottom: 1.5rem; line-height: 1.05; }
+    .cover-sub { font-size: 1.15rem; color: var(--muted); max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .cover-stats {
+      display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+      padding: 1.5rem 2.5rem; border-radius: 20px;
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+    }
+    .cstat-num { font-size: 1.75rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; }
+    .cstat-lbl { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: .15rem; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 2 — PROBLEM
+    ════════════════════════════════════════════════ */
+    #s2 .prob-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; width: 100%; max-width: 900px; }
+    .prob-card {
+      background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 20px; padding: 2rem 1.5rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .prob-card::before {
+      content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+      width: 160px; height: 160px; border-radius: 50%;
+      background: var(--glow); filter: blur(40px); opacity: .6; pointer-events: none;
+    }
+    .prob-num {
+      font-size: 4rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif;
+      line-height: 1; margin-bottom: .5rem;
+    }
+    .prob-lbl { font-size: .88rem; color: var(--muted); line-height: 1.55; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 3 — MARKET
+    ════════════════════════════════════════════════ */
+    #s3 .mkt-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; width: 100%; max-width: 980px; }
+    .mkt-left h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; margin-bottom: 1rem; }
+    .mkt-left p { color: var(--muted); font-size: .95rem; line-height: 1.7; }
+    .mkt-bars { display: flex; flex-direction: column; gap: .85rem; }
+    .mkt-bar-row { display: flex; flex-direction: column; gap: .3rem; }
+    .mkt-bar-label { display: flex; justify-content: space-between; font-size: .78rem; font-weight: 600; }
+    .mkt-bar-track { height: 8px; border-radius: 4px; background: rgba(255,255,255,.06); overflow: hidden; }
+    .mkt-bar-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(.4,0,.2,1) .3s; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 4 — SOLUTION
+    ════════════════════════════════════════════════ */
+    #s4 .sol-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; width: 100%; max-width: 1000px; }
+    #s4 h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; margin-bottom: 1rem; }
+    .sol-list { list-style: none; display: flex; flex-direction: column; gap: .85rem; margin-top: 1.25rem; }
+    .sol-list li { display: flex; align-items: center; gap: .8rem; font-size: .9rem; color: var(--muted); }
+    .sol-list li strong { color: var(--text); }
+    .sol-check {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(0,255,157,.1); border: 1px solid rgba(0,255,157,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem; color: var(--green);
+    }
+    .sol-mockup {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.5rem;
+      box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 60px rgba(155,89,255,.1);
+    }
+    .sol-topbar {
+      background: var(--bg2); border-radius: 10px; padding: .6rem 1rem;
+      font-size: .7rem; color: var(--muted); text-align: center; margin-bottom: 1rem;
+    }
+    .sol-brand { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: .85rem; background: var(--g-btn); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .sol-mini-games { display: grid; grid-template-columns: repeat(3,1fr); gap: .4rem; margin-bottom: .85rem; }
+    .sol-game { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: .55rem; text-align: center; font-size: .65rem; color: var(--muted); }
+    .sol-bal { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .75rem; display: flex; justify-content: space-between; align-items: center; font-size: .72rem; }
+    .sol-bal-val { font-weight: 700; color: var(--green); font-size: .9rem; }
+    .sol-fee { color: var(--yellow); font-weight: 700; font-size: .75rem; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 5 — HOW IT WORKS
+    ════════════════════════════════════════════════ */
+    #s5 .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; width: 100%; max-width: 940px; }
+    .step-card {
+      border-radius: 20px; padding: 2rem 1.5rem;
+      display: flex; flex-direction: column;
+    }
+    .step-num-big {
+      font-size: 3.5rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif;
+      line-height: 1; margin-bottom: 1rem; opacity: .5;
+    }
+    .step-title { font-size: 1.05rem; font-weight: 700; margin-bottom: .75rem; }
+    .step-items { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .step-items li { font-size: .82rem; color: var(--muted); display: flex; align-items: flex-start; gap: .5rem; line-height: 1.5; }
+    .step-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: .45rem; }
+    .step-time { font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.2rem; display: flex; align-items: center; gap: .4rem; }
+    .step-time::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 6 — GAMES
+    ════════════════════════════════════════════════ */
+    #s6 .games-wrap { width: 100%; max-width: 960px; }
+    .games-grid-pitch { display: grid; grid-template-columns: repeat(5,1fr); gap: .85rem; }
+    .game-pill {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.1rem .85rem; text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .game-pill:hover { transform: translateY(-3px); }
+    .game-icon { font-size: 1.6rem; margin-bottom: .4rem; }
+    .game-name { font-size: .78rem; font-weight: 700; margin-bottom: .2rem; }
+    .game-mult { font-size: .62rem; font-weight: 800; letter-spacing: .04em; padding: .12rem .4rem; border-radius: 5px; display: inline-block; }
+    .game-tag { font-size: .58rem; color: var(--muted); margin-top: .3rem; }
+    .games-note { text-align: center; font-size: .8rem; color: var(--muted); margin-top: 1.25rem; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 7 — TOKEN FLYWHEEL
+    ════════════════════════════════════════════════ */
+    #s7 .flywheel-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; width: 100%; max-width: 960px; }
+    #s7 h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 900; margin-bottom: 1rem; }
+    .utags { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 1.25rem; }
+    .utag { padding: .3rem .75rem; border-radius: 100px; font-size: .72rem; font-weight: 600; border: 1px solid; }
+    .utag-g { color: var(--green);  border-color: rgba(0,255,157,.3);  background: rgba(0,255,157,.07); }
+    .utag-p { color: var(--purple); border-color: rgba(155,89,255,.3); background: rgba(155,89,255,.07); }
+    .utag-b { color: var(--blue);   border-color: rgba(0,212,255,.3);  background: rgba(0,212,255,.07); }
+    .utag-y { color: var(--yellow); border-color: rgba(247,201,72,.3); background: rgba(247,201,72,.07); }
+    /* Wheel diagram */
+    .wheel-wrap { position: relative; width: 300px; height: 300px; margin: 0 auto; }
+    .wheel-ring {
+      position: absolute; border-radius: 50%; border: 2px solid;
+      display: flex; align-items: center; justify-content: center;
+      animation: spin-slow linear infinite;
+    }
+    @keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes spin-cw   { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes spin-ccw  { from{transform:rotate(360deg)} to{transform:rotate(0deg)} }
+    .wheel-center {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 110px; height: 110px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(155,89,255,.15), rgba(0,212,255,.1));
+      border: 2px solid rgba(155,89,255,.35);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; z-index: 10;
+    }
+    .wheel-center-label { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+    .wheel-center-val { font-size: 1.1rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; color: var(--green); }
+    .orbit-node {
+      position: absolute; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700; text-align: center;
+      width: 68px; height: 68px; border: 1px solid;
+      line-height: 1.2;
+    }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 8 — REVENUE
+    ════════════════════════════════════════════════ */
+    #s8 .rev-inner { width: 100%; max-width: 900px; }
+    #s8 h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; margin-bottom: .5rem; }
+    #s8 .sub { color: var(--muted); font-size: .92rem; margin-bottom: 2.5rem; }
+    .rev-tiers { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .rev-tier-card {
+      border-radius: 18px; padding: 1.75rem 1.5rem; position: relative; overflow: hidden;
+    }
+    .rtc-label { font-size: .62rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .75rem; }
+    .rtc-vol { font-size: .8rem; color: var(--muted); margin-bottom: .4rem; }
+    .rtc-earn { font-size: 2rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; line-height: 1; margin-bottom: .2rem; }
+    .rtc-mo { font-size: .75rem; color: var(--muted); }
+    .rtc-bar { height: 4px; border-radius: 2px; margin-top: 1.25rem; }
+    .rev-streams {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .rev-stream {
+      border-radius: 14px; padding: 1.1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .rev-stream-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .rev-stream-title { font-size: .85rem; font-weight: 700; margin-bottom: .2rem; }
+    .rev-stream-desc { font-size: .75rem; color: var(--muted); line-height: 1.4; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 9 — FEATURES
+    ════════════════════════════════════════════════ */
+    #s9 .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; width: 100%; max-width: 940px; }
+    .feat-item {
+      background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px; padding: 1.35rem;
+      border-top: 2px solid var(--accent);
+      transition: background .2s, transform .2s;
+    }
+    .feat-item:hover { background: rgba(255,255,255,.04); transform: translateY(-2px); }
+    .feat-icon { font-size: 1.5rem; margin-bottom: .65rem; }
+    .feat-title { font-size: .88rem; font-weight: 700; margin-bottom: .35rem; }
+    .feat-desc { font-size: .75rem; color: var(--muted); line-height: 1.55; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 10 — PRICING
+    ════════════════════════════════════════════════ */
+    #s10 .pricing-wrap { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; width: 100%; max-width: 880px; align-items: stretch; }
+    .p-card {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 2rem 1.75rem; display: flex; flex-direction: column;
+      position: relative;
+    }
+    .p-card:first-child { border-radius: 20px 0 0 20px; }
+    .p-card:last-child  { border-radius: 0 20px 20px 0; }
+    .p-card.featured {
+      border-color: var(--purple); border-radius: 20px; z-index: 2;
+      margin: -14px -1px; padding: 2.5rem 2rem;
+      box-shadow: 0 0 0 1px rgba(155,89,255,.4), 0 0 60px rgba(155,89,255,.15);
+      background: linear-gradient(160deg, rgba(155,89,255,.08) 0%, var(--card) 55%);
+    }
+    .p-popular {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--purple), #7c3aed);
+      color: #fff; font-size: .6rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .1em; padding: .25rem .9rem; border-radius: 100px; white-space: nowrap;
+    }
+    .p-plan { font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .85rem; }
+    .p-price { font-size: 2.2rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; line-height: 1; }
+    .p-price span { font-size: .85rem; font-weight: 400; color: var(--muted); }
+    .p-strike { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,.2); text-decoration: line-through; font-family: 'Space Grotesk', sans-serif; margin-left: .4rem; }
+    .p-rev { font-size: .7rem; font-weight: 700; padding: .2rem .6rem; border-radius: 6px; display: inline-flex; margin: .6rem 0 .4rem; }
+    .p-monthly { font-size: .78rem; color: var(--muted); margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .p-monthly b { color: var(--text); }
+    .p-features { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 0; margin-bottom: 1.25rem; }
+    .p-features li { font-size: .78rem; color: var(--muted); padding: .28rem 0; display: flex; gap: .5rem; line-height: 1.4; }
+    .p-check { color: var(--green); flex-shrink: 0; font-size: .7rem; margin-top: .1rem; }
+    .p-group { font-size: .55rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.2); margin-top: .85rem; margin-bottom: .1rem; }
+    .p-btn {
+      display: block; text-align: center; border-radius: 10px; padding: .75rem;
+      font-size: .82rem; font-weight: 700; text-decoration: none;
+      transition: opacity .2s, transform .15s;
+    }
+    .p-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .p-btn-default { background: rgba(255,255,255,.05); color: var(--text); border: 1px solid rgba(255,255,255,.1); }
+    .p-btn-featured { background: linear-gradient(135deg, var(--purple) 0%, #7c3aed 100%); color: #fff; box-shadow: 0 4px 20px rgba(155,89,255,.35); }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 11 — SOCIAL PROOF + TECH
+    ════════════════════════════════════════════════ */
+    #s11 .proof-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; width: 100%; max-width: 960px; }
+    .testimonial-item {
+      background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px; padding: 1.5rem;
+    }
+    .t-stars { color: var(--yellow); font-size: .75rem; letter-spacing: .1em; margin-bottom: .65rem; }
+    .t-text { font-size: .82rem; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; font-style: italic; }
+    .t-author { display: flex; align-items: center; gap: .6rem; }
+    .t-avatar {
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: .85rem;
+    }
+    .t-name { font-size: .8rem; font-weight: 700; }
+    .t-role { font-size: .68rem; color: var(--muted); }
+    .tech-row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .tech-chip {
+      padding: .35rem .85rem; border-radius: 8px; font-size: .7rem; font-weight: 700;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); color: var(--muted);
+    }
+    .s11-left h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; }
+    .s11-right h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; }
+    .key-nums { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.5rem; }
+    .kn-card { background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07); border-radius: 12px; padding: 1rem; text-align: center; }
+    .kn-val { font-size: 1.5rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; }
+    .kn-lbl { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: .15rem; }
+
+    /* ════════════════════════════════════════════════
+       SLIDE 12 — CTA
+    ════════════════════════════════════════════════ */
+    #s12 { text-align: center; }
+    #s12::before {
+      background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(155,89,255,.14) 0%, transparent 70%);
+    }
+    .cta-h2 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; margin-bottom: 1.25rem; }
+    .cta-p { font-size: 1rem; color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .cta-contact {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: var(--g-btn); color: #0a0a18;
+      font-weight: 800; border-radius: 12px;
+      padding: 1rem 2.25rem; font-size: 1rem; text-decoration: none;
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .cta-contact:hover { opacity: .88; transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,255,157,.25); }
+    .cta-chips { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+    .cta-chip { display: flex; align-items: center; gap: .4rem; font-size: .78rem; color: var(--muted); }
+    .cta-chip .c { color: var(--green); }
+    .cta-email { font-size: .9rem; color: var(--muted); margin-top: 1.5rem; }
+    .cta-email a { color: var(--green); text-decoration: none; font-weight: 600; }
+    .cta-email a:hover { text-decoration: underline; }
+
+    /* ── Keyboard hint ───────────────────────────── */
+    #key-hint {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      font-size: .65rem; color: rgba(255,255,255,.2); letter-spacing: .05em;
+      pointer-events: none; transition: opacity 1s; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-wrap"><div id="progress-bar"></div></div>
+<div id="logo-mark">GamZO</div>
+<div id="dots"></div>
+<div id="controls">
+  <button class="ctrl-btn" id="btn-prev" onclick="navigate(-1)">&#8592;</button>
+  <span id="slide-counter">1 / 12</span>
+  <button class="ctrl-btn" id="btn-next" onclick="navigate(1)">&#8594;</button>
+</div>
+<div id="key-hint">← → arrow keys to navigate</div>
+
+<div id="deck">
+
+  <!-- ══ SLIDE 1: COVER ══════════════════════════════════ -->
+  <div class="slide" id="s1">
+    <div class="cover-eyebrow">
+      <div class="cover-dot"></div>
+      <span class="badge badge-g">Confidential &nbsp;·&nbsp; Investor Pitch 2026</span>
+    </div>
+    <h1 class="cover-h1">
+      <span class="gradient-text">78% of token holders</span><br />sell within 90 days.<br />
+      <span style="color:var(--text)">Here's how to fix that.</span>
+    </h1>
+    <p class="cover-sub">
+      GamZO deploys a fully branded, play-to-earn community gaming hub on your token — in under 7 days. No code. No ops. Instant token utility.
+    </p>
+    <div class="cover-stats">
+      <div>
+        <div class="cstat-num neon">10</div>
+        <div class="cstat-lbl">Reward Games</div>
+      </div>
+      <div style="border-left:1px solid rgba(255,255,255,.07); padding-left:2.5rem;">
+        <div class="cstat-num" style="color:var(--purple)">7 days</div>
+        <div class="cstat-lbl">Avg. Deployment</div>
+      </div>
+      <div style="border-left:1px solid rgba(255,255,255,.07); padding-left:2.5rem;">
+        <div class="cstat-num" style="color:var(--blue)">100%</div>
+        <div class="cstat-lbl">VRF Verified</div>
+      </div>
+      <div style="border-left:1px solid rgba(255,255,255,.07); padding-left:2.5rem;">
+        <div class="cstat-num" style="color:var(--yellow)">Any ERC-20</div>
+        <div class="cstat-lbl">Token Compatible</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: PROBLEM ═══════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="badge badge-b">The Problem</div>
+    <h2 style="font-size:clamp(2rem,4vw,3rem); font-weight:900; margin-bottom:.75rem; text-align:center">Token projects are <span class="gradient-text">bleeding holders</span></h2>
+    <p style="color:var(--muted); font-size:.92rem; text-align:center; max-width:560px; margin:0 auto 2.5rem; line-height:1.65">No utility → no reason to hold → sell pressure → price drops → community dies. The cycle is predictable. And preventable.</p>
+    <div class="prob-grid">
+      <div class="prob-card" style="--glow:rgba(255,85,85,.25)">
+        <div class="prob-num" style="color:var(--red)">78%</div>
+        <div class="prob-lbl">of token holders sell due to <strong style="color:var(--text)">lack of real utility</strong> within 3 months of launch</div>
+      </div>
+      <div class="prob-card" style="--glow:rgba(247,201,72,.2)">
+        <div class="prob-num" style="color:var(--yellow)">4×</div>
+        <div class="prob-lbl">higher on-chain activity from <strong style="color:var(--text)">gaming users</strong> vs passive token holders</div>
+      </div>
+      <div class="prob-card" style="--glow:rgba(0,255,157,.15)">
+        <div class="prob-num" style="color:var(--green)">$65B+</div>
+        <div class="prob-lbl">Web3 gaming market projected by 2027 — <strong style="color:var(--text)">growing faster than DeFi &amp; NFTs</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: MARKET ═══════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="mkt-inner">
+      <div class="mkt-left">
+        <div class="badge badge-p" style="margin-bottom:1.25rem">Market Opportunity</div>
+        <h2>The window is <span class="gradient-text">right now</span></h2>
+        <p style="margin:.85rem 0 1.75rem">Early-mover token projects that add a gaming utility layer are seeing 3–5× better holder retention. The infrastructure to do this at scale didn't exist until now.</p>
+        <div style="background:rgba(0,255,157,.05); border:1px solid rgba(0,255,157,.15); border-radius:12px; padding:1rem 1.25rem">
+          <div style="font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--green); margin-bottom:.5rem">Key Insight</div>
+          <div style="font-size:.85rem; color:var(--muted); line-height:1.6">"Play with <strong style="color:var(--text)">$YOUR_TOKEN</strong>" is the most shareable, community-native use case in Web3 right now — and your competitors haven't done it yet.</div>
+        </div>
+      </div>
+      <div class="mkt-bars">
+        <div style="font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.5rem">Growth vs other Web3 sectors (2024–2027)</div>
+        <div class="mkt-bar-row">
+          <div class="mkt-bar-label">
+            <span style="color:var(--green); font-weight:700">Community Gaming</span>
+            <span style="color:var(--green)">+340%</span>
+          </div>
+          <div class="mkt-bar-track"><div class="mkt-bar-fill" style="width:0%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:4px" data-target="90%"></div></div>
+        </div>
+        <div class="mkt-bar-row">
+          <div class="mkt-bar-label">
+            <span>NFTs</span><span style="color:var(--muted)">+120%</span>
+          </div>
+          <div class="mkt-bar-track"><div class="mkt-bar-fill" style="width:0%;background:var(--purple)" data-target="55%"></div></div>
+        </div>
+        <div class="mkt-bar-row">
+          <div class="mkt-bar-label">
+            <span>DeFi</span><span style="color:var(--muted)">+95%</span>
+          </div>
+          <div class="mkt-bar-track"><div class="mkt-bar-fill" style="width:0%;background:var(--blue)" data-target="44%"></div></div>
+        </div>
+        <div class="mkt-bar-row">
+          <div class="mkt-bar-label">
+            <span>Layer 2s</span><span style="color:var(--muted)">+80%</span>
+          </div>
+          <div class="mkt-bar-track"><div class="mkt-bar-fill" style="width:0%;background:rgba(255,255,255,.3)" data-target="37%"></div></div>
+        </div>
+        <div style="background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:.85rem 1rem; margin-top:.75rem">
+          <div style="font-size:1.6rem; font-weight:900; font-family:'Space Grotesk',sans-serif; color:var(--yellow)">$65B+</div>
+          <div style="font-size:.72rem; color:var(--muted)">projected Web3 gaming market by 2027</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: SOLUTION ══════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="sol-inner">
+      <div>
+        <div class="badge badge-g" style="margin-bottom:1.25rem">The Solution</div>
+        <h2>Your token. A fully branded <span class="gradient-text">gaming hub.</span> 7 days.</h2>
+        <p style="color:var(--muted); font-size:.9rem; line-height:1.7; margin:.85rem 0 0">GamZO deploys a complete white-label community gaming platform — branded as yours, powered by your token, managed by us.</p>
+        <ul class="sol-list">
+          <li><div class="sol-check">✓</div><div><strong>10 live reward games</strong> — VRF-verified, provably fair</div></li>
+          <li><div class="sol-check">✓</div><div><strong>Your brand everywhere</strong> — logo, domain, colors. Zero GamZO attribution</div></li>
+          <li><div class="sol-check">✓</div><div><strong>Any ERC-20 token</strong> — Ethereum, Polygon, BSC, Base, Arbitrum +</div></li>
+          <li><div class="sol-check">✓</div><div><strong>Zero ops on your end</strong> — we own infra, security &amp; updates</div></li>
+          <li><div class="sol-check">✓</div><div><strong>Two revenue streams</strong> — running 24/7 from day one</div></li>
+        </ul>
+      </div>
+      <div class="sol-mockup">
+        <div class="sol-topbar">🌐 yourproject.io — powered by GamZO</div>
+        <div class="sol-brand">🎮 $PEPE GameHub</div>
+        <div style="display:inline-flex; align-items:center; gap:.35rem; background:rgba(155,89,255,.12); border:1px solid rgba(155,89,255,.25); border-radius:7px; padding:.3rem .65rem; font-size:.65rem; color:var(--purple); font-weight:600; margin-bottom:1rem">🪙 PEPE Token Balance</div>
+        <div class="sol-mini-games">
+          <div class="sol-game">🎲<br/>Dice</div>
+          <div class="sol-game">💣<br/>Mines</div>
+          <div class="sol-game">📈<br/>Crash</div>
+          <div class="sol-game">🟡<br/>Plinko</div>
+          <div class="sol-game">🃏<br/>HiLo</div>
+          <div class="sol-game">🎡<br/>Wheel</div>
+        </div>
+        <div class="sol-bal">
+          <div>
+            <div style="font-size:.6rem; color:var(--muted)">Your Balance</div>
+            <div class="sol-bal-val">12,500 <span style="font-size:.65rem; color:var(--purple)">PEPE</span></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.6rem; color:var(--muted)">Platform Fee</div>
+            <div class="sol-fee">1–2%</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.85rem">
+          <span style="font-size:.58rem; padding:.15rem .45rem; border-radius:5px; background:rgba(0,255,157,.07); border:1px solid rgba(0,255,157,.2); color:var(--green)">Wallet Login</span>
+          <span style="font-size:.58rem; padding:.15rem .45rem; border-radius:5px; background:rgba(0,212,255,.07); border:1px solid rgba(0,212,255,.2); color:var(--blue)">Gas-free Play</span>
+          <span style="font-size:.58rem; padding:.15rem .45rem; border-radius:5px; background:rgba(155,89,255,.07); border:1px solid rgba(155,89,255,.2); color:var(--purple)">VRF Verified</span>
+          <span style="font-size:.58rem; padding:.15rem .45rem; border-radius:5px; background:rgba(247,201,72,.07); border:1px solid rgba(247,201,72,.2); color:var(--yellow)">Leaderboard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: HOW IT WORKS ══════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="badge badge-b">How It Works</div>
+    <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:900; margin-bottom:.5rem; text-align:center">Live in <span class="gradient-text">3 steps</span></h2>
+    <p style="color:var(--muted); font-size:.88rem; text-align:center; margin-bottom:2rem">You give us 15 minutes. We give you a production-grade platform.</p>
+    <div class="steps">
+      <div class="step-card" style="background:linear-gradient(145deg,rgba(155,89,255,.07) 0%,var(--card) 60%); border:1px solid rgba(155,89,255,.2)">
+        <div class="step-time" style="color:var(--purple)">You &nbsp;·&nbsp; ~15 minutes</div>
+        <div class="step-top-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+          <div style="width:48px; height:48px; border-radius:14px; background:rgba(155,89,255,.1); border:1px solid rgba(155,89,255,.2); display:flex; align-items:center; justify-content:center; font-size:1.3rem">📋</div>
+          <div class="step-num-big" style="color:var(--purple)">01</div>
+        </div>
+        <div class="step-title">Brief Us</div>
+        <ul class="step-items">
+          <li><div class="step-dot" style="background:var(--purple)"></div>Token contract address + chain</li>
+          <li><div class="step-dot" style="background:var(--purple)"></div>Logo, brand colors, domain</li>
+          <li><div class="step-dot" style="background:var(--purple)"></div>One kickoff call — we take it from there</li>
+        </ul>
+      </div>
+      <div class="step-card" style="background:linear-gradient(145deg,rgba(0,212,255,.06) 0%,var(--card) 60%); border:1px solid rgba(0,212,255,.2)">
+        <div class="step-time" style="color:var(--blue)">Us &nbsp;·&nbsp; 5–7 days</div>
+        <div class="step-top-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+          <div style="width:48px; height:48px; border-radius:14px; background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.2); display:flex; align-items:center; justify-content:center; font-size:1.3rem">⚙️</div>
+          <div class="step-num-big" style="color:var(--blue)">02</div>
+        </div>
+        <div class="step-title">We Build Everything</div>
+        <ul class="step-items">
+          <li><div class="step-dot" style="background:var(--blue)"></div>Deploy audited smart contracts on-chain</li>
+          <li><div class="step-dot" style="background:var(--blue)"></div>Integrate Chainlink VRF for verified outcomes</li>
+          <li><div class="step-dot" style="background:var(--blue)"></div>White-label the full UI to your brand</li>
+          <li><div class="step-dot" style="background:var(--blue)"></div>Configure platform wallets, ledger &amp; fees</li>
+        </ul>
+      </div>
+      <div class="step-card" style="background:linear-gradient(145deg,rgba(0,255,157,.05) 0%,var(--card) 60%); border:1px solid rgba(0,255,157,.2)">
+        <div class="step-time" style="color:var(--green)">Together &nbsp;·&nbsp; Ongoing</div>
+        <div class="step-top-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+          <div style="width:48px; height:48px; border-radius:14px; background:rgba(0,255,157,.07); border:1px solid rgba(0,255,157,.2); display:flex; align-items:center; justify-content:center; font-size:1.3rem">🚀</div>
+          <div class="step-num-big" style="color:var(--green)">03</div>
+        </div>
+        <div class="step-title">Launch &amp; Earn</div>
+        <ul class="step-items">
+          <li><div class="step-dot" style="background:var(--green)"></div>Point your domain — we flip the switch</li>
+          <li><div class="step-dot" style="background:var(--green)"></div>Community plays with your token from day one</li>
+          <li><div class="step-dot" style="background:var(--green)"></div>Entries accrue to your Reward Treasury</li>
+          <li><div class="step-dot" style="background:var(--green)"></div>Live dashboard: revenue &amp; player activity</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: GAMES ════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="badge badge-g">10 Reward Games Included</div>
+    <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:900; margin-bottom:.5rem; text-align:center">Every game. <span class="gradient-text">Zero extra cost.</span></h2>
+    <p style="color:var(--muted); font-size:.88rem; text-align:center; margin-bottom:1.75rem">All plans include all 10 games on day one. No add-ons, no per-game fees.</p>
+    <div class="games-wrap">
+      <div class="games-grid-pitch">
+        <div class="game-pill" style="border-color:rgba(0,212,255,.25)">
+          <div class="game-icon">🎲</div>
+          <div class="game-name">Dice</div>
+          <div class="game-mult" style="background:rgba(0,212,255,.1); color:var(--blue); border:1px solid rgba(0,212,255,.25)">up to 99×</div>
+          <div class="game-tag">VRF · Solo</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(255,85,85,.25)">
+          <div class="game-icon">💣</div>
+          <div class="game-name">Mines</div>
+          <div class="game-mult" style="background:rgba(255,85,85,.1); color:var(--red); border:1px solid rgba(255,85,85,.25)">up to 25×</div>
+          <div class="game-tag">VRF · Multi-step</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(255,107,53,.25)">
+          <div class="game-icon">📈</div>
+          <div class="game-name">Crash</div>
+          <div class="game-mult" style="background:rgba(255,107,53,.1); color:#ff6b35; border:1px solid rgba(255,107,53,.25)">up to 10000×</div>
+          <div class="game-tag">Real-time</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(255,215,0,.25)">
+          <div class="game-icon">🟡</div>
+          <div class="game-name">Plinko</div>
+          <div class="game-mult" style="background:rgba(255,215,0,.1); color:#ffd700; border:1px solid rgba(255,215,0,.25)">up to 1000×</div>
+          <div class="game-tag">VRF · Risk Modes</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(129,140,248,.25)">
+          <div class="game-icon">🃏</div>
+          <div class="game-name">HiLo</div>
+          <div class="game-mult" style="background:rgba(129,140,248,.1); color:#818cf8; border:1px solid rgba(129,140,248,.25)">up to 10000×</div>
+          <div class="game-tag">VRF · Cards</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(251,146,60,.25)">
+          <div class="game-icon">🎡</div>
+          <div class="game-name">Wheel</div>
+          <div class="game-mult" style="background:rgba(251,146,60,.1); color:#fb923c; border:1px solid rgba(251,146,60,.25)">up to 100×</div>
+          <div class="game-tag">VRF · Risk Modes</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(168,85,247,.25)">
+          <div class="game-icon">🎯</div>
+          <div class="game-name">Keno</div>
+          <div class="game-mult" style="background:rgba(168,85,247,.1); color:#a855f7; border:1px solid rgba(168,85,247,.25)">up to 10000×</div>
+          <div class="game-tag">VRF · Pick &amp; Draw</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(232,121,249,.25)">
+          <div class="game-icon">🎰</div>
+          <div class="game-name">Roulette</div>
+          <div class="game-mult" style="background:rgba(232,121,249,.1); color:#e879f9; border:1px solid rgba(232,121,249,.25)">up to 36×</div>
+          <div class="game-tag">VRF · Classic</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(20,184,166,.25)">
+          <div class="game-icon">🂡</div>
+          <div class="game-name">Blackjack</div>
+          <div class="game-mult" style="background:rgba(20,184,166,.1); color:#14b8a6; border:1px solid rgba(20,184,166,.25)">up to 2.5×</div>
+          <div class="game-tag">Strategy · Classic</div>
+        </div>
+        <div class="game-pill" style="border-color:rgba(0,255,157,.2)">
+          <div class="game-icon">🪙</div>
+          <div class="game-name">CoinFlip</div>
+          <div class="game-mult" style="background:rgba(0,255,157,.08); color:var(--green); border:1px solid rgba(0,255,157,.2)">2× PvP</div>
+          <div class="game-tag">Player vs Player</div>
+        </div>
+      </div>
+      <p class="games-note">New games added quarterly — all clients receive them at no extra cost.</p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: TOKEN FLYWHEEL ════════════════════════ -->
+  <div class="slide" id="s7">
+    <div class="flywheel-inner">
+      <div>
+        <div class="badge badge-y" style="margin-bottom:1.25rem">Token Utility Engine</div>
+        <h2>The demand <span class="gradient-text">flywheel</span> for your token</h2>
+        <p style="color:var(--muted); font-size:.88rem; line-height:1.7; margin:.85rem 0 .75rem">A community gaming hub creates the most powerful token utility loop possible — every play is a buy, every win brings holders back.</p>
+        <div class="utags">
+          <span class="utag utag-g">Buy Pressure</span>
+          <span class="utag utag-p">Holder Retention</span>
+          <span class="utag utag-b">On-chain Activity</span>
+          <span class="utag utag-y">Ecosystem Revenue</span>
+          <span class="utag utag-g">Token Velocity</span>
+          <span class="utag utag-p">Community Engagement</span>
+        </div>
+        <div style="background:rgba(0,255,157,.04); border:1px solid rgba(0,255,157,.15); border-radius:14px; padding:1.1rem 1.25rem">
+          <div style="display:flex; flex-direction:column; gap:.55rem">
+            <div style="display:flex; align-items:center; gap:.65rem; font-size:.82rem">
+              <span style="font-size:1rem">👤</span>
+              <span style="color:var(--muted)">Player <strong style="color:var(--text)">holds &amp; deposits</strong> your token</span>
+              <span style="color:rgba(255,255,255,.2)">→</span>
+              <span style="color:var(--green); font-weight:600; font-size:.75rem">Token Demand ↑</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:.65rem; font-size:.82rem">
+              <span style="font-size:1rem">🎮</span>
+              <span style="color:var(--muted)">Player <strong style="color:var(--text)">plays a round</strong> — VRF settles</span>
+              <span style="color:rgba(255,255,255,.2)">→</span>
+              <span style="color:var(--blue); font-weight:600; font-size:.75rem">On-chain Activity ↑</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:.65rem; font-size:.82rem">
+              <span style="font-size:1rem">🏆</span>
+              <span style="color:var(--muted)"><strong style="color:var(--text)">Wins</strong> → player stays &amp; plays again</span>
+              <span style="color:rgba(255,255,255,.2)">→</span>
+              <span style="color:var(--purple); font-weight:600; font-size:.75rem">Retention ↑</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:.65rem; font-size:.82rem">
+              <span style="font-size:1rem">🏦</span>
+              <span style="color:var(--muted)">Unsuccessful round <strong style="color:var(--text)">fills your treasury</strong></span>
+              <span style="color:rgba(255,255,255,.2)">→</span>
+              <span style="color:var(--yellow); font-weight:600; font-size:.75rem">Revenue ↑</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Visual flywheel -->
+      <div style="display:flex; flex-direction:column; gap:.85rem">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:18px; padding:1.5rem; text-align:center">
+          <div style="font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:1.25rem">Token Utility Flow</div>
+          <div style="display:flex; flex-direction:column; gap:.7rem">
+            <div style="display:flex; align-items:center; gap:.5rem; font-size:.75rem">
+              <div style="flex:1; background:rgba(155,89,255,.1); border:1px solid rgba(155,89,255,.25); border-radius:8px; padding:.45rem .6rem; color:var(--purple); font-weight:600">👤 Player</div>
+              <span style="color:var(--muted)">→</span>
+              <div style="flex:1; background:rgba(0,255,157,.07); border:1px solid rgba(0,255,157,.2); border-radius:8px; padding:.45rem .6rem; color:var(--green); font-weight:600">🪙 $TOKEN</div>
+              <span style="color:var(--muted)">→</span>
+              <div style="flex:1; background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.2); border-radius:8px; padding:.45rem .6rem; color:var(--blue); font-weight:600">🎮 Play</div>
+            </div>
+            <div style="height:1px; background:rgba(255,255,255,.05)"></div>
+            <div style="display:flex; gap:.5rem; font-size:.72rem">
+              <div style="flex:1; background:rgba(0,255,157,.06); border:1px solid rgba(0,255,157,.15); border-radius:8px; padding:.55rem; text-align:center">
+                <div style="color:var(--green); font-weight:700; margin-bottom:.2rem">✅ WIN</div>
+                <div style="color:var(--muted)">Player earns reward<br/><span style="color:var(--yellow); font-weight:600">10% fee → Treasury</span></div>
+              </div>
+              <div style="flex:1; background:rgba(255,85,85,.06); border:1px solid rgba(255,85,85,.15); border-radius:8px; padding:.55rem; text-align:center">
+                <div style="color:var(--red); font-weight:700; margin-bottom:.2rem">❌ MISS</div>
+                <div style="color:var(--muted)">Entry retained<br/><span style="color:var(--yellow); font-weight:600">100% → Treasury</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(0,255,157,.04); border:1px solid rgba(0,255,157,.15); border-radius:14px; padding:1rem 1.25rem; text-align:center">
+          <div style="font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--green); margin-bottom:.3rem">Result</div>
+          <div style="font-size:.82rem; color:var(--muted)">Win or not — <strong style="color:var(--text)">every round generates treasury revenue.</strong> Two streams, running 24/7.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8: REVENUE ═══════════════════════════════ -->
+  <div class="slide" id="s8">
+    <div class="rev-inner">
+      <div style="text-align:center; margin-bottom:2rem">
+        <div class="badge badge-g" style="margin-bottom:.85rem">Revenue Model</div>
+        <h2>What your treasury <span class="gradient-text">looks like</span></h2>
+        <p class="sub">@ 5% avg platform fee · projections based on active daily players</p>
+      </div>
+      <div class="rev-tiers">
+        <div class="rev-tier-card" style="background:linear-gradient(145deg,rgba(0,212,255,.08) 0%,var(--card) 60%); border:1px solid rgba(0,212,255,.2)">
+          <div class="rtc-label" style="color:var(--blue)">Ignite Tier</div>
+          <div class="rtc-vol">$500K / mo volume</div>
+          <div class="rtc-earn" style="color:var(--blue)">$25K</div>
+          <div class="rtc-mo">/ month to treasury</div>
+          <div class="rtc-bar" style="background:linear-gradient(90deg,var(--blue),rgba(0,212,255,.3));width:30%"></div>
+        </div>
+        <div class="rev-tier-card" style="background:linear-gradient(145deg,rgba(155,89,255,.1) 0%,var(--card) 60%); border:1px solid rgba(155,89,255,.3); transform:scale(1.03)">
+          <div class="rtc-label" style="color:var(--purple)">Momentum Tier ⭐</div>
+          <div class="rtc-vol">$2M / mo volume</div>
+          <div class="rtc-earn" style="color:var(--purple)">$100K</div>
+          <div class="rtc-mo">/ month to treasury</div>
+          <div class="rtc-bar" style="background:linear-gradient(90deg,var(--purple),rgba(155,89,255,.3));width:60%"></div>
+        </div>
+        <div class="rev-tier-card" style="background:linear-gradient(145deg,rgba(0,255,157,.07) 0%,var(--card) 60%); border:1px solid rgba(0,255,157,.2)">
+          <div class="rtc-label" style="color:var(--green)">Apex Tier</div>
+          <div class="rtc-vol">$10M / mo volume</div>
+          <div class="rtc-earn" style="color:var(--green)">$500K</div>
+          <div class="rtc-mo">/ month to treasury</div>
+          <div class="rtc-bar" style="background:linear-gradient(90deg,var(--green),rgba(0,255,157,.3));width:100%"></div>
+        </div>
+      </div>
+      <div class="rev-streams">
+        <div class="rev-stream" style="background:rgba(0,255,157,.05); border:1px solid rgba(0,255,157,.15)">
+          <div class="rev-stream-icon">🏦</div>
+          <div>
+            <div class="rev-stream-title">Stream 1 — Unsuccessful rounds</div>
+            <div class="rev-stream-desc">100% of every unsuccessful round entry flows directly into your Reward Treasury. Untouched by us.</div>
+          </div>
+        </div>
+        <div class="rev-stream" style="background:rgba(247,201,72,.05); border:1px solid rgba(247,201,72,.15)">
+          <div class="rev-stream-icon">💰</div>
+          <div>
+            <div class="rev-stream-title">Stream 2 — Fee on wins</div>
+            <div class="rev-stream-desc">10% fee on winning round profit, credited to your treasury. Our revenue share comes only from this stream.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9: FEATURES ══════════════════════════════ -->
+  <div class="slide" id="s9">
+    <div class="badge badge-p">Platform Features</div>
+    <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:900; margin-bottom:.5rem; text-align:center">Built for scale, <span class="gradient-text">from day one</span></h2>
+    <p style="color:var(--muted); font-size:.88rem; text-align:center; margin-bottom:1.75rem">Everything you need to run a serious community gaming platform — no third-party add-ons.</p>
+    <div class="feat-grid">
+      <div class="feat-item" style="--accent:var(--green)">
+        <div class="feat-icon">🛡️</div>
+        <div class="feat-title">Verifiably Fair (Chainlink VRF)</div>
+        <div class="feat-desc">Every outcome settled on-chain. Players can audit any round, ever. The trust layer your community demands.</div>
+      </div>
+      <div class="feat-item" style="--accent:var(--purple)">
+        <div class="feat-icon">🏦</div>
+        <div class="feat-title">Reward Treasury &amp; Ledger</div>
+        <div class="feat-desc">Double-entry accounting. Full audit trail. Gas-free gameplay — treasury solvency enforced on every round.</div>
+      </div>
+      <div class="feat-item" style="--accent:var(--blue)">
+        <div class="feat-icon">🪙</div>
+        <div class="feat-title">Any ERC-20 Token</div>
+        <div class="feat-desc">Bring your contract address. We handle the rest. Ethereum, Polygon, BSC, Base, Arbitrum, Avalanche +</div>
+      </div>
+      <div class="feat-item" style="--accent:var(--green)">
+        <div class="feat-icon">🎨</div>
+        <div class="feat-title">Full White-Label UI</div>
+        <div class="feat-desc">Your logo, your domain, your colors — everywhere. Zero GamZO attribution visible to players.</div>
+      </div>
+      <div class="feat-item" style="--accent:var(--purple)">
+        <div class="feat-icon">⭐</div>
+        <div class="feat-title">Gamification &amp; NFT Rewards</div>
+        <div class="feat-desc">Streaks, leaderboards, VIP tiers, on-chain NFT badges — keeping holders engaged daily, not just on launch.</div>
+      </div>
+      <div class="feat-item" style="--accent:var(--blue)">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Admin Control Panel</div>
+        <div class="feat-desc">Manage treasury, deposits, withdrawals, fee collection. Full audit logs, player activity &amp; revenue analytics.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10: PRICING ══════════════════════════════ -->
+  <div class="slide" id="s10">
+    <div class="badge badge-p">Pricing</div>
+    <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:900; margin-bottom:.5rem; text-align:center">Choose your <span class="gradient-text">launch plan</span></h2>
+    <p style="color:var(--muted); font-size:.85rem; text-align:center; margin-bottom:1.75rem">Fully deployed &amp; managed by us. We grow when you grow.</p>
+    <div class="pricing-wrap">
+      <!-- Starter -->
+      <div class="p-card">
+        <div class="p-plan" style="color:var(--blue)">Starter</div>
+        <div style="display:flex; align-items:baseline; gap:.4rem; flex-wrap:wrap">
+          <div class="p-price">$2,999 <span>/ setup</span></div>
+          <span class="p-strike">$6,999</span>
+        </div>
+        <div style="font-size:.6rem; color:var(--blue); font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin:.35rem 0">🏷 Save $4,000</div>
+        <div class="p-rev" style="background:rgba(0,212,255,.08); color:var(--blue); border:1px solid rgba(0,212,255,.2)">50% revenue share</div>
+        <div class="p-monthly">Then <b>$399 / month</b> managed</div>
+        <ul class="p-features">
+          <li class="p-group">Platform</li>
+          <li><span class="p-check">✓</span> All 10 games, 1 EVM chain</li>
+          <li><span class="p-check">✓</span> Your ERC-20 token as currency</li>
+          <li><span class="p-check">✓</span> White-label UI — your brand</li>
+          <li><span class="p-check">✓</span> On-chain VRF, verified outcomes</li>
+          <li class="p-group">Engagement</li>
+          <li><span class="p-check">✓</span> Daily streak rewards</li>
+          <li><span class="p-check">✓</span> Public leaderboard</li>
+          <li class="p-group">Support</li>
+          <li><span class="p-check">✓</span> Email support</li>
+        </ul>
+        <a href="mailto:hello@gamzo.io?subject=Starter Plan Inquiry" class="p-btn p-btn-default">Get Started →</a>
+      </div>
+      <!-- Pro -->
+      <div class="p-card featured">
+        <div class="p-popular">Most Popular</div>
+        <div class="p-plan" style="color:var(--purple)">Pro</div>
+        <div style="display:flex; align-items:baseline; gap:.4rem; flex-wrap:wrap">
+          <div class="p-price" style="color:var(--purple)">$3,999 <span>/ setup</span></div>
+          <span class="p-strike">$9,999</span>
+        </div>
+        <div style="font-size:.6rem; color:var(--purple); font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin:.35rem 0">🏷 Save $6,000</div>
+        <div class="p-rev" style="background:rgba(155,89,255,.1); color:var(--purple); border:1px solid rgba(155,89,255,.25)">30% revenue share</div>
+        <div class="p-monthly">Then <b>$699 / month</b> managed</div>
+        <ul class="p-features">
+          <li class="p-group">Platform</li>
+          <li><span class="p-check">✓</span> All 10 games, up to 2 EVM chains</li>
+          <li><span class="p-check">✓</span> Full white-label — zero GamZO branding</li>
+          <li><span class="p-check">✓</span> Custom domain + SSL</li>
+          <li><span class="p-check">✓</span> VRF + configurable platform fee</li>
+          <li class="p-group">Retention &amp; Growth</li>
+          <li><span class="p-check">✓</span> Streak rewards &amp; seasonal challenges</li>
+          <li><span class="p-check">✓</span> Leaderboard + weekly competitions</li>
+          <li><span class="p-check">✓</span> Referral &amp; affiliate system</li>
+          <li><span class="p-check">✓</span> VIP tiers + Streak NFTs</li>
+          <li class="p-group">Support</li>
+          <li><span class="p-check">✓</span> Dedicated Slack + 24h SLA</li>
+        </ul>
+        <a href="mailto:hello@gamzo.io?subject=Pro Plan Inquiry" class="p-btn p-btn-featured">Get Started →</a>
+      </div>
+      <!-- Enterprise -->
+      <div class="p-card">
+        <div class="p-plan" style="color:var(--green)">Enterprise</div>
+        <div class="p-price" style="font-size:1.9rem">Custom</div>
+        <div class="p-rev" style="background:rgba(0,255,157,.07); color:var(--green); border:1px solid rgba(0,255,157,.2)">Negotiated share</div>
+        <div class="p-monthly">White-glove on <b>dedicated infra</b></div>
+        <ul class="p-features">
+          <li class="p-group">Platform</li>
+          <li><span class="p-check">✓</span> Everything in Pro</li>
+          <li><span class="p-check">✓</span> Unlimited EVM chains</li>
+          <li><span class="p-check">✓</span> Custom game development</li>
+          <li><span class="p-check">✓</span> Dedicated server infrastructure</li>
+          <li><span class="p-check">✓</span> Source code license</li>
+          <li class="p-group">Retention &amp; Growth</li>
+          <li><span class="p-check">✓</span> Custom NFT collection</li>
+          <li><span class="p-check">✓</span> Bespoke gamification engine</li>
+          <li><span class="p-check">✓</span> Custom tokenomics integration</li>
+          <li class="p-group">Support</li>
+          <li><span class="p-check">✓</span> Dedicated engineer + 4h SLA</li>
+        </ul>
+        <a href="mailto:hello@gamzo.io?subject=Enterprise Inquiry" class="p-btn p-btn-default">Contact Us →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 11: PROOF + TECH ══════════════════════════ -->
+  <div class="slide" id="s11">
+    <div class="badge badge-y">Why Trust Us</div>
+    <h2 style="font-size:clamp(1.6rem,3vw,2.4rem); font-weight:900; margin-bottom:1.75rem; text-align:center">Battle-tested tech. <span class="gradient-text">Real results.</span></h2>
+    <div class="proof-inner">
+      <div class="s11-left">
+        <h3>What projects are saying</h3>
+        <div style="display:flex; flex-direction:column; gap:.85rem">
+          <div class="testimonial-item">
+            <div class="t-stars">★★★★★</div>
+            <p class="t-text">"Launched $MEOW GameHub in 6 days. Token volume on-chain jumped 4× in the first week — holders had a real reason to stay."</p>
+            <div class="t-author">
+              <div class="t-avatar" style="background:rgba(0,255,157,.1); border-color:rgba(0,255,157,.3)">🐱</div>
+              <div><div class="t-name">Alex K.</div><div class="t-role">Founder, $MEOW Token</div></div>
+            </div>
+          </div>
+          <div class="testimonial-item">
+            <div class="t-stars">★★★★★</div>
+            <p class="t-text">"Quoted $300k to build this in-house. GamZO gave us a production-grade platform with 10 games in a week at under $5k."</p>
+            <div class="t-author">
+              <div class="t-avatar" style="background:rgba(0,212,255,.1); border-color:rgba(0,212,255,.3)">🚀</div>
+              <div><div class="t-name">Marcus T.</div><div class="t-role">Co-Founder, GameFi DAO</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="s11-right">
+        <h3>Key numbers</h3>
+        <div class="key-nums">
+          <div class="kn-card">
+            <div class="kn-val neon">10</div>
+            <div class="kn-lbl">Live Games</div>
+          </div>
+          <div class="kn-card">
+            <div class="kn-val" style="color:var(--purple)">7 days</div>
+            <div class="kn-lbl">Avg. Deploy</div>
+          </div>
+          <div class="kn-card">
+            <div class="kn-val" style="color:var(--blue)">100%</div>
+            <div class="kn-lbl">VRF Verified</div>
+          </div>
+          <div class="kn-card">
+            <div class="kn-val" style="color:var(--yellow)">10+</div>
+            <div class="kn-lbl">EVM Chains</div>
+          </div>
+        </div>
+        <h3 style="margin-bottom:.85rem">Powered by</h3>
+        <div class="tech-row">
+          <span class="tech-chip">⛓️ Chainlink VRF</span>
+          <span class="tech-chip">🔐 OpenZeppelin</span>
+          <span class="tech-chip">▲ Next.js 16</span>
+          <span class="tech-chip">🔷 Prisma + PostgreSQL</span>
+          <span class="tech-chip">🌈 RainbowKit / SIWE</span>
+        </div>
+        <div style="background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:.85rem 1.1rem; margin-top:1rem; font-size:.78rem; color:var(--muted); line-height:1.6">
+          <strong style="color:var(--text)">No KYC. No email. No friction.</strong> Players authenticate with their wallet — Sign-In With Ethereum. If they hold your token, they're in instantly.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 12: CTA ══════════════════════════════════ -->
+  <div class="slide" id="s12">
+    <div class="badge badge-g" style="margin-bottom:1.5rem">Ready to Launch?</div>
+    <h2 class="cta-h2">
+      Your platform.<br />
+      <span class="gradient-text">Your token. Your revenue.</span>
+    </h2>
+    <p class="cta-p">
+      Join token projects already earning from their community's engagement. Setup is fast, the platform is proven, and the upside is entirely yours.
+    </p>
+    <a href="mailto:hello@gamzo.io?subject=White-Label Gaming Platform Inquiry" class="cta-contact">
+      📩 &nbsp;Talk to the GamZO Team
+    </a>
+    <div class="cta-chips">
+      <div class="cta-chip"><span class="c">✓</span> Live in 7 days</div>
+      <div class="cta-chip"><span class="c">✓</span> No coding needed</div>
+      <div class="cta-chip"><span class="c">✓</span> Any ERC-20 token</div>
+      <div class="cta-chip"><span class="c">✓</span> VRF verified</div>
+      <div class="cta-chip"><span class="c">✓</span> 100% your brand</div>
+      <div class="cta-chip"><span class="c">✓</span> Zero ops on your end</div>
+    </div>
+    <p class="cta-email">Or email us directly: <a href="mailto:hello@gamzo.io">hello@gamzo.io</a></p>
+  </div>
+
+</div><!-- /deck -->
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsWrap = document.getElementById('dots');
+  const progressBar = document.getElementById('progress-bar');
+  const counter = document.getElementById('slide-counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const keyHint = document.getElementById('key-hint');
+  let current = 0;
+  let hintTimer;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.title = `Slide ${i+1}`;
+    d.onclick = () => goTo(i);
+    dotsWrap.appendChild(d);
+  });
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit-left');
+    setTimeout(() => slides[current > idx ? idx+1 : current].classList.remove('exit-left'), 450);
+
+    // if going backwards, flip exit direction
+    if (idx < current) {
+      slides[current].classList.remove('exit-left');
+      slides[current].style.transform = 'translateX(60px)';
+      slides[current].style.opacity = '0';
+      setTimeout(() => {
+        slides[current].style.transform = '';
+        slides[current].style.opacity = '';
+        slides[current].style.pointerEvents = '';
+      }, 450);
+    }
+
+    current = idx;
+    slides[current].classList.add('active');
+
+    // Dots
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+
+    // Progress
+    const pct = ((current + 1) / slides.length) * 100;
+    progressBar.style.width = pct + '%';
+
+    // Counter
+    counter.textContent = `${current + 1} / ${slides.length}`;
+
+    // Buttons
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === slides.length - 1;
+
+    // Animate bars on slide 3
+    if (current === 2) {
+      setTimeout(() => {
+        document.querySelectorAll('.mkt-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.target || '0%';
+        });
+      }, 300);
+    } else {
+      document.querySelectorAll('.mkt-bar-fill').forEach(bar => {
+        bar.style.width = '0%';
+      });
+    }
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); navigate(1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  { e.preventDefault(); navigate(-1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(slides.length - 1);
+  });
+
+  // Touch swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  // Hide key hint after 4s
+  hintTimer = setTimeout(() => { keyHint.style.opacity = '0'; }, 4000);
+
+  // Init
+  goTo(0);
+</script>
+</body>
+</html>
